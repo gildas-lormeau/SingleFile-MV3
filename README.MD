@@ -2,6 +2,8 @@
 
 Enjoy the version of SingleFile compatible with the Manifest V3!
 
+![Manifest V3](https://github.com/gildas-lormeau/SingleFile-Lite/blob/main/promo.png?raw=true)
+
 This is a work in progress.
 ## Notable features
 
