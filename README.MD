@@ -1,6 +1,6 @@
 # SingleFile Lite
 
-Enjoy the version of SingleFile compatible with the Manifest V3!
+This is the new version of SingleFile compatible with the long-awaited Manifest V3!
 
 ![Manifest V3](https://github.com/gildas-lormeau/SingleFile-Lite/blob/main/promo.png?raw=true)
 
