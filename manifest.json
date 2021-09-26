@@ -1,0 +1,117 @@
+{
+	"name": "SingleFile Lite",
+	"author": "Gildas Lormeau",
+	"homepage_url": "https://github.com/gildas-lormeau/SingleFile",
+	"icons": {
+		"16": "extension/ui/resources/icon_16.png",
+		"48": "extension/ui/resources/icon_48.png",
+		"64": "extension/ui/resources/icon_64.png",
+		"128": "extension/ui/resources/icon_128.png"
+	},
+	"version": "1.0.0",
+	"description": "__MSG_extensionDescription__",
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"run_at": "document_start",
+			"js": [
+				"dist/chrome-browser-polyfill.js",
+				"dist/single-file-frames.js",
+				"dist/extension-frames.js"
+			],
+			"all_frames": true,
+			"match_about_blank": true
+		},
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"run_at": "document_start",
+			"js": [
+				"dist/chrome-browser-polyfill.js",
+				"dist/single-file-bootstrap.js",
+				"dist/extension-bootstrap.js",
+				"dist/web/infobar-web.js",
+				"dist/single-file.js",
+				"dist/infobar.js",
+				"dist/extension.js"
+			]
+		}
+	],
+	"background": {
+		"service_worker": "dist/extension-background.js"
+	},
+	"options_ui": {
+		"browser_style": true,
+		"page": "extension/ui/pages/options.html",
+		"open_in_tab": false
+	},
+	"action": {
+		"default_icon": {
+			"16": "extension/ui/resources/icon_16.png",
+			"48": "extension/ui/resources/icon_48.png",
+			"64": "extension/ui/resources/icon_64.png",
+			"128": "extension/ui/resources/icon_128.png"
+		},
+		"default_title": "__MSG_buttonDefaultTooltip__"
+	},
+	"commands": {
+		"save-selected-tabs": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+Y"
+			},
+			"description": "__MSG_commandSaveSelectedTabs__"
+		},
+		"save-all-tabs": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+U"
+			},
+			"description": "__MSG_commandSaveAllTabs__"
+		}
+	},
+	"web_accessible_resources": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"resources": [
+				"dist/web/hooks/hooks-web.js",
+				"dist/web/hooks/hooks-frames-web.js",
+				"dist/web/infobar-web.js",
+				"dist/web/editor/editor-init-web.js",
+				"dist/web/editor/editor-web.js",
+				"dist/web/editor/editor-helper-web.js",
+				"extension/lib/readability/Readability.js",
+				"extension/lib/readability/Readability-readerable.js",
+				"extension/ui/pages/editor-note-web.css",
+				"extension/ui/pages/editor-mask-web.css",
+				"extension/ui/pages/editor-frame-web.css"
+			]
+		}
+	],
+	"oauth2": {
+		"client_id": "207618107333-3pj2pmelhnl4sf3rpctghs9cean3q8nj.apps.googleusercontent.com",
+		"scopes": [
+			"https://www.googleapis.com/auth/drive.file"
+		]
+	},
+	"permissions": [
+		"clipboardWrite",
+		"contextMenus",
+		"downloads",
+		"storage",
+		"tabs",
+		"scripting"
+	],
+	"optional_permissions": [
+		"identity",
+		"nativeMessaging",
+		"bookmarks"
+	],
+	"devtools_page": "extension/core/devtools/devtools.html",
+	"incognito": "spanning",
+	"manifest_version": 3,
+	"default_locale": "en"
+}
