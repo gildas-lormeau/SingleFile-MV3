@@ -1,7 +1,7 @@
 {
 	"name": "SingleFile Lite",
 	"author": "Gildas Lormeau",
-	"homepage_url": "https://github.com/gildas-lormeau/SingleFile",
+	"homepage_url": "https://github.com/gildas-lormeau/SingleFile-Lite",
 	"icons": {
 		"16": "extension/ui/resources/icon_16.png",
 		"48": "extension/ui/resources/icon_48.png",
@@ -102,8 +102,7 @@
 		"contextMenus",
 		"downloads",
 		"storage",
-		"tabs",
-		"scripting"
+		"tabs"
 	],
 	"optional_permissions": [
 		"identity",
