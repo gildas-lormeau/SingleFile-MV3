@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, Blob, document */
+/* global browser, Blob */
 
 import * as config from "./config.js";
 import * as bookmarks from "./bookmarks.js";
@@ -112,8 +112,6 @@ async function downloadTabPage(message, tab) {
 			await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: contents.join("") });
 		} else {
 			if (message.saveToClipboard) {
-				message.content = contents.join("");
-				saveToClipboard(message);
 				ui.onEnd(tab.id);
 			} else {
 				await downloadContent(contents, tab, tab.incognito, message);
@@ -275,18 +273,5 @@ async function downloadPage(pageData, options) {
 			}
 			await bookmarks.update(pageData.bookmarkId, { url: downloadData.filename });
 		}
-	}
-}
-
-function saveToClipboard(pageData) {
-	const command = "copy";
-	document.addEventListener(command, listener);
-	document.execCommand(command);
-	document.removeEventListener(command, listener);
-
-	function listener(event) {
-		event.clipboardData.setData(MIMETYPE_HTML, pageData.content);
-		event.clipboardData.setData("text/plain", pageData.content);
-		event.preventDefault();
 	}
 }
