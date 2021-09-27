@@ -81,7 +81,7 @@ img[type=button].cut-disabled:hover,
     .toolbar {
         flex-direction: column;
         min-width: 34px;
-        max-width: 34px;        
+        max-width: 34px;
     }
 
     .buttons {
