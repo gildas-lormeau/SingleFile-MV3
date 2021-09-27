@@ -229,13 +229,11 @@ function toolbarOnTouchStart(event) {
 function toolbarOnTouchMove(event) {
 	if (toolbarPositionPointer != null) {
 		const position = getPosition(event);
-		toolbarTranslate = Math.min(Math.max((orientationPortrait ? position.screenY : position.screenX) - toolbarPositionPointer, toolbarTranslateMax), 0);
-		if (Math.abs(toolbarTranslate)) {
-			toolbarMoving = true;
-			toolbarElement.style.setProperty("transform", orientationPortrait ? `translate(0, ${toolbarTranslate}px)` : `translate(${toolbarTranslate}px, 0)`);
-			editorElement.style.setProperty("pointer-events", "none");
-			event.preventDefault();
-		}
+		toolbarTranslate = Math.min(Math.max((orientationPortrait ? position.screenY : position.screenX) - toolbarPositionPointer, toolbarTranslateMax - toolbarPositionPointer), 0);
+		toolbarMoving = true;
+		toolbarElement.style.setProperty("transform", orientationPortrait ? `translate(0, ${toolbarTranslate}px)` : `translate(${toolbarTranslate}px, 0)`);
+		editorElement.style.setProperty("pointer-events", "none");
+		event.preventDefault();
 	}
 }
 
@@ -279,7 +277,7 @@ addEventListener("message", event => {
 			linkElement.rel = "icon";
 			linkElement.href = message.icon;
 			document.head.appendChild(linkElement);
-		}		
+		}
 		if (!message.reset) {
 			const defaultEditorMode = tabData.options.defaultEditorMode;
 			if (defaultEditorMode == "edit") {
