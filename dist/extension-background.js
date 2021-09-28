@@ -2568,21 +2568,12 @@
 	 *   Source.
 	 */
 
-	async function save(pageData) {
-		const port = browser.runtime.connectNative("singlefile_companion");
-		port.postMessage({
-			method: "save",
-			pageData
-		});
-		await new Promise((resolve, reject) => {
-			port.onDisconnect.addListener(() => {
-				if (port.error) {
-					reject(new Error(port.error.message + " (Companion)"));
-				} else if (!browser.runtime.lastError || browser.runtime.lastError.message.includes("Native host has exited")) {
-					resolve();
-				}
-			});
-		});
+	async function onMessage$8(message) {
+		if (message.method.endsWith(".resourceCommitted")) {
+			if (message.tabId && message.url && (message.type == "stylesheet" || message.type == "script")) {
+				await browser.tabs.sendMessage(message.tabId, message);
+			}
+		}
 	}
 
 	/*
@@ -2608,12 +2599,21 @@
 	 *   Source.
 	 */
 
-	async function onMessage$8(message) {
-		if (message.method.endsWith(".resourceCommitted")) {
-			if (message.tabId && message.url && (message.type == "stylesheet" || message.type == "script")) {
-				await browser.tabs.sendMessage(message.tabId, message);
-			}
-		}
+	async function save(pageData) {
+		const port = browser.runtime.connectNative("singlefile_companion");
+		port.postMessage({
+			method: "save",
+			pageData
+		});
+		await new Promise((resolve, reject) => {
+			port.onDisconnect.addListener(() => {
+				if (port.error) {
+					reject(new Error(port.error.message + " (Companion)"));
+				} else if (!browser.runtime.lastError || browser.runtime.lastError.message.includes("Native host has exited")) {
+					resolve();
+				}
+			});
+		});
 	}
 
 	/*
@@ -3216,8 +3216,6 @@
 				await open({ tabIndex: tab.index + 1, filename: message.filename, content: contents.join("") });
 			} else {
 				if (message.saveToClipboard) {
-					message.content = contents.join("");
-					saveToClipboard(message);
 					onEnd$1(tab.id);
 				} else {
 					await downloadContent(contents, tab, tab.incognito, message);
@@ -3379,19 +3377,6 @@
 				}
 				await update(pageData.bookmarkId, { url: downloadData.filename });
 			}
-		}
-	}
-
-	function saveToClipboard(pageData) {
-		const command = "copy";
-		document.addEventListener(command, listener);
-		document.execCommand(command);
-		document.removeEventListener(command, listener);
-
-		function listener(event) {
-			event.clipboardData.setData(MIMETYPE_HTML, pageData.content);
-			event.clipboardData.setData("text/plain", pageData.content);
-			event.preventDefault();
 		}
 	}
 

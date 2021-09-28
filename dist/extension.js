@@ -74,6 +74,9 @@
 				}
 				await browser.runtime.sendMessage(message);
 			}
+			if (!options.openEditor && options.saveToClipboard) {
+				saveToClipboard(pageData);
+			}
 		} else {
 			if (options.saveToClipboard) {
 				saveToClipboard(pageData);
