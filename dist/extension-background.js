@@ -1239,6 +1239,10 @@
 				tabsData.set(tab.id, { url: tab.url, content: contents.join(""), filename: message.filename });
 			}
 		}
+		if (message.method.endsWith(".setTabData")) {
+			const tab = sender.tab;
+			tabsData.set(tab.id, { content: message.content, filename: message.filename });
+		}
 	}
 
 	/*

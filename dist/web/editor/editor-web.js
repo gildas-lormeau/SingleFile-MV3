@@ -978,6 +978,7 @@ table {
 				redoCutPage();
 			}
 			if (message.method == "getContent") {
+				onUpdate(true);
 				let content = getContent(message.compressHTML, message.updatedResources);
 				if (initScriptContent) {
 					content = content.replace(/<script data-template-shadow-root src.*?<\/script>/g, initScriptContent);
