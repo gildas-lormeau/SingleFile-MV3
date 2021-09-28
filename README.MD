@@ -15,3 +15,6 @@ This is a work in progress.
  - no translations of native user interface elements: with the Manifest V2, labels in the context menu and button tooltip/badge could be easily translated. With the Manifest V3, it's no more possible.
  - inability to save the opened tabs just after installing SingleFile: with the Manifest V2, it was possible to inject content scripts dynamically if they were not present in the page. With the Manifest V3, it's no more possible.
  - and more to come!
+
+## Benefits of the Manifest V3
+ - none
