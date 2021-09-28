@@ -21,16 +21,24 @@
  *   Source.
  */
 
-import { getMessages } from "./util.js";
-import * as config from "./config.js";
+/* global browser, fetch */
 
 export {
-	onMessage
+	getMessages
 };
 
-async function onMessage(message, sender) {
-	if (message.method.endsWith(".init")) {
-		const [options, messages] = await Promise.all([config.getOptions(sender.tab.url, true), getMessages()]);
-		return { options, tabId: sender.tab.id, tabIndex: sender.tab.index, messages };
+async function getMessages() {
+	let language = (((await browser.i18n.getAcceptLanguages())[0]) || "en").replace(/-/, "_");
+	let response;
+	try {
+		response = await fetch(`/_locales/${language}/messages.json`);
+	} catch (error) {
+		if (language.includes("_")) {
+			language = language.split("_")[0];
+			response = await fetch(`/_locales/${language}/messages.json`);
+		} else {
+			throw error;
+		}
 	}
+	return await response.json();
 }

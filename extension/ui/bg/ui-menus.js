@@ -26,6 +26,7 @@
 import * as config from "./../../core/bg/config.js";
 import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
+import { getMessages } from "./../../core/bg/util.js";
 
 import * as button from "./ui-button.js";
 
@@ -50,22 +51,22 @@ const MENU_ID_SAVE_ALL_TABS = "save-all-tabs";
 const MENU_ID_BUTTON_SAVE_SELECTED_TABS = "button-" + MENU_ID_SAVE_SELECTED_TABS;
 const MENU_ID_BUTTON_SAVE_UNPINNED_TABS = "button-" + MENU_ID_SAVE_UNPINNED_TABS;
 const MENU_ID_BUTTON_SAVE_ALL_TABS = "button-" + MENU_ID_SAVE_ALL_TABS;
-const MENU_CREATE_DOMAIN_RULE_MESSAGE = "Select the profile of the current domain";
-const MENU_UPDATE_RULE_MESSAGE = "Select the profile of the current rule";
-const MENU_SAVE_PAGE_MESSAGE = "Save page with SingleFile";
-const MENU_SAVE_WITH_PROFILE = "Save page with profile";
-const MENU_SAVE_SELECTED_LINKS = "Save selected links";
-const MENU_EDIT_PAGE_MESSAGE = "Annotate the page...";
-const MENU_EDIT_AND_SAVE_PAGE_MESSAGE = "Annotate and save the page...";
-const MENU_VIEW_PENDINGS_MESSAGE = "View pending saves...";
-const MENU_SAVE_SELECTION_MESSAGE = "Save selection";
-const MENU_SAVE_FRAME_MESSAGE = "Save frame";
-const MENU_SAVE_TABS_MESSAGE = "Save tabs";
-const MENU_SAVE_SELECTED_TABS_MESSAGE = "Save selected tabs";
-const MENU_SAVE_UNPINNED_TABS_MESSAGE = "Save unpinned tabs";
-const MENU_SAVE_ALL_TABS_MESSAGE = "Save all tabs";
-const MENU_SELECT_PROFILE_MESSAGE = "Select the default profile";
-const PROFILE_DEFAULT_SETTINGS_MESSAGE = "Default settings";
+let MENU_CREATE_DOMAIN_RULE_MESSAGE;
+let MENU_UPDATE_RULE_MESSAGE;
+let MENU_SAVE_PAGE_MESSAGE;
+let MENU_SAVE_WITH_PROFILE;
+let MENU_SAVE_SELECTED_LINKS;
+let MENU_EDIT_PAGE_MESSAGE;
+let MENU_EDIT_AND_SAVE_PAGE_MESSAGE;
+let MENU_VIEW_PENDINGS_MESSAGE;
+let MENU_SAVE_SELECTION_MESSAGE;
+let MENU_SAVE_FRAME_MESSAGE;
+let MENU_SAVE_TABS_MESSAGE;
+let MENU_SAVE_SELECTED_TABS_MESSAGE;
+let MENU_SAVE_UNPINNED_TABS_MESSAGE;
+let MENU_SAVE_ALL_TABS_MESSAGE;
+let MENU_SELECT_PROFILE_MESSAGE;
+let PROFILE_DEFAULT_SETTINGS_MESSAGE;
 const MENU_TOP_VISIBLE_ENTRIES = [
 	MENU_ID_EDIT_AND_SAVE_PAGE,
 	MENU_ID_SAVE_SELECTED_LINKS,
@@ -87,11 +88,28 @@ export {
 	refreshTab as onTabActivated,
 	refreshTab as onInit,
 	createMenus as refreshTab,
-	setBusiness
+	init
 };
 
-function setBusiness(businessApi) {
+async function init(businessApi) {
 	business = businessApi;
+	const messages = await getMessages();
+	MENU_CREATE_DOMAIN_RULE_MESSAGE = messages.menuCreateDomainRule.message;
+	MENU_UPDATE_RULE_MESSAGE = messages.menuUpdateRule.message;
+	MENU_SAVE_PAGE_MESSAGE = messages.menuSavePage.message;
+	MENU_SAVE_WITH_PROFILE = messages.menuSaveWithProfile.message;
+	MENU_SAVE_SELECTED_LINKS = messages.menuSaveSelectedLinks.message;
+	MENU_EDIT_PAGE_MESSAGE = messages.menuEditPage.message;
+	MENU_EDIT_AND_SAVE_PAGE_MESSAGE = messages.menuEditAndSavePage.message;
+	MENU_VIEW_PENDINGS_MESSAGE = messages.menuViewPendingSaves.message;
+	MENU_SAVE_SELECTION_MESSAGE = messages.menuSaveSelection.message;
+	MENU_SAVE_FRAME_MESSAGE = messages.menuSaveFrame.message;
+	MENU_SAVE_TABS_MESSAGE = messages.menuSaveTabs.message;
+	MENU_SAVE_SELECTED_TABS_MESSAGE = messages.menuSaveSelectedTabs.message;
+	MENU_SAVE_UNPINNED_TABS_MESSAGE = messages.menuSaveUnpinnedTabs.message;
+	MENU_SAVE_ALL_TABS_MESSAGE = messages.menuSaveAllTabs.message;
+	MENU_SELECT_PROFILE_MESSAGE = messages.menuSelectProfile.message;
+	PROFILE_DEFAULT_SETTINGS_MESSAGE = messages.profileDefaultSettings.message;
 }
 
 function onMessage(message) {
@@ -445,7 +463,7 @@ async function refreshTab(tab) {
 		if (allTabsData[tab.id].editorDetected) {
 			updateAllVisibleValues(false);
 		} else {
-			updateAllVisibleValues(true);			
+			updateAllVisibleValues(true);
 			if (tab && tab.url) {
 				const options = await config.getOptions(tab.url);
 				promises.push(updateVisibleValue(tab, options.contextMenuEnabled));

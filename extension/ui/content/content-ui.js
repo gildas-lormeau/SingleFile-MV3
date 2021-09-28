@@ -21,9 +21,10 @@
  *   Source.
  */
 
-/* global browser, document, globalThis, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node */
+/* global document, globalThis, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node */
 
 const singlefile = globalThis.singlefile;
+const bootstrap = globalThis.singlefileBootstrap;
 
 const SELECTED_CONTENT_ATTRIBUTE_NAME = singlefile.helper.SELECTED_CONTENT_ATTRIBUTE_NAME;
 
@@ -39,10 +40,10 @@ const LOGS_LINE_TEXT_ELEMENT_CLASSNAME = "singlefile-logs-line-text";
 const LOGS_LINE_STATUS_ELEMENT_CLASSNAME = "singlefile-logs-line-icon";
 const SINGLE_FILE_UI_ELEMENT_CLASS = singlefile.helper.SINGLE_FILE_UI_ELEMENT_CLASS;
 const SELECT_PX_THRESHOLD = 8;
-const LOG_PANEL_DEFERRED_IMAGES_MESSAGE = browser.i18n.getMessage("logPanelDeferredImages");
-const LOG_PANEL_FRAME_CONTENTS_MESSAGE = browser.i18n.getMessage("logPanelFrameContents");
-const LOG_PANEL_STEP_MESSAGE = browser.i18n.getMessage("logPanelStep");
-const LOG_PANEL_WIDTH = browser.i18n.getMessage("logPanelWidth");
+let LOG_PANEL_DEFERRED_IMAGES_MESSAGE;
+let LOG_PANEL_FRAME_CONTENTS_MESSAGE;
+let LOG_PANEL_STEP_MESSAGE;
+let LOG_PANEL_WIDTH;
 const CSS_PROPERTIES = new Set(Array.from(getComputedStyle(document.documentElement)));
 
 let selectedAreaElement, logsWindowElement;
@@ -73,6 +74,10 @@ function promptMessage(message, defaultValue) {
 }
 
 function onStartPage(options) {
+	LOG_PANEL_DEFERRED_IMAGES_MESSAGE = bootstrap.messages.logPanelDeferredImages.message;
+	LOG_PANEL_FRAME_CONTENTS_MESSAGE = bootstrap.messages.logPanelFrameContents.message;
+	LOG_PANEL_STEP_MESSAGE = bootstrap.messages.logPanelStep.message;
+	LOG_PANEL_WIDTH = bootstrap.messages.logPanelWidth.message;
 	let maskElement = document.querySelector(MASK_TAGNAME);
 	if (!maskElement) {
 		if (options.logsEnabled) {
