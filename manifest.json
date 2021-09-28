@@ -32,11 +32,7 @@
 			"js": [
 				"dist/chrome-browser-polyfill.js",
 				"dist/single-file-bootstrap.js",
-				"dist/extension-bootstrap.js",
-				"dist/web/infobar-web.js",
-				"dist/single-file.js",
-				"dist/infobar.js",
-				"dist/extension.js"
+				"dist/extension-bootstrap.js"
 			]
 		}
 	],
@@ -102,7 +98,9 @@
 		"contextMenus",
 		"downloads",
 		"storage",
-		"tabs"
+		"tabs",
+		"activeTab",
+		"scripting"
 	],
 	"optional_permissions": [
 		"identity",

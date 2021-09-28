@@ -35,6 +35,15 @@ const INJECT_SCRIPTS_STEP = 1;
 const EXECUTE_SCRIPTS_STEP = 2;
 const TASK_PENDING_STATE = "pending";
 const TASK_PROCESSING_STATE = "processing";
+const CONTENT_SCRIPTS = [
+	"dist/chrome-browser-polyfill.js",
+	"dist/single-file-bootstrap.js",
+	"dist/extension-bootstrap.js",
+	"dist/web/infobar-web.js",
+	"dist/single-file.js",
+	"dist/infobar.js",
+	"dist/extension.js"
+];
 
 const extensionScriptFiles = [
 	"dist/infobar.js",
@@ -59,9 +68,23 @@ export {
 };
 
 async function saveSelectedLinks(tab) {
-	const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
-	if (response.urls && response.urls.length) {
-		await saveUrls(response.urls);
+	let scriptsInjected;
+	try {
+		await browser.scripting.executeScript({
+			target: { tabId: tab.id },
+			files: CONTENT_SCRIPTS
+		});
+		scriptsInjected = true;
+	} catch (error) {
+		// ignored
+	}
+	if (scriptsInjected) {
+		const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
+		if (response.urls && response.urls.length) {
+			await saveUrls(response.urls);
+		}
+	} else {
+		ui.onForbiddenDomain(tab);
 	}
 }
 
@@ -91,13 +114,28 @@ async function saveTabs(tabs, options = {}) {
 		tabOptions.tabId = tabId;
 		tabOptions.tabIndex = tab.index;
 		tabOptions.extensionScriptFiles = extensionScriptFiles;
-		ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
-		addTask({
-			status: TASK_PENDING_STATE,
-			tab,
-			options: tabOptions,
-			method: "content.save"
-		});
+		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
+		let scriptsInjected;
+		try {
+			await browser.scripting.executeScript({
+				target: { tabId: tab.id },
+				files: CONTENT_SCRIPTS
+			});
+			scriptsInjected = true;
+		} catch (error) {
+			// ignored
+		}
+		if (scriptsInjected || editor.isEditor(tab)) {
+			ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
+			addTask({
+				status: TASK_PENDING_STATE,
+				tab,
+				options: tabOptions,
+				method: "content.save"
+			});
+		} else {
+			ui.onForbiddenDomain(tab);
+		}
 	}));
 	runTasks();
 }
@@ -143,15 +181,26 @@ async function runTask(taskInfo) {
 	const taskId = taskInfo.id;
 	taskInfo.status = TASK_PROCESSING_STATE;
 	if (!taskInfo.tab.id) {
+		let scriptsInjected;
 		try {
 			const tab = await createTabAndWaitUntilComplete({ url: taskInfo.tab.url, active: false });
 			taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 			taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 			ui.onStart(taskInfo.tab.id, INJECT_SCRIPTS_STEP);
+			await browser.scripting.executeScript({
+				target: { tabId: tab.id },
+				files: CONTENT_SCRIPTS
+			});
+			scriptsInjected = true;
 		} catch (tabId) {
 			taskInfo.tab.id = tabId;
 		}
-		ui.onStart(taskInfo.tab.id, EXECUTE_SCRIPTS_STEP);
+		if (scriptsInjected) {
+			ui.onStart(taskInfo.tab.id, EXECUTE_SCRIPTS_STEP);
+		} else {
+			taskInfo.done();
+			return;
+		}
 	}
 	taskInfo.options.taskId = taskId;
 	try {

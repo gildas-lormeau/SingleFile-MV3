@@ -30,6 +30,7 @@ import * as command from "./ui-commands.js";
 export {
 	onMessage,
 	refreshTab,
+	onForbiddenDomain,
 	onStart,
 	onError,
 	onEdit,
@@ -58,6 +59,10 @@ function onMessage(message, sender) {
 
 async function refreshTab(tab) {
 	return Promise.all([menus.refreshTab(tab), button.refreshTab(tab)]);
+}
+
+function onForbiddenDomain(tab) {
+	button.onForbiddenDomain(tab);
 }
 
 function onStart(tabId, step) {

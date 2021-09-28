@@ -29,15 +29,18 @@ import * as tabsData from "./../../core/bg/tabs-data.js";
 const DEFAULT_ICON_PATH = "/extension/ui/resources/icon_128.png";
 const WAIT_ICON_PATH_PREFIX = "/extension/ui/resources/icon_128_wait";
 const BUTTON_DEFAULT_TOOLTIP_MESSAGE = "Save page with SingleFile";
+const BUTTON_BLOCKED_TOOLTIP_MESSAGE = "This page cannot be saved with SingleFile";
 const BUTTON_DEFAULT_BADGE_MESSAGE = "";
 const BUTTON_INITIALIZING_BADGE_MESSAGE = "•••";
 const BUTTON_INITIALIZING_TOOLTIP_MESSAGE = "Initializing SingleFile";
 const BUTTON_ERROR_BADGE_MESSAGE = "ERR";
+const BUTTON_BLOCKED_BADGE_MESSAGE = "🚫";
 const BUTTON_OK_BADGE_MESSAGE = "OK";
 const BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = "Save progress: ";
 const BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = "Upload progress: ";
 const DEFAULT_COLOR = [2, 147, 20, 192];
 const ACTIVE_COLOR = [4, 229, 36, 192];
+const FORBIDDEN_COLOR = [255, 255, 255, 1];
 const ERROR_COLOR = [229, 4, 12, 192];
 const INJECT_SCRIPTS_STEP = 1;
 
@@ -78,6 +81,12 @@ const BUTTON_STATES = {
 		setBadgeText: { text: BUTTON_ERROR_BADGE_MESSAGE },
 		setTitle: { title: BUTTON_DEFAULT_BADGE_MESSAGE },
 		setIcon: { path: DEFAULT_ICON_PATH }
+	},
+	forbidden: {
+		setBadgeBackgroundColor: { color: FORBIDDEN_COLOR },
+		setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
+		setIcon: { path: DEFAULT_ICON_PATH }
 	}
 };
 
@@ -104,6 +113,7 @@ export {
 	onMessage,
 	onStart,
 	onUploadProgress,
+	onForbiddenDomain,	
 	onError,
 	onEdit,
 	onEnd,
@@ -159,6 +169,10 @@ function onEdit(tabId) {
 
 function onEnd(tabId) {
 	refresh(tabId, getButtonState("end"));
+}
+
+function onForbiddenDomain(tab) {
+	refresh(tab.id, getButtonState("forbidden"));
 }
 
 function onCancelled(tab) {

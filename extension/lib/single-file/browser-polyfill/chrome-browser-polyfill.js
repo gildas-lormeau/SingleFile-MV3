@@ -328,6 +328,9 @@ if (typeof globalThis == "undefined") {
 					return nativeAPI.runtime.lastError;
 				}
 			},
+			scripting: {
+				executeScript: injection => nativeAPI.scripting.executeScript(injection)
+			},
 			storage: {
 				local: {
 					set: value => new Promise((resolve, reject) => {

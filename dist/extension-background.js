@@ -333,6 +333,9 @@
 							return nativeAPI.runtime.lastError;
 						}
 					},
+					scripting: {
+						executeScript: injection => nativeAPI.scripting.executeScript(injection)
+					},
 					storage: {
 						local: {
 							set: value => new Promise((resolve, reject) => {
@@ -1369,15 +1372,18 @@
 	const DEFAULT_ICON_PATH = "/extension/ui/resources/icon_128.png";
 	const WAIT_ICON_PATH_PREFIX = "/extension/ui/resources/icon_128_wait";
 	const BUTTON_DEFAULT_TOOLTIP_MESSAGE = "Save page with SingleFile";
+	const BUTTON_BLOCKED_TOOLTIP_MESSAGE = "This page cannot be saved with SingleFile";
 	const BUTTON_DEFAULT_BADGE_MESSAGE = "";
 	const BUTTON_INITIALIZING_BADGE_MESSAGE = "•••";
 	const BUTTON_INITIALIZING_TOOLTIP_MESSAGE = "Initializing SingleFile";
 	const BUTTON_ERROR_BADGE_MESSAGE = "ERR";
+	const BUTTON_BLOCKED_BADGE_MESSAGE = "🚫";
 	const BUTTON_OK_BADGE_MESSAGE = "OK";
 	const BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = "Save progress: ";
 	const BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = "Upload progress: ";
 	const DEFAULT_COLOR = [2, 147, 20, 192];
 	const ACTIVE_COLOR = [4, 229, 36, 192];
+	const FORBIDDEN_COLOR = [255, 255, 255, 1];
 	const ERROR_COLOR = [229, 4, 12, 192];
 	const INJECT_SCRIPTS_STEP = 1;
 
@@ -1417,6 +1423,12 @@
 			setBadgeBackgroundColor: { color: ERROR_COLOR },
 			setBadgeText: { text: BUTTON_ERROR_BADGE_MESSAGE },
 			setTitle: { title: BUTTON_DEFAULT_BADGE_MESSAGE },
+			setIcon: { path: DEFAULT_ICON_PATH }
+		},
+		forbidden: {
+			setBadgeBackgroundColor: { color: FORBIDDEN_COLOR },
+			setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
+			setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
 			setIcon: { path: DEFAULT_ICON_PATH }
 		}
 	};
@@ -1487,6 +1499,10 @@
 
 	function onEnd(tabId) {
 		refresh(tabId, getButtonState("end"));
+	}
+
+	function onForbiddenDomain(tab) {
+		refresh(tab.id, getButtonState("forbidden"));
 	}
 
 	function onCancelled(tab) {
@@ -2138,6 +2154,10 @@
 		}
 	}
 
+	function onForbiddenDomain$1(tab) {
+		onForbiddenDomain(tab);
+	}
+
 	function onStart$1(tabId, step) {
 		onStart(tabId, step);
 	}
@@ -2208,6 +2228,15 @@
 	const EXECUTE_SCRIPTS_STEP = 2;
 	const TASK_PENDING_STATE = "pending";
 	const TASK_PROCESSING_STATE = "processing";
+	const CONTENT_SCRIPTS = [
+		"dist/chrome-browser-polyfill.js",
+		"dist/single-file-bootstrap.js",
+		"dist/extension-bootstrap.js",
+		"dist/web/infobar-web.js",
+		"dist/single-file.js",
+		"dist/infobar.js",
+		"dist/extension.js"
+	];
 
 	const extensionScriptFiles = [
 		"dist/infobar.js",
@@ -2219,9 +2248,23 @@
 	setBusiness$3({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
 
 	async function saveSelectedLinks(tab) {
-		const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
-		if (response.urls && response.urls.length) {
-			await saveUrls(response.urls);
+		let scriptsInjected;
+		try {
+			await browser.scripting.executeScript({
+				target: { tabId: tab.id },
+				files: CONTENT_SCRIPTS
+			});
+			scriptsInjected = true;
+		} catch (error) {
+			// ignored
+		}
+		if (scriptsInjected) {
+			const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
+			if (response.urls && response.urls.length) {
+				await saveUrls(response.urls);
+			}
+		} else {
+			onForbiddenDomain$1(tab);
 		}
 	}
 
@@ -2251,13 +2294,28 @@
 			tabOptions.tabId = tabId;
 			tabOptions.tabIndex = tab.index;
 			tabOptions.extensionScriptFiles = extensionScriptFiles;
-			onStart$1(tabId, EXECUTE_SCRIPTS_STEP);
-			addTask({
-				status: TASK_PENDING_STATE,
-				tab,
-				options: tabOptions,
-				method: "content.save"
-			});
+			onStart$1(tabId, INJECT_SCRIPTS_STEP$1);
+			let scriptsInjected;
+			try {
+				await browser.scripting.executeScript({
+					target: { tabId: tab.id },
+					files: CONTENT_SCRIPTS
+				});
+				scriptsInjected = true;
+			} catch (error) {
+				// ignored
+			}
+			if (scriptsInjected || isEditor(tab)) {
+				onStart$1(tabId, EXECUTE_SCRIPTS_STEP);
+				addTask({
+					status: TASK_PENDING_STATE,
+					tab,
+					options: tabOptions,
+					method: "content.save"
+				});
+			} else {
+				onForbiddenDomain$1(tab);
+			}
 		}));
 		runTasks();
 	}
@@ -2303,15 +2361,26 @@
 		const taskId = taskInfo.id;
 		taskInfo.status = TASK_PROCESSING_STATE;
 		if (!taskInfo.tab.id) {
+			let scriptsInjected;
 			try {
 				const tab = await createTabAndWaitUntilComplete({ url: taskInfo.tab.url, active: false });
 				taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 				taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 				onStart$1(taskInfo.tab.id, INJECT_SCRIPTS_STEP$1);
+				await browser.scripting.executeScript({
+					target: { tabId: tab.id },
+					files: CONTENT_SCRIPTS
+				});
+				scriptsInjected = true;
 			} catch (tabId) {
 				taskInfo.tab.id = tabId;
 			}
-			onStart$1(taskInfo.tab.id, EXECUTE_SCRIPTS_STEP);
+			if (scriptsInjected) {
+				onStart$1(taskInfo.tab.id, EXECUTE_SCRIPTS_STEP);
+			} else {
+				taskInfo.done();
+				return;
+			}
 		}
 		taskInfo.options.taskId = taskId;
 		try {
