@@ -261,9 +261,10 @@
 	 *   Source.
 	 */
 
-	/* global browser, document, globalThis, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node */
+	/* global document, globalThis, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node */
 
 	const singlefile = globalThis.singlefile;
+	const bootstrap = globalThis.singlefileBootstrap;
 
 	const SELECTED_CONTENT_ATTRIBUTE_NAME = singlefile.helper.SELECTED_CONTENT_ATTRIBUTE_NAME;
 
@@ -279,10 +280,10 @@
 	const LOGS_LINE_STATUS_ELEMENT_CLASSNAME = "singlefile-logs-line-icon";
 	const SINGLE_FILE_UI_ELEMENT_CLASS = singlefile.helper.SINGLE_FILE_UI_ELEMENT_CLASS;
 	const SELECT_PX_THRESHOLD = 8;
-	const LOG_PANEL_DEFERRED_IMAGES_MESSAGE = browser.i18n.getMessage("logPanelDeferredImages");
-	const LOG_PANEL_FRAME_CONTENTS_MESSAGE = browser.i18n.getMessage("logPanelFrameContents");
-	const LOG_PANEL_STEP_MESSAGE = browser.i18n.getMessage("logPanelStep");
-	const LOG_PANEL_WIDTH = browser.i18n.getMessage("logPanelWidth");
+	let LOG_PANEL_DEFERRED_IMAGES_MESSAGE;
+	let LOG_PANEL_FRAME_CONTENTS_MESSAGE;
+	let LOG_PANEL_STEP_MESSAGE;
+	let LOG_PANEL_WIDTH;
 	const CSS_PROPERTIES = new Set(Array.from(getComputedStyle(document.documentElement)));
 
 	let selectedAreaElement, logsWindowElement;
@@ -293,6 +294,10 @@
 	}
 
 	function onStartPage(options) {
+		LOG_PANEL_DEFERRED_IMAGES_MESSAGE = bootstrap.messages.logPanelDeferredImages.message;
+		LOG_PANEL_FRAME_CONTENTS_MESSAGE = bootstrap.messages.logPanelFrameContents.message;
+		LOG_PANEL_STEP_MESSAGE = bootstrap.messages.logPanelStep.message;
+		LOG_PANEL_WIDTH = bootstrap.messages.logPanelWidth.message;
 		let maskElement = document.querySelector(MASK_TAGNAME);
 		if (!maskElement) {
 			if (options.logsEnabled) {
@@ -1003,7 +1008,7 @@
 	 */
 
 	const singlefile$2 = globalThis.singlefile;
-	const bootstrap = globalThis.singlefileBootstrap;
+	const bootstrap$1 = globalThis.singlefileBootstrap;
 
 	const MOZ_EXTENSION_PROTOCOL = "moz-extension:";
 
@@ -1050,16 +1055,16 @@
 		if (options.selected || options.optionallySelected) {
 			selectionFound = await markSelection(options.optionallySelected);
 		}
-		if (!processing && (!bootstrap || !bootstrap.pageInfo.processing)) {
-			options.updatedResources = bootstrap ? bootstrap.pageInfo.updatedResources : {};
-			options.visitDate = bootstrap ? bootstrap.pageInfo.visitDate : new Date();
+		if (!processing && (!bootstrap$1 || !bootstrap$1.pageInfo.processing)) {
+			options.updatedResources = bootstrap$1 ? bootstrap$1.pageInfo.updatedResources : {};
+			options.visitDate = bootstrap$1 ? bootstrap$1.pageInfo.visitDate : new Date();
 			Object.keys(options.updatedResources).forEach(url => options.updatedResources[url].retrieved = false);
 			if (options.optionallySelected && selectionFound) {
 				options.selected = true;
 			}
 			if (!options.selected || selectionFound) {
-				if (bootstrap) {
-					bootstrap.pageInfo.processing = true;
+				if (bootstrap$1) {
+					bootstrap$1.pageInfo.processing = true;
 				}
 				try {
 					const pageData = await processPage(options);
@@ -1079,8 +1084,8 @@
 				browser.runtime.sendMessage({ method: "ui.processCancelled" });
 			}
 			processing = false;
-			if (bootstrap) {
-				bootstrap.pageInfo.processing = false;
+			if (bootstrap$1) {
+				bootstrap$1.pageInfo.processing = false;
 			}
 		}
 	}

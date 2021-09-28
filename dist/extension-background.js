@@ -195,7 +195,16 @@
 						})
 					},
 					i18n: {
-						getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions)
+						getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions),
+						getAcceptLanguages: () => new Promise((resolve, reject) => {
+							nativeAPI.i18n.getAcceptLanguages(languages => {
+								if (nativeAPI.runtime.lastError) {
+									reject(nativeAPI.runtime.lastError);
+								} else {
+									resolve(languages);
+								}
+							});
+						})
 					},
 					identity: {
 						get getAuthToken() {
@@ -1144,10 +1153,49 @@
 	 *   Source.
 	 */
 
+	async function getMessages() {
+		let language = (((await browser.i18n.getAcceptLanguages())[0]) || "en").replace(/-/, "_");
+		let response;
+		try {
+			response = await fetch(`/_locales/${language}/messages.json`);
+		} catch (error) {
+			if (language.includes("_")) {
+				language = language.split("_")[0];
+				response = await fetch(`/_locales/${language}/messages.json`);
+			} else {
+				throw error;
+			}
+		}
+		return await response.json();
+	}
+
+	/*
+	 * Copyright 2010-2020 Gildas Lormeau
+	 * contact : gildas.lormeau <at> gmail.com
+	 * 
+	 * This file is part of SingleFile.
+	 *
+	 *   The code in this file is free software: you can redistribute it and/or 
+	 *   modify it under the terms of the GNU Affero General Public License 
+	 *   (GNU AGPL) as published by the Free Software Foundation, either version 3
+	 *   of the License, or (at your option) any later version.
+	 * 
+	 *   The code in this file is distributed in the hope that it will be useful, 
+	 *   but WITHOUT ANY WARRANTY; without even the implied warranty of 
+	 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero 
+	 *   General Public License for more details.
+	 *
+	 *   As additional permission under GNU AGPL version 3 section 7, you may 
+	 *   distribute UNMODIFIED VERSIONS OF THIS file without the copy of the GNU 
+	 *   AGPL normally required by section 4, provided you include this license 
+	 *   notice and a URL through which recipients can access the Corresponding 
+	 *   Source.
+	 */
+
 	async function onMessage$2(message, sender) {
 		if (message.method.endsWith(".init")) {
-			const [options] = await Promise.all([getOptions(sender.tab.url)]);
-			return { options, tabId: sender.tab.id, tabIndex: sender.tab.index };
+			const [options, messages] = await Promise.all([getOptions(sender.tab.url), getMessages()]);
+			return { options, tabId: sender.tab.id, tabIndex: sender.tab.index, messages };
 		}
 	}
 
@@ -1371,67 +1419,23 @@
 
 	const DEFAULT_ICON_PATH = "/extension/ui/resources/icon_128.png";
 	const WAIT_ICON_PATH_PREFIX = "/extension/ui/resources/icon_128_wait";
-	const BUTTON_DEFAULT_TOOLTIP_MESSAGE = "Save page with SingleFile";
-	const BUTTON_BLOCKED_TOOLTIP_MESSAGE = "This page cannot be saved with SingleFile";
 	const BUTTON_DEFAULT_BADGE_MESSAGE = "";
-	const BUTTON_INITIALIZING_BADGE_MESSAGE = "•••";
-	const BUTTON_INITIALIZING_TOOLTIP_MESSAGE = "Initializing SingleFile";
-	const BUTTON_ERROR_BADGE_MESSAGE = "ERR";
-	const BUTTON_BLOCKED_BADGE_MESSAGE = "🚫";
-	const BUTTON_OK_BADGE_MESSAGE = "OK";
-	const BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = "Save progress: ";
-	const BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = "Upload progress: ";
+	let BUTTON_DEFAULT_TOOLTIP_MESSAGE;
+	let BUTTON_BLOCKED_TOOLTIP_MESSAGE;
+	let BUTTON_INITIALIZING_BADGE_MESSAGE;
+	let BUTTON_INITIALIZING_TOOLTIP_MESSAGE;
+	let BUTTON_ERROR_BADGE_MESSAGE;
+	let BUTTON_BLOCKED_BADGE_MESSAGE;
+	let BUTTON_OK_BADGE_MESSAGE;
+	let BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE;
+	let BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE;
 	const DEFAULT_COLOR = [2, 147, 20, 192];
 	const ACTIVE_COLOR = [4, 229, 36, 192];
 	const FORBIDDEN_COLOR = [255, 255, 255, 1];
 	const ERROR_COLOR = [229, 4, 12, 192];
 	const INJECT_SCRIPTS_STEP = 1;
 
-	const BUTTON_STATES = {
-		default: {
-			setBadgeBackgroundColor: { color: DEFAULT_COLOR },
-			setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		inject: {
-			setBadgeBackgroundColor: { color: DEFAULT_COLOR },
-			setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE },
-		},
-		execute: {
-			setBadgeBackgroundColor: { color: ACTIVE_COLOR },
-			setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
-		},
-		progress: {
-			setBadgeBackgroundColor: { color: ACTIVE_COLOR },
-			setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE }
-		},
-		edit: {
-			setBadgeBackgroundColor: { color: DEFAULT_COLOR },
-			setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		end: {
-			setBadgeBackgroundColor: { color: ACTIVE_COLOR },
-			setBadgeText: { text: BUTTON_OK_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		error: {
-			setBadgeBackgroundColor: { color: ERROR_COLOR },
-			setBadgeText: { text: BUTTON_ERROR_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_BADGE_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		forbidden: {
-			setBadgeBackgroundColor: { color: FORBIDDEN_COLOR },
-			setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		}
-	};
+	let BUTTON_STATES;
 
 	let business;
 
@@ -1452,8 +1456,63 @@
 		}
 	});
 
-	function setBusiness(businessApi) {
+	async function init(businessApi) {
 		business = businessApi;
+		const messages = await getMessages();
+		BUTTON_DEFAULT_TOOLTIP_MESSAGE = messages.buttonDefaultTooltip.message;
+		BUTTON_BLOCKED_TOOLTIP_MESSAGE = messages.buttonBlockedTooltip.message;
+		BUTTON_INITIALIZING_BADGE_MESSAGE = messages.buttonInitializingBadge.message;
+		BUTTON_INITIALIZING_TOOLTIP_MESSAGE = messages.buttonInitializingTooltip.message;
+		BUTTON_ERROR_BADGE_MESSAGE = messages.buttonErrorBadge.message;
+		BUTTON_BLOCKED_BADGE_MESSAGE = messages.buttonBlockedBadge.message;
+		BUTTON_OK_BADGE_MESSAGE = messages.buttonOKBadge.message;
+		BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = messages.buttonSaveProgressTooltip.message;
+		BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = messages.buttonUploadProgressTooltip.message;
+		BUTTON_STATES = {
+			default: {
+				setBadgeBackgroundColor: { color: DEFAULT_COLOR },
+				setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
+				setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
+				setIcon: { path: DEFAULT_ICON_PATH }
+			},
+			inject: {
+				setBadgeBackgroundColor: { color: DEFAULT_COLOR },
+				setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
+				setTitle: { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE },
+			},
+			execute: {
+				setBadgeBackgroundColor: { color: ACTIVE_COLOR },
+				setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
+			},
+			progress: {
+				setBadgeBackgroundColor: { color: ACTIVE_COLOR },
+				setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE }
+			},
+			edit: {
+				setBadgeBackgroundColor: { color: DEFAULT_COLOR },
+				setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
+				setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
+				setIcon: { path: DEFAULT_ICON_PATH }
+			},
+			end: {
+				setBadgeBackgroundColor: { color: ACTIVE_COLOR },
+				setBadgeText: { text: BUTTON_OK_BADGE_MESSAGE },
+				setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
+				setIcon: { path: DEFAULT_ICON_PATH }
+			},
+			error: {
+				setBadgeBackgroundColor: { color: ERROR_COLOR },
+				setBadgeText: { text: BUTTON_ERROR_BADGE_MESSAGE },
+				setTitle: { title: BUTTON_DEFAULT_BADGE_MESSAGE },
+				setIcon: { path: DEFAULT_ICON_PATH }
+			},
+			forbidden: {
+				setBadgeBackgroundColor: { color: FORBIDDEN_COLOR },
+				setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
+				setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
+				setIcon: { path: DEFAULT_ICON_PATH }
+			}
+		};
 	}
 
 	function onMessage$4(message, sender) {
@@ -1614,22 +1673,22 @@
 	const MENU_ID_BUTTON_SAVE_SELECTED_TABS = "button-" + MENU_ID_SAVE_SELECTED_TABS;
 	const MENU_ID_BUTTON_SAVE_UNPINNED_TABS = "button-" + MENU_ID_SAVE_UNPINNED_TABS;
 	const MENU_ID_BUTTON_SAVE_ALL_TABS = "button-" + MENU_ID_SAVE_ALL_TABS;
-	const MENU_CREATE_DOMAIN_RULE_MESSAGE = "Select the profile of the current domain";
-	const MENU_UPDATE_RULE_MESSAGE = "Select the profile of the current rule";
-	const MENU_SAVE_PAGE_MESSAGE = "Save page with SingleFile";
-	const MENU_SAVE_WITH_PROFILE = "Save page with profile";
-	const MENU_SAVE_SELECTED_LINKS = "Save selected links";
-	const MENU_EDIT_PAGE_MESSAGE = "Annotate the page...";
-	const MENU_EDIT_AND_SAVE_PAGE_MESSAGE = "Annotate and save the page...";
-	const MENU_VIEW_PENDINGS_MESSAGE = "View pending saves...";
-	const MENU_SAVE_SELECTION_MESSAGE = "Save selection";
-	const MENU_SAVE_FRAME_MESSAGE = "Save frame";
-	const MENU_SAVE_TABS_MESSAGE = "Save tabs";
-	const MENU_SAVE_SELECTED_TABS_MESSAGE = "Save selected tabs";
-	const MENU_SAVE_UNPINNED_TABS_MESSAGE = "Save unpinned tabs";
-	const MENU_SAVE_ALL_TABS_MESSAGE = "Save all tabs";
-	const MENU_SELECT_PROFILE_MESSAGE = "Select the default profile";
-	const PROFILE_DEFAULT_SETTINGS_MESSAGE = "Default settings";
+	let MENU_CREATE_DOMAIN_RULE_MESSAGE;
+	let MENU_UPDATE_RULE_MESSAGE;
+	let MENU_SAVE_PAGE_MESSAGE;
+	let MENU_SAVE_WITH_PROFILE;
+	let MENU_SAVE_SELECTED_LINKS;
+	let MENU_EDIT_PAGE_MESSAGE;
+	let MENU_EDIT_AND_SAVE_PAGE_MESSAGE;
+	let MENU_VIEW_PENDINGS_MESSAGE;
+	let MENU_SAVE_SELECTION_MESSAGE;
+	let MENU_SAVE_FRAME_MESSAGE;
+	let MENU_SAVE_TABS_MESSAGE;
+	let MENU_SAVE_SELECTED_TABS_MESSAGE;
+	let MENU_SAVE_UNPINNED_TABS_MESSAGE;
+	let MENU_SAVE_ALL_TABS_MESSAGE;
+	let MENU_SELECT_PROFILE_MESSAGE;
+	let PROFILE_DEFAULT_SETTINGS_MESSAGE;
 	const MENU_TOP_VISIBLE_ENTRIES = [
 		MENU_ID_EDIT_AND_SAVE_PAGE,
 		MENU_ID_SAVE_SELECTED_LINKS,
@@ -1646,8 +1705,25 @@
 	let menusCreated, pendingRefresh, business$1;
 	Promise.resolve().then(initialize);
 
-	function setBusiness$1(businessApi) {
+	async function init$1(businessApi) {
 		business$1 = businessApi;
+		const messages = await getMessages();
+		MENU_CREATE_DOMAIN_RULE_MESSAGE = messages.menuCreateDomainRule.message;
+		MENU_UPDATE_RULE_MESSAGE = messages.menuUpdateRule.message;
+		MENU_SAVE_PAGE_MESSAGE = messages.menuSavePage.message;
+		MENU_SAVE_WITH_PROFILE = messages.menuSaveWithProfile.message;
+		MENU_SAVE_SELECTED_LINKS = messages.menuSaveSelectedLinks.message;
+		MENU_EDIT_PAGE_MESSAGE = messages.menuEditPage.message;
+		MENU_EDIT_AND_SAVE_PAGE_MESSAGE = messages.menuEditAndSavePage.message;
+		MENU_VIEW_PENDINGS_MESSAGE = messages.menuViewPendingSaves.message;
+		MENU_SAVE_SELECTION_MESSAGE = messages.menuSaveSelection.message;
+		MENU_SAVE_FRAME_MESSAGE = messages.menuSaveFrame.message;
+		MENU_SAVE_TABS_MESSAGE = messages.menuSaveTabs.message;
+		MENU_SAVE_SELECTED_TABS_MESSAGE = messages.menuSaveSelectedTabs.message;
+		MENU_SAVE_UNPINNED_TABS_MESSAGE = messages.menuSaveUnpinnedTabs.message;
+		MENU_SAVE_ALL_TABS_MESSAGE = messages.menuSaveAllTabs.message;
+		MENU_SELECT_PROFILE_MESSAGE = messages.menuSelectProfile.message;
+		PROFILE_DEFAULT_SETTINGS_MESSAGE = messages.profileDefaultSettings.message;
 	}
 
 	function onMessage$5(message) {
@@ -2001,7 +2077,7 @@
 			if (allTabsData[tab.id].editorDetected) {
 				updateAllVisibleValues(false);
 			} else {
-				updateAllVisibleValues(true);			
+				updateAllVisibleValues(true);
 				if (tab && tab.url) {
 					const options = await getOptions(tab.url);
 					promises.push(updateVisibleValue(tab, options.contextMenuEnabled));
@@ -2100,7 +2176,7 @@
 
 	let business$2;
 
-	function setBusiness$2(businessApi) {
+	function init$2(businessApi) {
 		business$2 = businessApi;
 	}
 
@@ -2140,10 +2216,10 @@
 	 *   Source.
 	 */
 
-	function setBusiness$3(businessApi) {
-		setBusiness$1(businessApi);
-		setBusiness(businessApi);
-		setBusiness$2(businessApi);
+	function init$3(businessApi) {
+		init$1(businessApi);
+		init(businessApi);
+		init$2(businessApi);
 	}
 
 	function onMessage$6(message, sender) {
@@ -2245,7 +2321,7 @@
 
 	const tasks = [];
 	let currentTaskId = 0, maxParallelWorkers;
-	setBusiness$3({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
+	init$3({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
 
 	async function saveSelectedLinks(tab) {
 		let scriptsInjected;
