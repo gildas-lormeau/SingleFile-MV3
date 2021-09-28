@@ -113,7 +113,7 @@ export {
 	onMessage,
 	onStart,
 	onUploadProgress,
-	onForbiddenDomain,	
+	onForbiddenDomain,
 	onError,
 	onEdit,
 	onEnd,
