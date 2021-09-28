@@ -257,7 +257,6 @@ addEventListener("message", event => {
 			content: message.content,
 			filename: tabData.filename
 		};
-		tabData.docSaved = true;
 		tabData.options.openEditor = false;
 		tabData.options.openSavedPage = false;
 		download.downloadPage(pageData, tabData.options);
@@ -278,6 +277,7 @@ addEventListener("message", event => {
 			linkElement.href = message.icon;
 			document.head.appendChild(linkElement);
 		}
+		tabData.docSaved = true;
 		if (!message.reset) {
 			const defaultEditorMode = tabData.options.defaultEditorMode;
 			if (defaultEditorMode == "edit") {
@@ -312,21 +312,20 @@ browser.runtime.onMessage.addListener(message => {
 		return Promise.resolve({});
 	}
 	if (message.method == "editor.setTabData") {
-		if (!tabData) {
-			if (message.truncated) {
-				tabDataContents.push(message.content);
-			} else {
-				tabDataContents = [message.content];
-			}
-			if (!message.truncated || message.finished) {
-				tabData = JSON.parse(tabDataContents.join(""));
-				tabData.options = message.options;
-				tabDataContents = [];
-				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
-				editorElement.contentWindow.focus();
-				delete tabData.content;
-			}
+		if (message.truncated) {
+			tabDataContents.push(message.content);
+		} else {
+			tabDataContents = [message.content];
 		}
+		if (!message.truncated || message.finished) {
+			tabData = JSON.parse(tabDataContents.join(""));
+			tabData.options = message.options;
+			tabDataContents = [];
+			editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
+			editorElement.contentWindow.focus();
+			delete tabData.content;
+		}
+		return Promise.resolve({});
 	}
 	if (message.method == "options.refresh") {
 		return refreshOptions(message.profileName);
@@ -336,7 +335,9 @@ browser.runtime.onMessage.addListener(message => {
 	}
 });
 
-addEventListener("load", getTabData);
+addEventListener("load", () => {
+	browser.runtime.sendMessage({ method: "editor.getTabData" });
+});
 
 addEventListener("beforeunload", event => {
 	if (tabData.options.warnUnsavedPage && !tabData.docSaved) {
@@ -344,10 +345,6 @@ addEventListener("beforeunload", event => {
 		event.returnValue = "";
 	}
 });
-
-async function getTabData() {
-	await browser.runtime.sendMessage({ method: "editor.getTabData" });
-}
 
 async function refreshOptions(profileName) {
 	const profiles = await browser.runtime.sendMessage({ method: "config.getProfiles" });
