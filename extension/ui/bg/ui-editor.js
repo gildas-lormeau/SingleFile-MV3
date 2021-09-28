@@ -323,7 +323,6 @@ browser.runtime.onMessage.addListener(message => {
 			tabDataContents = [];
 			editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
 			editorElement.contentWindow.focus();
-			delete tabData.content;
 		}
 		return Promise.resolve({});
 	}
@@ -340,6 +339,7 @@ addEventListener("load", () => {
 });
 
 addEventListener("beforeunload", event => {
+	browser.runtime.sendMessage({ method: "editor.setTabData", content: tabData.content, filename: tabData.filename });
 	if (tabData.options.warnUnsavedPage && !tabData.docSaved) {
 		event.preventDefault();
 		event.returnValue = "";
