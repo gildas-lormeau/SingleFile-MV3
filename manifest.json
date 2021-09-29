@@ -86,7 +86,6 @@
 		]
 	},
 	"permissions": [
-		"clipboardWrite",
 		"contextMenus",
 		"downloads",
 		"storage",
@@ -95,6 +94,7 @@
 		"scripting"
 	],
 	"optional_permissions": [
+		"clipboardWrite",
 		"identity",
 		"nativeMessaging",
 		"bookmarks"

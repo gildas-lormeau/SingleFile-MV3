@@ -354,9 +354,11 @@ removeScriptsInput.addEventListener("click", () => {
 	}
 }, false);
 saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
+saveToClipboardInput.addEventListener("click", () => enableClipboardSave(saveToClipboardInput), false);
 saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
 saveToFilesystemInput.addEventListener("click", async () => await browser.runtime.sendMessage({ method: "downloads.disableGDrive" }), false);
 saveToClipboardInput.addEventListener("click", async () => await browser.runtime.sendMessage({ method: "downloads.disableGDrive" }), false);
+saveWithCompanionInput.addEventListener("click", async () => await browser.runtime.sendMessage({ method: "downloads.disableGDrive" }), false);
 addProofInput.addEventListener("click", async event => {
 	if (addProofInput.checked) {
 		addProofInput.checked = false;
@@ -803,6 +805,36 @@ async function enableExternalSave(input) {
 		input.checked = false;
 		try {
 			const permissionGranted = await browser.permissions.request({ permissions: ["nativeMessaging"] });
+			if (permissionGranted) {
+				input.checked = true;
+				await refreshOption();
+				if (window.chrome) {
+					window.chrome.runtime.reload();
+					location.reload();
+				}
+			} else {
+				await refreshOption();
+			}
+		} catch (error) {
+			input.checked = true;
+			await refreshOption();
+		}
+	} else {
+		await refreshOption();
+	}
+
+	async function refreshOption() {
+		await update();
+		await refresh();
+	}
+}
+
+
+async function enableClipboardSave(input) {
+	if (input.checked) {
+		input.checked = false;
+		try {
+			const permissionGranted = await browser.permissions.request({ permissions: ["clipboardWrite"] });
 			if (permissionGranted) {
 				input.checked = true;
 				await refreshOption();
