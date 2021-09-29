@@ -343,10 +343,6 @@ addEventListener("load", () => {
 	browser.runtime.sendMessage({ method: "editor.getTabData" });
 });
 
-addEventListener("unload", () => {
-	browser.runtime.sendMessage({ method: "editor.setTabData", content: tabData.content, filename: tabData.filename, url: tabData.url });
-});
-
 addEventListener("beforeunload", event => {
 	if (tabData.options.warnUnsavedPage && !tabData.docSaved) {
 		event.preventDefault();
