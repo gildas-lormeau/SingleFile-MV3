@@ -68,6 +68,7 @@ async function onMessage(message, sender) {
 					method: "editor.setTabData"
 				};
 				message.truncated = content.length > MAX_CONTENT_SIZE;
+				message.url = tabData.url;
 				if (message.truncated) {
 					message.finished = (blockIndex + 1) * MAX_CONTENT_SIZE > content.length;
 					message.content = content.substring(blockIndex * MAX_CONTENT_SIZE, (blockIndex + 1) * MAX_CONTENT_SIZE);

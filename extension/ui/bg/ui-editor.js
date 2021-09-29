@@ -344,7 +344,7 @@ addEventListener("load", () => {
 });
 
 addEventListener("beforeunload", event => {
-	browser.runtime.sendMessage({ method: "editor.setTabData", content: tabData.content, filename: tabData.filename });
+	browser.runtime.sendMessage({ method: "editor.setTabData", content: tabData.content, filename: tabData.filename, url: tabData.url });
 	if (tabData.options.warnUnsavedPage && !tabData.docSaved) {
 		event.preventDefault();
 		event.returnValue = "";
