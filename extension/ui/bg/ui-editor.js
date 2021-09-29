@@ -21,11 +21,13 @@
  *   Source.
  */
 
-/* global browser, document, prompt, matchMedia, addEventListener, innerHeight, innerWidth */
+/* global browser, document, prompt, matchMedia, addEventListener, innerHeight, innerWidth, webkitRequestFileSystem, TEMPORARY, Blob */
 
 import * as download from "../../core/common/download.js";
 import { onError } from "./../common/content-error.js";
 import { getMessages } from "./../../core/bg/i18n.js";
+
+const FS_SIZE = 100 * 1024 * 1024;
 
 const editorElement = document.querySelector(".editor");
 const toolbarElement = document.querySelector(".toolbar");
@@ -317,17 +319,27 @@ browser.runtime.onMessage.addListener(message => {
 		return Promise.resolve({});
 	}
 	if (message.method == "editor.setTabData") {
-		if (message.truncated) {
-			tabDataContents.push(message.content);
+		if (message.content) {
+			if (message.truncated) {
+				tabDataContents.push(message.content);
+			} else {
+				tabDataContents = [message.content];
+			}
+			if (!message.truncated || message.finished) {
+				tabData = JSON.parse(tabDataContents.join(""));
+				tabData.tabId = message.tabId;
+				tabData.options = message.options;
+				tabDataContents = [];
+				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
+				editorElement.contentWindow.focus();
+				saveTabData();
+			}
 		} else {
-			tabDataContents = [message.content];
-		}
-		if (!message.truncated || message.finished) {
-			tabData = JSON.parse(tabDataContents.join(""));
-			tabData.options = message.options;
-			tabDataContents = [];
-			editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
-			editorElement.contentWindow.focus();
+			tabData = { tabId: message.tabId };
+			loadTabData().then(() => {
+				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
+				editorElement.contentWindow.focus();
+			});
 		}
 		return Promise.resolve({});
 	}
@@ -349,6 +361,38 @@ addEventListener("beforeunload", event => {
 		event.returnValue = "";
 	}
 });
+
+function loadTabData() {
+	return new Promise((resolve, reject) => {
+		webkitRequestFileSystem(TEMPORARY, FS_SIZE, fs => {
+			fs.root.getFile(tabData.tabId, {}, function (fileEntry) {
+				fileEntry.file(data => {
+					data.text()
+						.then(jsonData => {
+							tabData = JSON.parse(jsonData);
+							resolve();
+						})
+						.catch(reject);
+				}, reject);
+			}, reject);
+		}, reject);
+	});
+}
+
+function saveTabData() {
+	return new Promise((resolve, reject) => {
+		const data = JSON.stringify(tabData);
+		webkitRequestFileSystem(TEMPORARY, FS_SIZE, fs => {
+			fs.root.getFile(tabData.tabId, { create: true }, function (fileEntry) {
+				fileEntry.createWriter(function (fileWriter) {
+					fileWriter.onwriteend = () => resolve();
+					fileWriter.onerror = reject;
+					fileWriter.write(new Blob([data], { type: "text/plain" }));
+				}, reject);
+			}, reject);
+		}, reject);
+	});
+}
 
 async function refreshOptions(profileName) {
 	const profiles = await browser.runtime.sendMessage({ method: "config.getProfiles" });
