@@ -195,7 +195,6 @@
 						})
 					},
 					i18n: {
-						getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions),
 						getAcceptLanguages: () => new Promise((resolve, reject) => {
 							nativeAPI.i18n.getAcceptLanguages(languages => {
 								if (nativeAPI.runtime.lastError) {
@@ -1153,20 +1152,28 @@
 	 *   Source.
 	 */
 
+	/* global browser, fetch */
+
+	let messages;
+	getMessages();
+
 	async function getMessages() {
-		let language = (((await browser.i18n.getAcceptLanguages())[0]) || "en").replace(/-/, "_");
-		let response;
-		try {
-			response = await fetch(`/_locales/${language}/messages.json`);
-		} catch (error) {
-			if (language.includes("_")) {
-				language = language.split("_")[0];
+		if (!messages) {
+			let language = (((await browser.i18n.getAcceptLanguages())[0]) || "en").replace(/-/, "_");
+			let response;
+			try {
 				response = await fetch(`/_locales/${language}/messages.json`);
-			} else {
-				throw error;
+			} catch (error) {
+				if (language.includes("_")) {
+					language = language.split("_")[0];
+					response = await fetch(`/_locales/${language}/messages.json`);
+				} else {
+					throw error;
+				}
 			}
+			messages = await response.json();
 		}
-		return await response.json();
+		return messages;
 	}
 
 	/*
