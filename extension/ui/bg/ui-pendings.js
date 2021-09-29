@@ -23,6 +23,8 @@
 
 /* global browser, window, document, setInterval, location */
 
+import { getMessages } from "./../../core/bg/util.js";
+
 const URLLabel = document.getElementById("URLLabel");
 const titleLabel = document.getElementById("titleLabel");
 const resultsTable = document.getElementById("resultsTable");
@@ -31,21 +33,8 @@ const addUrlsButton = document.getElementById("addUrlsButton");
 const addUrlsInput = document.getElementById("addUrlsInput");
 const addUrlsCancelButton = document.getElementById("addUrlsCancelButton");
 const addUrlsOKButton = document.getElementById("addUrlsOKButton");
-document.title = browser.i18n.getMessage("pendingsTitle");
-cancelAllButton.textContent = browser.i18n.getMessage("pendingsCancelAllButton");
-addUrlsButton.textContent = browser.i18n.getMessage("pendingsAddUrlsButton");
-addUrlsCancelButton.textContent = browser.i18n.getMessage("pendingsAddUrlsCancelButton");
-addUrlsOKButton.textContent = browser.i18n.getMessage("pendingsAddUrlsOKButton");
-document.getElementById("addUrlsLabel").textContent = browser.i18n.getMessage("pendingsAddUrls");
-URLLabel.textContent = browser.i18n.getMessage("pendingsURLTitle");
-titleLabel.textContent = browser.i18n.getMessage("pendingsTitleTitle");
-document.getElementById("statusLabel").textContent = browser.i18n.getMessage("pendingsStatusTitle");
-const statusText = {
-	pending: browser.i18n.getMessage("pendingsPendingStatus"),
-	processing: browser.i18n.getMessage("pendingsProcessingStatus"),
-	cancelling: browser.i18n.getMessage("pendingsCancellingStatus")
-};
-const noPendingsText = browser.i18n.getMessage("pendingsNoPendings");
+const statusText = {};
+
 cancelAllButton.onclick = async () => {
 	await browser.runtime.sendMessage({ method: "downloads.cancelAll" });
 	await refresh();
@@ -59,9 +48,27 @@ document.getElementById("URLTitleLabel").onclick = () => {
 	URLDisplayed = !URLDisplayed;
 	refresh(true);
 };
-let previousState;
+let previousState, noPendingsText;
 setInterval(refresh, 1000);
-refresh();
+init();
+
+async function init() {
+	const messages = await getMessages();
+	document.title = messages.pendingsTitle.message;
+	cancelAllButton.textContent = messages.pendingsCancelAllButton.message;
+	addUrlsButton.textContent = messages.pendingsAddUrlsButton.message;
+	addUrlsCancelButton.textContent = messages.pendingsAddUrlsCancelButton.message;
+	addUrlsOKButton.textContent = messages.pendingsAddUrlsOKButton.message;
+	document.getElementById("addUrlsLabel").textContent = messages.pendingsAddUrls.message;
+	URLLabel.textContent = messages.pendingsURLTitle.message;
+	titleLabel.textContent = messages.pendingsTitleTitle.message;
+	document.getElementById("statusLabel").textContent = messages.pendingsStatusTitle.message;
+	statusText.pending = messages.pendingsPendingStatus.message;
+	statusText.processing = messages.pendingsProcessingStatus.message;
+	statusText.cancelling = messages.pendingsCancellingStatus.message;
+	noPendingsText = messages.pendingsNoPendings.message;
+	refresh();
+}
 
 function resetTable() {
 	resultsTable.innerHTML = "";

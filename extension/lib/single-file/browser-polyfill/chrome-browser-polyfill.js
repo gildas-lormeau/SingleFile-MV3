@@ -190,7 +190,6 @@ if (typeof globalThis == "undefined") {
 				})
 			},
 			i18n: {
-				getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions),
 				getAcceptLanguages: () => new Promise((resolve, reject) => {
 					nativeAPI.i18n.getAcceptLanguages(languages => {
 						if (nativeAPI.runtime.lastError) {

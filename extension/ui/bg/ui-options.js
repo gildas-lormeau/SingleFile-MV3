@@ -23,6 +23,8 @@
 
 /* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement */
 
+import { getMessages } from "./../../core/bg/util.js";
+
 const HELP_ICON_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABIUlEQVQ4y+2TsarCMBSGvxTBRdqiUZAWOrhJB9EXcPKFfCvfQYfulUKHDqXg4CYUJSioYO4mSDX3ttzt3n87fMlHTpIjlsulxpDZbEYYhgghSNOUOI5Ny2mZYBAELBYLer0eAJ7ncTweKYri4x7LJJRS0u12n7XrukgpjSc0CpVSXK/XZ32/31FKNW85z3PW6zXT6RSAJEnIsqy5UGvNZrNhu90CcDqd+C6tT6J+v//2Th+PB2VZ1hN2Oh3G4zGTyQTbtl/YbrdjtVpxu91+Ljyfz0RRhG3bzOfzF+Y4TvNXvlwuaK2pE4tfzr/wzwsty0IIURlL0998KxRCMBqN8H2/wlzXJQxD2u12vVkeDoeUZUkURRU+GAw4HA7s9/sK+wK6CWHasQ/S/wAAAABJRU5ErkJggg==";
 const HELP_PAGE_PATH = "/extension/ui/pages/help.html";
 let DEFAULT_PROFILE_NAME, DISABLED_PROFILE_NAME, CURRENT_PROFILE_NAME;
@@ -192,7 +194,18 @@ const cancelButton = document.getElementById("cancelButton");
 const promptInput = document.getElementById("promptInput");
 const promptCancelButton = document.getElementById("promptCancelButton");
 const promptConfirmButton = document.getElementById("promptConfirmButton");
+let optionsDeleteDisplayedRulesConfirm;
+let profileAddPrompt;
+let profileDeleteConfirm;
+let profileRenamePrompt;
+let optionsAddProofConfirm;
+let profileDefaultSettings;
+let profileDisabled;
+let optionsDeleteRuleTooltip;
+let optionsDeleteRuleConfirm;
+let optionsUpdateRuleTooltip;
 
+init();
 let sidePanelDisplay;
 if (location.href.endsWith("#side-panel")) {
 	sidePanelDisplay = true;
@@ -206,7 +219,7 @@ browser.runtime.onMessage.addListener(message => {
 });
 let pendingSave = Promise.resolve();
 rulesDeleteAllButton.addEventListener("click", async event => {
-	if (await confirm(browser.i18n.getMessage("optionsDeleteDisplayedRulesConfirm"), event.clientY - 100)) {
+	if (await confirm(optionsDeleteDisplayedRulesConfirm, event.clientY - 100)) {
 		await browser.runtime.sendMessage({ method: "config.deleteRules", profileName: !showAllProfilesInput.checked && profileNamesInput.value });
 		await refresh();
 		await refreshExternalComponents();
@@ -250,7 +263,7 @@ showAllProfilesInput.addEventListener("click", () => {
 	}
 }, false);
 addProfileButton.addEventListener("click", async event => {
-	const profileName = await prompt(browser.i18n.getMessage("profileAddPrompt"), event.clientY + 50);
+	const profileName = await prompt(profileAddPrompt, event.clientY + 50);
 	if (profileName) {
 		try {
 			await browser.runtime.sendMessage({ method: "config.createProfile", profileName, fromProfileName: profileNamesInput.value });
@@ -266,7 +279,7 @@ addProfileButton.addEventListener("click", async event => {
 	}
 }, false);
 deleteProfileButton.addEventListener("click", async event => {
-	if (await confirm(browser.i18n.getMessage("profileDeleteConfirm"), event.clientY + 50)) {
+	if (await confirm(profileDeleteConfirm, event.clientY + 50)) {
 		try {
 			await browser.runtime.sendMessage({ method: "config.deleteProfile", profileName: profileNamesInput.value });
 		} catch (error) {
@@ -278,7 +291,7 @@ deleteProfileButton.addEventListener("click", async event => {
 	}
 }, false);
 renameProfileButton.addEventListener("click", async event => {
-	const profileName = await prompt(browser.i18n.getMessage("profileRenamePrompt"), event.clientY + 50, profileNamesInput.value);
+	const profileName = await prompt(profileRenamePrompt, event.clientY + 50, profileNamesInput.value);
 	if (profileName) {
 		try {
 			await browser.runtime.sendMessage({ method: "config.renameProfile", profileName: profileNamesInput.value, newProfileName: profileName });
@@ -347,7 +360,7 @@ saveToClipboardInput.addEventListener("click", async () => await browser.runtime
 addProofInput.addEventListener("click", async event => {
 	if (addProofInput.checked) {
 		addProofInput.checked = false;
-		if (await confirm(browser.i18n.getMessage("optionsAddProofConfirm"), event.clientY - 100)) {
+		if (await confirm(optionsAddProofConfirm, event.clientY - 100)) {
 			addProofInput.checked = true;
 			woleetKeyInput.disabled = false;
 		}
@@ -393,104 +406,119 @@ document.body.onchange = async event => {
 		}
 	}
 };
-addProfileButton.title = browser.i18n.getMessage("profileAddButtonTooltip");
-deleteProfileButton.title = browser.i18n.getMessage("profileDeleteButtonTooltip");
-renameProfileButton.title = browser.i18n.getMessage("profileRenameButtonTooltip");
-removeHiddenElementsLabel.textContent = browser.i18n.getMessage("optionRemoveHiddenElements");
-removeUnusedStylesLabel.textContent = browser.i18n.getMessage("optionRemoveUnusedStyles");
-removeUnusedFontsLabel.textContent = browser.i18n.getMessage("optionRemoveUnusedFonts");
-removeFramesLabel.textContent = browser.i18n.getMessage("optionRemoveFrames");
-removeImportsLabel.textContent = browser.i18n.getMessage("optionRemoveImports");
-removeScriptsLabel.textContent = browser.i18n.getMessage("optionRemoveScripts");
-saveRawPageLabel.textContent = browser.i18n.getMessage("optionSaveRawPage");
-insertMetaCSPLabel.textContent = browser.i18n.getMessage("optionInsertMetaCSP");
-saveToClipboardLabel.textContent = browser.i18n.getMessage("optionSaveToClipboard");
-saveToFilesystemLabel.textContent = browser.i18n.getMessage("optionSaveToFilesystem");
-addProofLabel.textContent = browser.i18n.getMessage("optionAddProof");
-woleetKeyLabel.textContent = browser.i18n.getMessage("optionWoleetKey");
-saveToGDriveLabel.textContent = browser.i18n.getMessage("optionSaveToGDrive");
-saveToGitHubLabel.textContent = browser.i18n.getMessage("optionSaveToGitHub");
-githubTokenLabel.textContent = browser.i18n.getMessage("optionGitHubToken");
-githubUserLabel.textContent = browser.i18n.getMessage("optionGitHubUser");
-githubRepositoryLabel.textContent = browser.i18n.getMessage("optionGitHubRepository");
-githubBranchLabel.textContent = browser.i18n.getMessage("optionGitHubBranch");
-saveWithCompanionLabel.textContent = browser.i18n.getMessage("optionSaveWithCompanion");
-compressHTMLLabel.textContent = browser.i18n.getMessage("optionCompressHTML");
-compressCSSLabel.textContent = browser.i18n.getMessage("optionCompressCSS");
-loadDeferredImagesLabel.textContent = browser.i18n.getMessage("optionLoadDeferredImages");
-loadDeferredImagesMaxIdleTimeLabel.textContent = browser.i18n.getMessage("optionLoadDeferredImagesMaxIdleTime");
-loadDeferredImagesKeepZoomLevelLabel.textContent = browser.i18n.getMessage("optionLoadDeferredImagesKeepZoomLevel");
-addMenuEntryLabel.textContent = browser.i18n.getMessage("optionAddMenuEntry");
-filenameTemplateLabel.textContent = browser.i18n.getMessage("optionFilenameTemplate");
-filenameMaxLengthLabel.textContent = browser.i18n.getMessage("optionFilenameMaxLength");
-shadowEnabledLabel.textContent = browser.i18n.getMessage("optionDisplayShadow");
-setMaxResourceSizeLabel.textContent = browser.i18n.getMessage("optionSetMaxResourceSize");
-maxResourceSizeLabel.textContent = browser.i18n.getMessage("optionMaxResourceSize");
-confirmFilenameLabel.textContent = browser.i18n.getMessage("optionConfirmFilename");
-filenameConflictActionLabel.textContent = browser.i18n.getMessage("optionFilenameConflictAction");
-filenameConflictActionUniquifyLabel.textContent = browser.i18n.getMessage("optionFilenameConflictActionUniquify");
-filenameConflictActionOverwriteLabel.textContent = browser.i18n.getMessage("optionFilenameConflictActionOverwrite");
-filenameConflictActionPromptLabel.textContent = browser.i18n.getMessage("optionFilenameConflictActionPrompt");
-filenameConflictActionSkipLabel.textContent = browser.i18n.getMessage("optionFilenameConflictActionSkip");
-removeAudioLabel.textContent = browser.i18n.getMessage("optionRemoveAudio");
-removeVideoLabel.textContent = browser.i18n.getMessage("optionRemoveVideo");
-displayInfobarLabel.textContent = browser.i18n.getMessage("optionDisplayInfobar");
-displayStatsLabel.textContent = browser.i18n.getMessage("optionDisplayStats");
-backgroundSaveLabel.textContent = browser.i18n.getMessage("optionBackgroundSave");
-removeAlternativeFontsLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeFonts");
-removeAlternativeImagesLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeImages");
-removeAlternativeMediasLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeMedias");
-saveCreatedBookmarksLabel.textContent = browser.i18n.getMessage("optionSaveCreatedBookmarks");
-replaceBookmarkURLLabel.textContent = browser.i18n.getMessage("optionReplaceBookmarkURL");
-allowedBookmarkFoldersLabel.textContent = browser.i18n.getMessage("optionAllowedBookmarkFolders");
-ignoredBookmarkFoldersLabel.textContent = browser.i18n.getMessage("optionIgnoredBookmarkFolders");
-groupDuplicateImagesLabel.textContent = browser.i18n.getMessage("optionGroupDuplicateImages");
-titleLabel.textContent = browser.i18n.getMessage("optionsTitle");
-userInterfaceLabel.textContent = browser.i18n.getMessage("optionsUserInterfaceSubTitle");
-filenameLabel.textContent = browser.i18n.getMessage("optionsFileNameSubTitle");
-htmlContentLabel.textContent = browser.i18n.getMessage("optionsHTMLContentSubTitle");
-imagesLabel.textContent = browser.i18n.getMessage("optionsImagesSubTitle");
-stylesheetsLabel.textContent = browser.i18n.getMessage("optionsStylesheetsSubTitle");
-fontsLabel.textContent = browser.i18n.getMessage("optionsFontsSubTitle");
-otherResourcesLabel.textContent = browser.i18n.getMessage("optionsOtherResourcesSubTitle");
-destinationLabel.textContent = browser.i18n.getMessage("optionsDestionationSubTitle");
-bookmarksLabel.textContent = browser.i18n.getMessage("optionsBookmarkSubTitle");
-miscLabel.textContent = browser.i18n.getMessage("optionsMiscSubTitle");
-helpLabel.textContent = browser.i18n.getMessage("optionsHelpLink");
-infobarTemplateLabel.textContent = browser.i18n.getMessage("optionInfobarTemplate");
-includeInfobarLabel.textContent = browser.i18n.getMessage("optionIncludeInfobar");
-confirmInfobarLabel.textContent = browser.i18n.getMessage("optionConfirmInfobar");
-autoCloseLabel.textContent = browser.i18n.getMessage("optionAutoClose");
-editorLabel.textContent = browser.i18n.getMessage("optionsEditorSubTitle");
-openEditorLabel.textContent = browser.i18n.getMessage("optionOpenEditor");
-openSavedPageLabel.textContent = browser.i18n.getMessage("optionOpenSavedPage");
-autoOpenEditorLabel.textContent = browser.i18n.getMessage("optionAutoOpenEditor");
-defaultEditorModeLabel.textContent = browser.i18n.getMessage("optionDefaultEditorMode");
-defaultEditorModeNormalLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeNormal");
-defaultEditorModeEditLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeEdit");
-defaultEditorModeFormatLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeFormat");
-defaultEditorModeCutLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeCut");
-defaultEditorModeCutExternalLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeCutExternal");
-applySystemThemeLabel.textContent = browser.i18n.getMessage("optionApplySystemTheme");
-warnUnsavedPageLabel.textContent = browser.i18n.getMessage("optionWarnUnsavedPage");
-resetButton.textContent = browser.i18n.getMessage("optionsResetButton");
-exportButton.textContent = browser.i18n.getMessage("optionsExportButton");
-importButton.textContent = browser.i18n.getMessage("optionsImportButton");
-resetButton.title = browser.i18n.getMessage("optionsResetTooltip");
-autoSettingsLabel.textContent = browser.i18n.getMessage("optionsAutoSettingsSubTitle");
-autoSettingsUrlLabel.textContent = browser.i18n.getMessage("optionsAutoSettingsUrl");
-autoSettingsProfileLabel.textContent = browser.i18n.getMessage("optionsAutoSettingsProfile");
-ruleAddButton.title = browser.i18n.getMessage("optionsAddRuleTooltip");
-ruleEditButton.title = browser.i18n.getMessage("optionsValidateChangesTooltip");
-rulesDeleteAllButton.title = browser.i18n.getMessage("optionsDeleteRulesTooltip");
-showAllProfilesLabel.textContent = browser.i18n.getMessage("optionsAutoSettingsShowAllProfiles");
-ruleUrlInput.placeholder = ruleEditUrlInput.placeholder = browser.i18n.getMessage("optionsAutoSettingsUrlPlaceholder");
-synchronizeLabel.textContent = browser.i18n.getMessage("optionSynchronize");
-resetAllButton.textContent = browser.i18n.getMessage("optionsResetAllButton");
-resetCurrentButton.textContent = browser.i18n.getMessage("optionsResetCurrentButton");
-resetCancelButton.textContent = promptCancelButton.textContent = cancelButton.textContent = browser.i18n.getMessage("optionsCancelButton");
-confirmButton.textContent = promptConfirmButton.textContent = browser.i18n.getMessage("optionsOKButton");
-document.getElementById("resetConfirmLabel").textContent = browser.i18n.getMessage("optionsResetConfirm");
+
+async function init() {
+	const messages = await getMessages();
+	optionsDeleteDisplayedRulesConfirm = messages.optionsDeleteDisplayedRulesConfirm.message;
+	profileAddPrompt = messages.profileAddPrompt.message;
+	profileDeleteConfirm = messages.profileDeleteConfirm.message;
+	profileRenamePrompt = messages.profileRenamePrompt.message;
+	optionsAddProofConfirm = messages.optionsAddProofConfirm.message;
+	profileDefaultSettings = messages.profileDefaultSettings.message;
+	profileDisabled = messages.profileDisabled.message;
+	optionsDeleteRuleTooltip = messages.optionsDeleteRuleTooltip.message;
+	optionsDeleteRuleConfirm = messages.optionsDeleteRuleConfirm.message;
+	optionsUpdateRuleTooltip = messages.optionsUpdateRuleTooltip.message;
+	addProfileButton.title = messages.profileAddButtonTooltip.message;
+	deleteProfileButton.title = messages.profileDeleteButtonTooltip.message;
+	renameProfileButton.title = messages.profileRenameButtonTooltip.message;
+	removeHiddenElementsLabel.textContent = messages.optionRemoveHiddenElements.message;
+	removeUnusedStylesLabel.textContent = messages.optionRemoveUnusedStyles.message;
+	removeUnusedFontsLabel.textContent = messages.optionRemoveUnusedFonts.message;
+	removeFramesLabel.textContent = messages.optionRemoveFrames.message;
+	removeImportsLabel.textContent = messages.optionRemoveImports.message;
+	removeScriptsLabel.textContent = messages.optionRemoveScripts.message;
+	saveRawPageLabel.textContent = messages.optionSaveRawPage.message;
+	insertMetaCSPLabel.textContent = messages.optionInsertMetaCSP.message;
+	saveToClipboardLabel.textContent = messages.optionSaveToClipboard.message;
+	saveToFilesystemLabel.textContent = messages.optionSaveToFilesystem.message;
+	addProofLabel.textContent = messages.optionAddProof.message;
+	woleetKeyLabel.textContent = messages.optionWoleetKey.message;
+	saveToGDriveLabel.textContent = messages.optionSaveToGDrive.message;
+	saveToGitHubLabel.textContent = messages.optionSaveToGitHub.message;
+	githubTokenLabel.textContent = messages.optionGitHubToken.message;
+	githubUserLabel.textContent = messages.optionGitHubUser.message;
+	githubRepositoryLabel.textContent = messages.optionGitHubRepository.message;
+	githubBranchLabel.textContent = messages.optionGitHubBranch.message;
+	saveWithCompanionLabel.textContent = messages.optionSaveWithCompanion.message;
+	compressHTMLLabel.textContent = messages.optionCompressHTML.message;
+	compressCSSLabel.textContent = messages.optionCompressCSS.message;
+	loadDeferredImagesLabel.textContent = messages.optionLoadDeferredImages.message;
+	loadDeferredImagesMaxIdleTimeLabel.textContent = messages.optionLoadDeferredImagesMaxIdleTime.message;
+	loadDeferredImagesKeepZoomLevelLabel.textContent = messages.optionLoadDeferredImagesKeepZoomLevel.message;
+	addMenuEntryLabel.textContent = messages.optionAddMenuEntry.message;
+	filenameTemplateLabel.textContent = messages.optionFilenameTemplate.message;
+	filenameMaxLengthLabel.textContent = messages.optionFilenameMaxLength.message;
+	shadowEnabledLabel.textContent = messages.optionDisplayShadow.message;
+	setMaxResourceSizeLabel.textContent = messages.optionSetMaxResourceSize.message;
+	maxResourceSizeLabel.textContent = messages.optionMaxResourceSize.message;
+	confirmFilenameLabel.textContent = messages.optionConfirmFilename.message;
+	filenameConflictActionLabel.textContent = messages.optionFilenameConflictAction.message;
+	filenameConflictActionUniquifyLabel.textContent = messages.optionFilenameConflictActionUniquify.message;
+	filenameConflictActionOverwriteLabel.textContent = messages.optionFilenameConflictActionOverwrite.message;
+	filenameConflictActionPromptLabel.textContent = messages.optionFilenameConflictActionPrompt.message;
+	filenameConflictActionSkipLabel.textContent = messages.optionFilenameConflictActionSkip.message;
+	removeAudioLabel.textContent = messages.optionRemoveAudio.message;
+	removeVideoLabel.textContent = messages.optionRemoveVideo.message;
+	displayInfobarLabel.textContent = messages.optionDisplayInfobar.message;
+	displayStatsLabel.textContent = messages.optionDisplayStats.message;
+	backgroundSaveLabel.textContent = messages.optionBackgroundSave.message;
+	removeAlternativeFontsLabel.textContent = messages.optionRemoveAlternativeFonts.message;
+	removeAlternativeImagesLabel.textContent = messages.optionRemoveAlternativeImages.message;
+	removeAlternativeMediasLabel.textContent = messages.optionRemoveAlternativeMedias.message;
+	saveCreatedBookmarksLabel.textContent = messages.optionSaveCreatedBookmarks.message;
+	replaceBookmarkURLLabel.textContent = messages.optionReplaceBookmarkURL.message;
+	allowedBookmarkFoldersLabel.textContent = messages.optionAllowedBookmarkFolders.message;
+	ignoredBookmarkFoldersLabel.textContent = messages.optionIgnoredBookmarkFolders.message;
+	groupDuplicateImagesLabel.textContent = messages.optionGroupDuplicateImages.message;
+	titleLabel.textContent = messages.optionsTitle.message;
+	userInterfaceLabel.textContent = messages.optionsUserInterfaceSubTitle.message;
+	filenameLabel.textContent = messages.optionsFileNameSubTitle.message;
+	htmlContentLabel.textContent = messages.optionsHTMLContentSubTitle.message;
+	imagesLabel.textContent = messages.optionsImagesSubTitle.message;
+	stylesheetsLabel.textContent = messages.optionsStylesheetsSubTitle.message;
+	fontsLabel.textContent = messages.optionsFontsSubTitle.message;
+	otherResourcesLabel.textContent = messages.optionsOtherResourcesSubTitle.message;
+	destinationLabel.textContent = messages.optionsDestionationSubTitle.message;
+	bookmarksLabel.textContent = messages.optionsBookmarkSubTitle.message;
+	miscLabel.textContent = messages.optionsMiscSubTitle.message;
+	helpLabel.textContent = messages.optionsHelpLink.message;
+	infobarTemplateLabel.textContent = messages.optionInfobarTemplate.message;
+	includeInfobarLabel.textContent = messages.optionIncludeInfobar.message;
+	confirmInfobarLabel.textContent = messages.optionConfirmInfobar.message;
+	autoCloseLabel.textContent = messages.optionAutoClose.message;
+	editorLabel.textContent = messages.optionsEditorSubTitle.message;
+	openEditorLabel.textContent = messages.optionOpenEditor.message;
+	openSavedPageLabel.textContent = messages.optionOpenSavedPage.message;
+	autoOpenEditorLabel.textContent = messages.optionAutoOpenEditor.message;
+	defaultEditorModeLabel.textContent = messages.optionDefaultEditorMode.message;
+	defaultEditorModeNormalLabel.textContent = messages.optionDefaultEditorModeNormal.message;
+	defaultEditorModeEditLabel.textContent = messages.optionDefaultEditorModeEdit.message;
+	defaultEditorModeFormatLabel.textContent = messages.optionDefaultEditorModeFormat.message;
+	defaultEditorModeCutLabel.textContent = messages.optionDefaultEditorModeCut.message;
+	defaultEditorModeCutExternalLabel.textContent = messages.optionDefaultEditorModeCutExternal.message;
+	applySystemThemeLabel.textContent = messages.optionApplySystemTheme.message;
+	warnUnsavedPageLabel.textContent = messages.optionWarnUnsavedPage.message;
+	resetButton.textContent = messages.optionsResetButton.message;
+	exportButton.textContent = messages.optionsExportButton.message;
+	importButton.textContent = messages.optionsImportButton.message;
+	resetButton.title = messages.optionsResetTooltip.message;
+	autoSettingsLabel.textContent = messages.optionsAutoSettingsSubTitle.message;
+	autoSettingsUrlLabel.textContent = messages.optionsAutoSettingsUrl.message;
+	autoSettingsProfileLabel.textContent = messages.optionsAutoSettingsProfile.message;
+	ruleAddButton.title = messages.optionsAddRuleTooltip.message;
+	ruleEditButton.title = messages.optionsValidateChangesTooltip.message;
+	rulesDeleteAllButton.title = messages.optionsDeleteRulesTooltip.message;
+	showAllProfilesLabel.textContent = messages.optionsAutoSettingsShowAllProfiles.message;
+	ruleUrlInput.placeholder = ruleEditUrlInput.placeholder = messages.optionsAutoSettingsUrlPlaceholder.message;
+	synchronizeLabel.textContent = messages.optionSynchronize.message;
+	resetAllButton.textContent = messages.optionsResetAllButton.message;
+	resetCurrentButton.textContent = messages.optionsResetCurrentButton.message;
+	resetCancelButton.textContent = promptCancelButton.textContent = cancelButton.textContent = messages.optionsCancelButton.message;
+	confirmButton.textContent = promptConfirmButton.textContent = messages.optionsOKButton.message;
+	document.getElementById("resetConfirmLabel").textContent = messages.optionsResetConfirm.message;
+}
+
 if (location.href.endsWith("#")) {
 	document.querySelector(".new-window-link").remove();
 	document.documentElement.classList.add("maximized");
@@ -513,12 +541,12 @@ async function refresh(profileName) {
 	ruleEditProfileInput.options.length = 0;
 	let optionElement = document.createElement("option");
 	optionElement.value = DEFAULT_PROFILE_NAME;
-	optionElement.textContent = browser.i18n.getMessage("profileDefaultSettings");
+	optionElement.textContent = profileDefaultSettings;
 	[CURRENT_PROFILE_NAME].concat(...Object.keys(profiles)).forEach(profileName => {
 		const optionElement = document.createElement("option");
 		optionElement.value = optionElement.textContent = profileName;
 		if (profileName == DEFAULT_PROFILE_NAME) {
-			optionElement.textContent = browser.i18n.getMessage("profileDefaultSettings");
+			optionElement.textContent = profileDefaultSettings;
 		}
 		if (profileName != CURRENT_PROFILE_NAME) {
 			profileNamesInput.appendChild(optionElement);
@@ -529,7 +557,7 @@ async function refresh(profileName) {
 	profileNamesInput.disabled = profileNamesInput.options.length == 1;
 	optionElement = document.createElement("option");
 	optionElement.value = DISABLED_PROFILE_NAME;
-	optionElement.textContent = browser.i18n.getMessage("profileDisabled");
+	optionElement.textContent = profileDisabled;
 	const rulesDataElement = rulesElement.querySelector(".rules-data");
 	Array.from(rulesDataElement.childNodes).forEach(node => (!node.className || !node.className.includes("rule-edit")) && node.remove());
 	const editURLElement = rulesElement.querySelector(".rule-edit");
@@ -550,15 +578,15 @@ async function refresh(profileName) {
 			rulesDataElement.appendChild(ruleElement);
 			const ruleDeleteButton = ruleElement.querySelector(".rule-delete-button");
 			const ruleUpdateButton = ruleElement.querySelector(".rule-update-button");
-			ruleDeleteButton.title = browser.i18n.getMessage("optionsDeleteRuleTooltip");
+			ruleDeleteButton.title = optionsDeleteRuleTooltip;
 			ruleDeleteButton.addEventListener("click", async event => {
-				if (await confirm(browser.i18n.getMessage("optionsDeleteRuleConfirm"), event.clientY - 100)) {
+				if (await confirm(optionsDeleteRuleConfirm, event.clientY - 100)) {
 					await browser.runtime.sendMessage({ method: "config.deleteRule", url: rule.url });
 					await refresh();
 					await refreshExternalComponents();
 				}
 			}, false);
-			ruleUpdateButton.title = browser.i18n.getMessage("optionsUpdateRuleTooltip");
+			ruleUpdateButton.title = optionsUpdateRuleTooltip;
 			ruleUpdateButton.addEventListener("click", async () => {
 				if (editURLElement.hidden) {
 					createURLElement.hidden = true;
@@ -653,7 +681,7 @@ async function refresh(profileName) {
 }
 
 function getProfileText(profileName) {
-	return profileName == DEFAULT_PROFILE_NAME ? browser.i18n.getMessage("profileDefaultSettings") : profileName == DISABLED_PROFILE_NAME ? browser.i18n.getMessage("profileDisabled") : profileName;
+	return profileName == DEFAULT_PROFILE_NAME ? profileDefaultSettings : profileName == DISABLED_PROFILE_NAME ? profileDisabled : profileName;
 }
 
 async function update() {

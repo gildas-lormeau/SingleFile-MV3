@@ -25,6 +25,7 @@
 
 import * as download from "../../core/common/download.js";
 import { onError } from "./../common/content-error.js";
+import { getMessages } from "./../../core/bg/util.js";
 
 const editorElement = document.querySelector(".editor");
 const toolbarElement = document.querySelector(".toolbar");
@@ -53,27 +54,7 @@ const lastButton = toolbarElement.querySelector(".buttons:last-of-type [type=but
 
 let tabData, tabDataContents = [];
 
-addYellowNoteButton.title = browser.i18n.getMessage("editorAddYellowNote");
-addPinkNoteButton.title = browser.i18n.getMessage("editorAddPinkNote");
-addBlueNoteButton.title = browser.i18n.getMessage("editorAddBlueNote");
-addGreenNoteButton.title = browser.i18n.getMessage("editorAddGreenNote");
-highlightYellowButton.title = browser.i18n.getMessage("editorHighlightYellow");
-highlightPinkButton.title = browser.i18n.getMessage("editorHighlightPink");
-highlightBlueButton.title = browser.i18n.getMessage("editorHighlightBlue");
-highlightGreenButton.title = browser.i18n.getMessage("editorHighlightGreen");
-toggleNotesButton.title = browser.i18n.getMessage("editorToggleNotes");
-toggleHighlightsButton.title = browser.i18n.getMessage("editorToggleHighlights");
-removeHighlightButton.title = browser.i18n.getMessage("editorRemoveHighlight");
-editPageButton.title = browser.i18n.getMessage("editorEditPage");
-formatPageButton.title = browser.i18n.getMessage("editorFormatPage");
-cutInnerPageButton.title = browser.i18n.getMessage("editorCutInnerPage");
-cutOuterPageButton.title = browser.i18n.getMessage("editorCutOuterPage");
-undoCutPageButton.title = browser.i18n.getMessage("editorUndoCutPage");
-undoAllCutPageButton.title = browser.i18n.getMessage("editorUndoAllCutPage");
-redoCutPageButton.title = browser.i18n.getMessage("editorRedoCutPage");
-savePageButton.title = browser.i18n.getMessage("editorSavePage");
-printPageButton.title = browser.i18n.getMessage("editorPrintPage");
-
+init();
 addYellowNoteButton.onmouseup = () => editorElement.contentWindow.postMessage(JSON.stringify({ method: "addNote", color: "note-yellow" }), "*");
 addPinkNoteButton.onmouseup = () => editorElement.contentWindow.postMessage(JSON.stringify({ method: "addNote", color: "note-pink" }), "*");
 addBlueNoteButton.onmouseup = () => editorElement.contentWindow.postMessage(JSON.stringify({ method: "addNote", color: "note-blue" }), "*");
@@ -214,6 +195,30 @@ toolbarElement.ontouchstart = toolbarOnTouchStart;
 toolbarElement.onmousedown = toolbarOnTouchStart;
 toolbarElement.ontouchmove = toolbarOnTouchMove;
 toolbarElement.ontouchend = toolbarOnTouchEnd;
+
+async function init() {
+	const messages = await getMessages();
+	addYellowNoteButton.title = messages.editorAddYellowNote.message;
+	addPinkNoteButton.title = messages.editorAddPinkNote.message;
+	addBlueNoteButton.title = messages.editorAddBlueNote.message;
+	addGreenNoteButton.title = messages.editorAddGreenNote.message;
+	highlightYellowButton.title = messages.editorHighlightYellow.message;
+	highlightPinkButton.title = messages.editorHighlightPink.message;
+	highlightBlueButton.title = messages.editorHighlightBlue.message;
+	highlightGreenButton.title = messages.editorHighlightGreen.message;
+	toggleNotesButton.title = messages.editorToggleNotes.message;
+	toggleHighlightsButton.title = messages.editorToggleHighlights.message;
+	removeHighlightButton.title = messages.editorRemoveHighlight.message;
+	editPageButton.title = messages.editorEditPage.message;
+	formatPageButton.title = messages.editorFormatPage.message;
+	cutInnerPageButton.title = messages.editorCutInnerPage.message;
+	cutOuterPageButton.title = messages.editorCutOuterPage.message;
+	undoCutPageButton.title = messages.editorUndoCutPage.message;
+	undoAllCutPageButton.title = messages.editorUndoAllCutPage.message;
+	redoCutPageButton.title = messages.editorRedoCutPage.message;
+	savePageButton.title = messages.editorSavePage.message;
+	printPageButton.title = messages.editorPrintPage.message;
+}
 
 function viewportSizeChange() {
 	orientationPortrait = matchMedia("(orientation: portrait)").matches;

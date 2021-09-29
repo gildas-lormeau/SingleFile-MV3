@@ -21,15 +21,14 @@
  *   Source.
  */
 
-/* global browser, document */
+/* global document */
 
 const optionsTab = document.getElementById("tab-options");
 const pendingsTab = document.getElementById("tab-pendings");
 const viewPanel = document.getElementById("view-panel");
+import { getMessages } from "./../../core/bg/util.js";
 
-optionsTab.textContent = browser.i18n.getMessage("optionsTitle");
-pendingsTab.textContent = browser.i18n.getMessage("pendingsTitle");
-
+init();
 optionsTab.onclick = () => {
 	optionsTab.classList.add("tab-selected");
 	pendingsTab.classList.remove("tab-selected");
@@ -40,3 +39,9 @@ pendingsTab.onclick = () => {
 	pendingsTab.classList.add("tab-selected");
 	viewPanel.src = "pendings.html#side-panel";
 };
+
+async function init() {
+	const messages = await getMessages();
+	optionsTab.textContent = messages.optionsTitle.message;
+	pendingsTab.textContent = messages.pendingsTitle.message;
+}
