@@ -21,7 +21,7 @@
  *   Source.
  */
 
-import { getMessages } from "./util.js";
+import { getMessages } from "./i18n.js";
 import * as config from "./config.js";
 
 export {

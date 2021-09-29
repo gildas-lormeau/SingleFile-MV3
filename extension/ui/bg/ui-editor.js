@@ -25,7 +25,7 @@
 
 import * as download from "../../core/common/download.js";
 import { onError } from "./../common/content-error.js";
-import { getMessages } from "./../../core/bg/util.js";
+import { getMessages } from "./../../core/bg/i18n.js";
 
 const editorElement = document.querySelector(".editor");
 const toolbarElement = document.querySelector(".toolbar");

@@ -25,7 +25,7 @@
 
 import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
-import { getMessages } from "./../../core/bg/util.js";
+import { getMessages } from "./../../core/bg/i18n.js";
 
 const DEFAULT_ICON_PATH = "/extension/ui/resources/icon_128.png";
 const WAIT_ICON_PATH_PREFIX = "/extension/ui/resources/icon_128_wait";

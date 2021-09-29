@@ -23,7 +23,7 @@
 
 /* global browser, window, document, setInterval, location */
 
-import { getMessages } from "./../../core/bg/util.js";
+import { getMessages } from "./../../core/bg/i18n.js";
 
 const URLLabel = document.getElementById("URLLabel");
 const titleLabel = document.getElementById("titleLabel");

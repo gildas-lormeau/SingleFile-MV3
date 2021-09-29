@@ -26,7 +26,7 @@
 const optionsTab = document.getElementById("tab-options");
 const pendingsTab = document.getElementById("tab-pendings");
 const viewPanel = document.getElementById("view-panel");
-import { getMessages } from "./../../core/bg/util.js";
+import { getMessages } from "./../../core/bg/i18n.js";
 
 init();
 optionsTab.onclick = () => {

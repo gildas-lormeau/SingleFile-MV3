@@ -26,7 +26,7 @@
 import * as config from "./../../core/bg/config.js";
 import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
-import { getMessages } from "./../../core/bg/util.js";
+import { getMessages } from "./../../core/bg/i18n.js";
 
 import * as button from "./ui-button.js";
 
