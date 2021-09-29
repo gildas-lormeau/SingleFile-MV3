@@ -68,16 +68,7 @@ export {
 };
 
 async function saveSelectedLinks(tab) {
-	let scriptsInjected;
-	try {
-		await browser.scripting.executeScript({
-			target: { tabId: tab.id },
-			files: CONTENT_SCRIPTS
-		});
-		scriptsInjected = true;
-	} catch (error) {
-		// ignored
-	}
+	const scriptsInjected = await injectScripts(tab.id);
 	if (scriptsInjected) {
 		const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
 		if (response.urls && response.urls.length) {
@@ -115,16 +106,7 @@ async function saveTabs(tabs, options = {}) {
 		tabOptions.tabIndex = tab.index;
 		tabOptions.extensionScriptFiles = extensionScriptFiles;
 		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
-		let scriptsInjected;
-		try {
-			await browser.scripting.executeScript({
-				target: { tabId: tab.id },
-				files: CONTENT_SCRIPTS
-			});
-			scriptsInjected = true;
-		} catch (error) {
-			// ignored
-		}
+		const scriptsInjected = await injectScripts(tab.id);
 		if (scriptsInjected || editor.isEditor(tab)) {
 			ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
 			addTask({
@@ -187,11 +169,7 @@ async function runTask(taskInfo) {
 			taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 			taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 			ui.onStart(taskInfo.tab.id, INJECT_SCRIPTS_STEP);
-			await browser.scripting.executeScript({
-				target: { tabId: tab.id },
-				files: CONTENT_SCRIPTS
-			});
-			scriptsInjected = true;
+			scriptsInjected = await injectScripts(tab.id);
 		} catch (tabId) {
 			taskInfo.tab.id = tabId;
 		}
@@ -239,6 +217,19 @@ function onSaveEnd(taskId) {
 	}
 }
 
+async function injectScripts(tabId) {
+	let scriptsInjected;
+	try {
+		await browser.scripting.executeScript({
+			target: { tabId },
+			files: CONTENT_SCRIPTS
+		});
+		scriptsInjected = true;
+	} catch (error) {
+		// ignored
+	}
+	return scriptsInjected;
+}
 
 async function createTabAndWaitUntilComplete(createProperties) {
 	const tab = await browser.tabs.create(createProperties);
