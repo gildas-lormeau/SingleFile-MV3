@@ -344,7 +344,7 @@ addEventListener("load", () => {
 });
 
 addEventListener("unload", () => {
-	browser.runtime.sendMessage({ method: "editor.setTabData", content: tabData.content, filename: tabData.filename, url: tabData.url });	
+	browser.runtime.sendMessage({ method: "editor.setTabData", content: tabData.content, filename: tabData.filename, url: tabData.url });
 });
 
 addEventListener("beforeunload", event => {
