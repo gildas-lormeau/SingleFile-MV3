@@ -50,7 +50,7 @@
 	const dispatchEvent = event => globalThis.dispatchEvent(event);
 	const CustomEvent$1 = globalThis.CustomEvent;
 	const document = globalThis.document;
-	const HTMLDocument = globalThis.HTMLDocument;
+	const Document = globalThis.Document;
 
 	let fontFaces;
 	if (window._singleFile_fontFaces) {
@@ -59,7 +59,7 @@
 		fontFaces = window._singleFile_fontFaces = new Map();
 	}
 
-	if (document instanceof HTMLDocument) {
+	if (document instanceof Document) {
 		if (browser && browser.runtime && browser.runtime.getURL) {
 			addEventListener(NEW_FONT_FACE_EVENT, event => {
 				const detail = event.detail;
@@ -1357,9 +1357,9 @@
 
 	const browser$3 = globalThis.browser;
 	const document$3 = globalThis.document;
-	const HTMLDocument$1 = globalThis.HTMLDocument;
+	const Document$1 = globalThis.Document;
 
-	if (document$3 instanceof HTMLDocument$1) {
+	if (document$3 instanceof Document$1) {
 		const scriptElement = document$3.createElement("script");
 		scriptElement.async = false;
 		if (browser$3 && browser$3.runtime && browser$3.runtime.getURL) {
