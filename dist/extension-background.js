@@ -1260,12 +1260,13 @@
 		if (message.method.endsWith(".getTabData")) {
 			const tab = sender.tab;
 			const tabData = tabsData.get(tab.id);
-			const options = await getOptions(tabData.url);
 			if (tabData) {
+				const options = await getOptions(tabData.url);
 				const content = JSON.stringify(tabData);
 				for (let blockIndex = 0; blockIndex * MAX_CONTENT_SIZE < content.length; blockIndex++) {
 					const message = {
-						method: "editor.setTabData"
+						method: "editor.setTabData",
+						tabId: tab.id
 					};
 					message.truncated = content.length > MAX_CONTENT_SIZE;
 					message.url = tabData.url;
@@ -1278,6 +1279,12 @@
 					}
 					await browser.tabs.sendMessage(tab.id, message);
 				}
+			} else {
+				const message = {
+					method: "editor.setTabData",
+					tabId: tab.id
+				};
+				await browser.tabs.sendMessage(tab.id, message);
 			}
 		}
 		if (message.method.endsWith(".open")) {
@@ -1301,10 +1308,6 @@
 				await browser.tabs.update(tab.id, updateTabProperties);
 				tabsData.set(tab.id, { url: tab.url, content: contents.join(""), filename: message.filename });
 			}
-		}
-		if (message.method.endsWith(".setTabData")) {
-			const tab = sender.tab;
-			tabsData.set(tab.id, { content: message.content, filename: message.filename });
 		}
 	}
 
@@ -2336,16 +2339,7 @@
 	init$3({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
 
 	async function saveSelectedLinks(tab) {
-		let scriptsInjected;
-		try {
-			await browser.scripting.executeScript({
-				target: { tabId: tab.id },
-				files: CONTENT_SCRIPTS
-			});
-			scriptsInjected = true;
-		} catch (error) {
-			// ignored
-		}
+		const scriptsInjected = await injectScripts(tab.id);
 		if (scriptsInjected) {
 			const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
 			if (response.urls && response.urls.length) {
@@ -2383,16 +2377,7 @@
 			tabOptions.tabIndex = tab.index;
 			tabOptions.extensionScriptFiles = extensionScriptFiles;
 			onStart$1(tabId, INJECT_SCRIPTS_STEP$1);
-			let scriptsInjected;
-			try {
-				await browser.scripting.executeScript({
-					target: { tabId: tab.id },
-					files: CONTENT_SCRIPTS
-				});
-				scriptsInjected = true;
-			} catch (error) {
-				// ignored
-			}
+			const scriptsInjected = await injectScripts(tab.id);
 			if (scriptsInjected || isEditor(tab)) {
 				onStart$1(tabId, EXECUTE_SCRIPTS_STEP);
 				addTask({
@@ -2455,11 +2440,7 @@
 				taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 				taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 				onStart$1(taskInfo.tab.id, INJECT_SCRIPTS_STEP$1);
-				await browser.scripting.executeScript({
-					target: { tabId: tab.id },
-					files: CONTENT_SCRIPTS
-				});
-				scriptsInjected = true;
+				scriptsInjected = await injectScripts(tab.id);
 			} catch (tabId) {
 				taskInfo.tab.id = tabId;
 			}
@@ -2507,6 +2488,19 @@
 		}
 	}
 
+	async function injectScripts(tabId) {
+		let scriptsInjected;
+		try {
+			await browser.scripting.executeScript({
+				target: { tabId },
+				files: CONTENT_SCRIPTS
+			});
+			scriptsInjected = true;
+		} catch (error) {
+			// ignored
+		}
+		return scriptsInjected;
+	}
 
 	async function createTabAndWaitUntilComplete(createProperties) {
 		const tab = await browser.tabs.create(createProperties);
