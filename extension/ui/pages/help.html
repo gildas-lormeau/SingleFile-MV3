@@ -47,17 +47,9 @@
 							<li>or all the tabs.</li>
 						</ul>
 					</li>
-					<li>The context menu also allows you to activate the auto-save of: <ul>
-							<li>the current tab,</li>
-							<li>or the unpinned tabs,</li>
-							<li>or all the tabs.</li>
-						</ul>
-					</li>
 					<li>You can highlight text, add notes, format and remove content before saving the page with the <a
 							href="#annotation-editor">Annotation editor</a> by selecting "Annotate and save the page..."
 						in the context menu</li>
-					<li>With auto-save active, pages are automatically saved every time after being loaded (or before
-						being unloaded if not). </li>
 					<li>Select "Save Selection" from the context menu without selecting any content first to display a
 						selector that will help you choose content by hovering over it with the mouse.</li>
 					<li>Right-click on the SingleFile button and select "Options" to open the options page.</li>
@@ -465,7 +457,7 @@
 					</li>
 					<li data-options-label="maxResourceSizeLabel"> <span class="option">Option: maximum size (MB)</span>
 						<p>Specify the maximum size of embedded resources in megabytes.</p>
-					</li>					
+					</li>
 					<li data-options-label="addProofLabel"> <span class="option">Option: add proof od existence</span>
 						<p>Check this option to create a worldwide proof of the existence of the page you want to save.
 						</p>
@@ -507,10 +499,9 @@
 				</ul>
 				<p id="auto-settings-rules">Auto-settings rules</p>
 				<ul>
-					<li>The auto-settings rules let you associate a complete or partial URL with a profile. It also
-						allows to associate a specific profile for the auto-save, or to disable it (check "display
-						'Auto-save profile' column"). When two or more rules match a URL of a page to save, the rule
-						with the longest URL will be chosen. The special profile "-" means the current profile. </li>
+					<li>The auto-settings rules let you associate a complete or partial URL with a profile. When two or
+						more rules match a URL of a page to save, the rule with the longest URL will be chosen. The
+						special profile "-" means the current profile. </li>
 					<li>You can use the special value "*" as URL to create a rule that applies to all URLs</li>
 					<li>You can use regular expressions by prefixing the URL with "regexp:" (e.g. "regexp:.*\.com" to
 						match all URLs containing ".com"). When zero or more rules based on URLs and one or more rules
