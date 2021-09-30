@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser */
+/* global browser, document */
 
 import * as config from "./config.js";
 import * as editor from "./editor.js";
@@ -106,7 +106,7 @@ async function saveTabs(tabs, options = {}) {
 		tabOptions.tabIndex = tab.index;
 		tabOptions.extensionScriptFiles = extensionScriptFiles;
 		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
-		const scriptsInjected = await injectScripts(tab.id);
+		const scriptsInjected = await injectScripts(tab.id, options);
 		if (scriptsInjected || editor.isEditor(tab)) {
 			ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
 			addTask({
@@ -169,7 +169,7 @@ async function runTask(taskInfo) {
 			taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 			taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 			ui.onStart(taskInfo.tab.id, INJECT_SCRIPTS_STEP);
-			scriptsInjected = await injectScripts(tab.id);
+			scriptsInjected = await injectScripts(tab.id, taskInfo.options);
 		} catch (tabId) {
 			taskInfo.tab.id = tabId;
 		}
@@ -217,7 +217,7 @@ function onSaveEnd(taskId) {
 	}
 }
 
-async function injectScripts(tabId) {
+async function injectScripts(tabId, options = {}) {
 	let scriptsInjected;
 	try {
 		await browser.scripting.executeScript({
@@ -227,6 +227,15 @@ async function injectScripts(tabId) {
 		scriptsInjected = true;
 	} catch (error) {
 		// ignored
+	}
+	if (scriptsInjected && options.frameId) {
+		await browser.scripting.executeScript({
+			target: {
+				tabId,
+				frameIds: [options.frameId]
+			},
+			func: () => document.documentElement.dataset.requestedFrameId = true
+		});
 	}
 	return scriptsInjected;
 }
