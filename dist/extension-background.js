@@ -2377,7 +2377,7 @@
 			tabOptions.tabIndex = tab.index;
 			tabOptions.extensionScriptFiles = extensionScriptFiles;
 			onStart$1(tabId, INJECT_SCRIPTS_STEP$1);
-			const scriptsInjected = await injectScripts(tab.id);
+			const scriptsInjected = await injectScripts(tab.id, options);
 			if (scriptsInjected || isEditor(tab)) {
 				onStart$1(tabId, EXECUTE_SCRIPTS_STEP);
 				addTask({
@@ -2440,7 +2440,7 @@
 				taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 				taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 				onStart$1(taskInfo.tab.id, INJECT_SCRIPTS_STEP$1);
-				scriptsInjected = await injectScripts(tab.id);
+				scriptsInjected = await injectScripts(tab.id, taskInfo.options);
 			} catch (tabId) {
 				taskInfo.tab.id = tabId;
 			}
@@ -2488,7 +2488,7 @@
 		}
 	}
 
-	async function injectScripts(tabId) {
+	async function injectScripts(tabId, options = {}) {
 		let scriptsInjected;
 		try {
 			await browser.scripting.executeScript({
@@ -2498,6 +2498,15 @@
 			scriptsInjected = true;
 		} catch (error) {
 			// ignored
+		}
+		if (scriptsInjected && options.frameId) {
+			await browser.scripting.executeScript({
+				target: {
+					tabId,
+					frameIds: [options.frameId]
+				},
+				func: () => document.documentElement.dataset.requestedFrameId = true
+			});
 		}
 		return scriptsInjected;
 	}
