@@ -12,4 +12,5 @@ This is the new version of SingleFile compatible with the long-awaited Manifest 
  - and more to come!
 
 ## Benefits of the Manifest V3
+
  - none
