@@ -3,8 +3,6 @@
 This is the new version of SingleFile compatible with the long-awaited Manifest V3!
 
 ![Manifest V3 logo with a thug font](https://github.com/gildas-lormeau/SingleFile-Lite/blob/main/promo.png?raw=true)
-
-This is a work in progress.
 ## Notable features
 
  - more RAM & CPU intensive: with the Manifest V2, it was possible to download efficiently pages as `Blob` objects. With the Manifest V3, it's no more possible.
