@@ -99,6 +99,9 @@
 		"nativeMessaging",
 		"bookmarks"
 	],
+	"host_permissions": [
+		"<all_urls>"
+	],
 	"devtools_page": "extension/core/devtools/devtools.html",
 	"incognito": "spanning",
 	"manifest_version": 3,
