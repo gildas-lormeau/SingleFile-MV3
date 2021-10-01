@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, document */
+/* global browser, globalThis, document */
 
 import * as config from "./config.js";
 import * as editor from "./editor.js";
@@ -219,14 +219,21 @@ function onSaveEnd(taskId) {
 
 async function injectScripts(tabId, options = {}) {
 	let scriptsInjected;
-	try {
-		await browser.scripting.executeScript({
-			target: { tabId },
-			files: CONTENT_SCRIPTS
-		});
-		scriptsInjected = true;
-	} catch (error) {
-		// ignored
+	const resultData = (await browser.scripting.executeScript({
+		target: { tabId },
+		func: () => Boolean(globalThis.singlefile)
+	}))[0];
+	scriptsInjected = resultData && resultData.result;
+	if (!scriptsInjected) {
+		try {
+			await browser.scripting.executeScript({
+				target: { tabId },
+				files: CONTENT_SCRIPTS
+			});
+			scriptsInjected = true;
+		} catch (error) {
+			// ignored
+		}
 	}
 	if (scriptsInjected && options.frameId) {
 		await browser.scripting.executeScript({
