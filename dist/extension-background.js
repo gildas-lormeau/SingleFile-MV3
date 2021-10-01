@@ -2490,14 +2490,21 @@
 
 	async function injectScripts(tabId, options = {}) {
 		let scriptsInjected;
-		try {
-			await browser.scripting.executeScript({
-				target: { tabId },
-				files: CONTENT_SCRIPTS
-			});
-			scriptsInjected = true;
-		} catch (error) {
-			// ignored
+		const resultData = (await browser.scripting.executeScript({
+			target: { tabId },
+			func: () => Boolean(globalThis.singlefile)
+		}))[0];
+		scriptsInjected = resultData && resultData.result;
+		if (!scriptsInjected) {
+			try {
+				await browser.scripting.executeScript({
+					target: { tabId },
+					files: CONTENT_SCRIPTS
+				});
+				scriptsInjected = true;
+			} catch (error) {
+				// ignored
+			}
 		}
 		if (scriptsInjected && options.frameId) {
 			await browser.scripting.executeScript({
