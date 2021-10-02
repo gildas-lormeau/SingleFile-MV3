@@ -45,11 +45,6 @@ const CONTENT_SCRIPTS = [
 	"dist/extension.js"
 ];
 
-const extensionScriptFiles = [
-	"dist/infobar.js",
-	"dist/extension.js"
-];
-
 const tasks = [];
 let currentTaskId = 0, maxParallelWorkers;
 ui.init({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
@@ -85,7 +80,6 @@ async function saveUrls(urls, options = {}) {
 		const tabOptions = await config.getOptions(url);
 		Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 		tabOptions.autoClose = true;
-		tabOptions.extensionScriptFiles = extensionScriptFiles;
 		addTask({
 			tab: { url },
 			status: TASK_PENDING_STATE,
@@ -104,7 +98,6 @@ async function saveTabs(tabs, options = {}) {
 		Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 		tabOptions.tabId = tabId;
 		tabOptions.tabIndex = tab.index;
-		tabOptions.extensionScriptFiles = extensionScriptFiles;
 		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
 		const scriptsInjected = await injectScripts(tab.id, options);
 		if (scriptsInjected || editor.isEditor(tab)) {
