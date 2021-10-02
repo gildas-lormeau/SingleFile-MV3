@@ -32,7 +32,8 @@
 			"js": [
 				"dist/chrome-browser-polyfill.js",
 				"dist/single-file-bootstrap.js",
-				"dist/extension-bootstrap.js"
+				"dist/extension-bootstrap.js",
+				"dist/web/infobar-web.js"
 			]
 		}
 	],
