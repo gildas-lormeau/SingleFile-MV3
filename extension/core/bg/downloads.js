@@ -124,7 +124,7 @@ async function downloadTabPage(message, tab) {
 async function downloadContent(contents, tab, incognito, message) {
 	try {
 		if (message.saveToGDrive) {
-			await (await saveToGDrive(message.taskId, message.filename, new Blob([contents], { type: MIMETYPE_HTML }), {
+			await (await saveToGDrive(message.taskId, message.filename, new Blob(contents, { type: MIMETYPE_HTML }), {
 				forceWebAuthFlow: message.forceWebAuthFlow,
 				extractAuthCode: message.extractAuthCode
 			}, {
