@@ -97,7 +97,6 @@
 	"optional_permissions": [
 		"clipboardWrite",
 		"identity",
-		"nativeMessaging",
 		"bookmarks"
 	],
 	"host_permissions": [
