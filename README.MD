@@ -8,7 +8,7 @@ V3!
 Don't have any idea what Manifest V3 is? You can find more information in this
 blog article: https://developer.chrome.com/blog/mv2-transition/
 
-The objective is summarized as follow:
+The objective is summarized as follows:
 
 > Manifest V3 is more secure, performant, and privacy-preserving than its
 > predecessor. It is an evolution of the extension platform that takes into
