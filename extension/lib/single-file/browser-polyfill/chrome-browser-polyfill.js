@@ -29,9 +29,7 @@ if (typeof globalThis == "undefined") {
 
 (() => {
 
-	const NON_COMPLIANT_IMPLEMENTATION = globalThis.origin && globalThis.origin.startsWith("safari-web-extension://");
-
-	if ((!globalThis.browser || NON_COMPLIANT_IMPLEMENTATION) && globalThis.chrome) {
+	if (!globalThis.browser && globalThis.chrome) {
 		const nativeAPI = globalThis.chrome;
 		globalThis.__defineGetter__("browser", () => ({
 			action: {
