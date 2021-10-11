@@ -74,7 +74,7 @@ async function onMessage(message) {
 		return {};
 	}
 	if (message.method == "common.promptValueRequest") {
-		browser.runtime.sendMessage({ method: "tabs.promptValueResponse", value: prompt("SingleFile: " + message.promptMessage) });
+		browser.runtime.sendMessage({ method: "tabs.promptValueResponse", value: prompt("SingleFile Lite: " + message.promptMessage) });
 		return {};
 	}
 }

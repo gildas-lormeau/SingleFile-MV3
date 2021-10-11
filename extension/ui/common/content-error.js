@@ -40,7 +40,7 @@ export {
 
 function onError(message, link) {
 	try {
-		console.error("SingleFile", message, link); // eslint-disable-line no-console
+		console.error("SingleFile Lite", message, link); // eslint-disable-line no-console
 		errorBarElement = document.querySelector(ERROR_BAR_TAGNAME);
 		if (!errorBarElement) {
 			errorBarElement = createElement(ERROR_BAR_TAGNAME);

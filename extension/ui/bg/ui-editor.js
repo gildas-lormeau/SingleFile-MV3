@@ -285,7 +285,7 @@ addEventListener("message", event => {
 	if (message.method == "onInit") {
 		tabData.options.disableFormatPage = !message.formatPageEnabled;
 		formatPageButton.hidden = !message.formatPageEnabled;
-		document.title = "[SingleFile] " + message.title;
+		document.title = "[SingleFile Lite] " + message.title;
 		if (message.filename) {
 			tabData.filename = message.filename;
 		}
