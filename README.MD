@@ -20,23 +20,25 @@ The objective is summarized as follows:
 - **more RAM & CPU intensive**
 
   > With the Manifest V2, it was possible to download efficiently pages as
-  > `Blob` objects. With the Manifest V3, it's no more possible.
+  > `Blob` objects. With the Manifest V3, it's no more possible (cf.
+  > https://crbug.com/1051597).
 
 - **no auto-save**
 
   > With the Manifest V2, it was possible to process a page in background. With
-  > the Manifest V3, it's no more possible.
+  > the Manifest V3, it's no more possible (cf. https://crbug.com/1056354).
 
 - **no "Referrer" header injection**
 
   > With the Manifest V2, it was possible to inject a "Referrer" HTTP header if
-  > necessary. With the Manifest V3, it's no more possible.
+  > necessary. With the Manifest V3, it's no more possible (cf.
+  > https://crbug.com/1149619).
 
 - **no support for fonts dynamically loaded with the `FontFace` API**
 
   > With the Manifest V2, it was possible to save on page on
   > https://www.theverge.com/ and keep the original fonts. With the Manifest V3,
-  > it's no more possible.
+  > it's no more possible (cf. https://crbug.com/1054624).
 
 - and more to come!
 
