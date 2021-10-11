@@ -895,7 +895,7 @@
 
 	function onError(message, link) {
 		try {
-			console.error("SingleFile", message, link); // eslint-disable-line no-console
+			console.error("SingleFile Lite", message, link); // eslint-disable-line no-console
 			errorBarElement = document.querySelector(ERROR_BAR_TAGNAME);
 			if (!errorBarElement) {
 				errorBarElement = createElement$1(ERROR_BAR_TAGNAME);
@@ -947,7 +947,7 @@
 				const errorTextElement = document.createElement("span");
 				errorTextElement.classList.add("text");
 				const content = message.split("__DOC_LINK__");
-				errorTextElement.textContent = "SingleFile error: " + content[0];
+				errorTextElement.textContent = "SingleFile Lite error: " + content[0];
 				if (link && content.length == 2) {
 					const linkElement = document.createElement("a");
 					linkElement.textContent = link;
@@ -1200,7 +1200,7 @@
 			}
 			onEndPage();
 			if (options.displayStats) {
-				console.log("SingleFile stats"); // eslint-disable-line no-console
+				console.log("SingleFile Lite stats"); // eslint-disable-line no-console
 				console.table(page.stats); // eslint-disable-line no-console
 			}
 		}

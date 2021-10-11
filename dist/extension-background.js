@@ -34,119 +34,20 @@
 
 		(() => {
 
-			const FEATURE_TESTS = {};
-			const NON_COMPLIANT_IMPLEMENTATION = globalThis.origin && globalThis.origin.startsWith("safari-web-extension://");
-
-			if ((!globalThis.browser || NON_COMPLIANT_IMPLEMENTATION) && globalThis.chrome) {
+			if (!globalThis.browser && globalThis.chrome) {
 				const nativeAPI = globalThis.chrome;
 				globalThis.__defineGetter__("browser", () => ({
-					browserAction: {
+					action: {
 						onClicked: {
 							addListener: listener => nativeAPI.action.onClicked.addListener(listener)
 						},
-						setBadgeText: options => new Promise((resolve, reject) => {
-							if (!FEATURE_TESTS["action.setBadgeText"] || !FEATURE_TESTS["action.setBadgeText"].callbackNotSupported) {
-								try {
-									nativeAPI.action.setBadgeText(options, () => {
-										if (nativeAPI.runtime.lastError) {
-											reject(nativeAPI.runtime.lastError);
-										} else {
-											resolve();
-										}
-									});
-								} catch (error) {
-									FEATURE_TESTS["action.setBadgeText"] = { callbackNotSupported: true };
-								}
-							}
-							if (FEATURE_TESTS["action.setBadgeText"] && FEATURE_TESTS["action.setBadgeText"].callbackNotSupported) {
-								nativeAPI.action.setBadgeText(options);
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve();
-								}
-							}
-						}),
-						setBadgeBackgroundColor: options => new Promise((resolve, reject) => {
-							if (!FEATURE_TESTS["action.setBadgeBackgroundColor"] || !FEATURE_TESTS["action.setBadgeBackgroundColor"].callbackNotSupported) {
-								try {
-									nativeAPI.action.setBadgeBackgroundColor(options, () => {
-										if (nativeAPI.runtime.lastError) {
-											reject(nativeAPI.runtime.lastError);
-										} else {
-											resolve();
-										}
-									});
-								} catch (error) {
-									FEATURE_TESTS["action.setBadgeBackgroundColor"] = { callbackNotSupported: true };
-								}
-							}
-							if (FEATURE_TESTS["action.setBadgeBackgroundColor"] && FEATURE_TESTS["action.setBadgeBackgroundColor"].callbackNotSupported) {
-								nativeAPI.action.setBadgeBackgroundColor(options);
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve();
-								}
-							}
-						}),
-						setTitle: options => new Promise((resolve, reject) => {
-							if (!FEATURE_TESTS["action.setTitle"] || !FEATURE_TESTS["action.setTitle"].callbackNotSupported) {
-								try {
-									nativeAPI.action.setTitle(options, () => {
-										if (nativeAPI.runtime.lastError) {
-											reject(nativeAPI.runtime.lastError);
-										} else {
-											resolve();
-										}
-									});
-								} catch (error) {
-									FEATURE_TESTS["action.setTitle"] = { callbackNotSupported: true };
-								}
-							}
-							if (FEATURE_TESTS["action.setTitle"] && FEATURE_TESTS["action.setTitle"].callbackNotSupported) {
-								nativeAPI.action.setTitle(options);
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve();
-								}
-							}
-						}),
-						setIcon: options => new Promise((resolve, reject) => {
-							if (!FEATURE_TESTS["action.setIcon"] || !FEATURE_TESTS["action.setIcon"].callbackNotSupported) {
-								try {
-									nativeAPI.action.setIcon(options, () => {
-										if (nativeAPI.runtime.lastError) {
-											reject(nativeAPI.runtime.lastError);
-										} else {
-											resolve();
-										}
-									});
-								} catch (error) {
-									FEATURE_TESTS["action.setIcon"] = { callbackNotSupported: true };
-								}
-							}
-							if (FEATURE_TESTS["action.setIcon"] && FEATURE_TESTS["action.setIcon"].callbackNotSupported) {
-								nativeAPI.action.setIcon(options);
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve();
-								}
-							}
-						})
+						setBadgeText: options => nativeAPI.action.setBadgeText(options),
+						setBadgeBackgroundColor: options => nativeAPI.action.setBadgeBackgroundColor(options),
+						setTitle: options => nativeAPI.action.setTitle(options),
+						setIcon: options => nativeAPI.action.setIcon(options)
 					},
 					bookmarks: {
-						get: id => new Promise((resolve, reject) => {
-							nativeAPI.bookmarks.get(id, result => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(result);
-								}
-							});
-						}),
+						get: id => nativeAPI.bookmarks.get(id),
 						onCreated: {
 							addListener: listener => nativeAPI.bookmarks.onCreated.addListener(listener),
 							removeListener: listener => nativeAPI.bookmarks.onCreated.removeListener(listener)
@@ -155,15 +56,7 @@
 							addListener: listener => nativeAPI.bookmarks.onChanged.addListener(listener),
 							removeListener: listener => nativeAPI.bookmarks.onChanged.removeListener(listener)
 						},
-						update: (id, changes) => new Promise((resolve, reject) => {
-							nativeAPI.bookmarks.update(id, changes, node => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(node);
-								}
-							});
-						})
+						update: (id, changes) => nativeAPI.bookmarks.update(id, changes)
 					},
 					commands: {
 						onCommand: {
@@ -171,28 +64,12 @@
 						}
 					},
 					downloads: {
-						download: options => new Promise((resolve, reject) => {
-							nativeAPI.downloads.download(options, downloadId => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(downloadId);
-								}
-							});
-						}),
+						download: options => nativeAPI.downloads.download(options),
 						onChanged: {
 							addListener: listener => nativeAPI.downloads.onChanged.addListener(listener),
 							removeListener: listener => nativeAPI.downloads.onChanged.removeListener(listener)
 						},
-						search: query => new Promise((resolve, reject) => {
-							nativeAPI.downloads.search(query, downloadItems => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(downloadItems);
-								}
-							});
-						})
+						search: query => nativeAPI.downloads.search(query)
 					},
 					i18n: {
 						getAcceptLanguages: () => new Promise((resolve, reject) => {
@@ -240,7 +117,7 @@
 							));
 						}
 					},
-					menus: {
+					contextMenus: {
 						onClicked: {
 							addListener: listener => nativeAPI.contextMenus.onClicked.addListener(listener)
 						},
@@ -265,24 +142,8 @@
 						})
 					},
 					permissions: {
-						request: permissions => new Promise((resolve, reject) => {
-							nativeAPI.permissions.request(permissions, result => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(result);
-								}
-							});
-						}),
-						remove: permissions => new Promise((resolve, reject) => {
-							nativeAPI.permissions.remove(permissions, result => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(result);
-								}
-							});
-						})
+						request: permissions => nativeAPI.permissions.request(permissions),
+						remove: permissions => nativeAPI.permissions.remove(permissions)
 					},
 					runtime: {
 						connectNative: application => nativeAPI.runtime.connectNative(application),
@@ -453,51 +314,11 @@
 								reject(nativeAPI.runtime.lastError);
 							}
 						}),
-						query: options => new Promise((resolve, reject) => {
-							nativeAPI.tabs.query(options, tabs => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(tabs);
-								}
-							});
-						}),
-						create: createProperties => new Promise((resolve, reject) => {
-							nativeAPI.tabs.create(createProperties, tab => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(tab);
-								}
-							});
-						}),
-						get: options => new Promise((resolve, reject) => {
-							nativeAPI.tabs.get(options, tab => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(tab);
-								}
-							});
-						}),
-						remove: tabId => new Promise((resolve, reject) => {
-							nativeAPI.tabs.remove(tabId, () => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve();
-								}
-							});
-						}),
-						update: (tabId, updateProperties) => new Promise((resolve, reject) => {
-							nativeAPI.tabs.update(tabId, updateProperties, tab => {
-								if (nativeAPI.runtime.lastError) {
-									reject(nativeAPI.runtime.lastError);
-								} else {
-									resolve(tab);
-								}
-							});
-						})
+						query: options => nativeAPI.tabs.query(options),
+						create: createProperties => nativeAPI.tabs.create(createProperties),
+						get: options => nativeAPI.tabs.get(options),
+						remove: tabId => nativeAPI.tabs.remove(tabId),
+						update: (tabId, updateProperties) => nativeAPI.tabs.update(tabId, updateProperties)
 					},
 					devtools: nativeAPI.devtools && {
 						inspectedWindow: nativeAPI.devtools.inspectedWindow && {
@@ -1454,7 +1275,7 @@
 
 	let business;
 
-	browser.browserAction.onClicked.addListener(async tab => {
+	browser.action.onClicked.addListener(async tab => {
 		const highlightedTabs = await queryTabs({ currentWindow: true, highlighted: true });
 		if (highlightedTabs.length <= 1) {
 			toggleSaveTab(tab);
@@ -1633,10 +1454,10 @@
 	}
 
 	async function refreshProperty(tabId, browserActionMethod, browserActionParameter) {
-		if (browser.browserAction[browserActionMethod]) {
+		if (browser.action[browserActionMethod]) {
 			const parameter = JSON.parse(JSON.stringify(browserActionParameter));
 			parameter.tabId = tabId;
-			await browser.browserAction[browserActionMethod](parameter);
+			await browser.action[browserActionMethod](parameter);
 		}
 	}
 
@@ -1667,7 +1488,7 @@
 	 *   Source.
 	 */
 
-	const menus = browser.menus || browser.contextMenus;
+	const menus = browser.contextMenus;
 	const BROWSER_MENUS_API_SUPPORTED = menus && menus.onClicked && menus.create && menus.update && menus.removeAll;
 	const MENU_ID_SAVE_PAGE = "save-page";
 	const MENU_ID_EDIT_AND_SAVE_PAGE = "edit-and-save-page";
@@ -2329,11 +2150,6 @@
 		"dist/extension.js"
 	];
 
-	const extensionScriptFiles = [
-		"dist/infobar.js",
-		"dist/extension.js"
-	];
-
 	const tasks = [];
 	let currentTaskId = 0, maxParallelWorkers;
 	init$3({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
@@ -2356,7 +2172,6 @@
 			const tabOptions = await getOptions(url);
 			Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 			tabOptions.autoClose = true;
-			tabOptions.extensionScriptFiles = extensionScriptFiles;
 			addTask({
 				tab: { url },
 				status: TASK_PENDING_STATE,
@@ -2375,7 +2190,6 @@
 			Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 			tabOptions.tabId = tabId;
 			tabOptions.tabIndex = tab.index;
-			tabOptions.extensionScriptFiles = extensionScriptFiles;
 			onStart$1(tabId, INJECT_SCRIPTS_STEP$1);
 			const scriptsInjected = await injectScripts(tab.id, options);
 			if (scriptsInjected || isEditor(tab)) {
@@ -3399,7 +3213,7 @@
 	async function downloadContent(contents, tab, incognito, message) {
 		try {
 			if (message.saveToGDrive) {
-				await (await saveToGDrive(message.taskId, message.filename, new Blob([contents], { type: MIMETYPE_HTML }), {
+				await (await saveToGDrive(message.taskId, message.filename, new Blob(contents, { type: MIMETYPE_HTML }), {
 					forceWebAuthFlow: message.forceWebAuthFlow,
 					extractAuthCode: message.extractAuthCode
 				}, {
