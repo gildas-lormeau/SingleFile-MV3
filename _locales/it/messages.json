@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "Salva pagina con SingleFile",
-		"description": "Menu entry: 'Save page with SingleFile'"
+		"message": "Salva pagina con SingleFile Lite",
+		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Salva link selezionati",
@@ -72,20 +72,20 @@
 		"description": "Menu entry: 'Save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Salva pagina con SingleFile",
-		"description": "Button title: 'Save page with SingleFile'"
+		"message": "Salva pagina con SingleFile Lite",
+		"description": "Button title: 'Save page with SingleFile Lite'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "Questa pagina non può essere salvata con SingleFile",
-		"description": "Button title: 'This page cannot be saved with SingleFile'"
+		"message": "Questa pagina non può essere salvata con SingleFile Lite",
+		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "Inizializzazione SingleFile",
-		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
+		"message": "Inizializzazione SingleFile Lite",
+		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -336,8 +336,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "apri pagine salvate con SingleFile nell'editor annotazioni",
-		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
+		"message": "apri pagine salvate con SingleFile Lite nell'editor annotazioni",
+		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "modalità predefinita",
@@ -416,7 +416,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "Conferma che permetti a SingleFile di inare alle API Woleet un hash SHA256 di ogni pagina che stai per salvare. Puoi trovare maggiori informazioni su questa caratteristica nella pagina di aiuto o facendo clic sul punto esclamativo accanto all'opzione.",
+		"message": "Conferma che permetti a SingleFile Lite di inare alle API Woleet un hash SHA256 di ogni pagina che stai per salvare. Puoi trovare maggiori informazioni su questa caratteristica nella pagina di aiuto o facendo clic sul punto esclamativo accanto all'opzione.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

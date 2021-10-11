@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "SingleFile でページを保存",
-		"description": "Menu entry: 'Save page with SingleFile'"
+		"message": "SingleFile Lite でページを保存",
+		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Save selected links",
@@ -72,20 +72,20 @@
 		"description": "Menu entry: 'Save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "SingleFile でページを保存",
-		"description": "Button title: 'Save page with SingleFile'"
+		"message": "SingleFile Lite でページを保存",
+		"description": "Button title: 'Save page with SingleFile Lite'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "このページは SingleFile では保存できません",
-		"description": "Button title: 'This page cannot be saved with SingleFile'"
+		"message": "このページは SingleFile Lite では保存できません",
+		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "SingleFile の初期化",
-		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
+		"message": "SingleFile Lite の初期化",
+		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -336,8 +336,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "annotation editor で、SingleFile で保存されたページを開く",
-		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
+		"message": "annotation editor で、SingleFile Lite で保存されたページを開く",
+		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "default mode",
@@ -416,7 +416,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "Confirm you allow SingleFile to send to the Woleet API a SHA256 hash of each page you are going to save. You can find more information about this feature in the help page or by clicking on the question mark next to the option.",
+		"message": "Confirm you allow SingleFile Lite to send to the Woleet API a SHA256 hash of each page you are going to save. You can find more information about this feature in the help page or by clicking on the question mark next to the option.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

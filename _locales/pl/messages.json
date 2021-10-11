@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "Zapisz stronę z SingleFile",
-		"description": "Menu entry: 'Save page with SingleFile'"
+		"message": "Zapisz stronę z SingleFile Lite",
+		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Zapisz wybrane odnośniki",
@@ -72,20 +72,20 @@
 		"description": "Menu entry: 'Save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Zapisz stronę z SingleFile",
-		"description": "Button title: 'Save page with SingleFile'"
+		"message": "Zapisz stronę z SingleFile Lite",
+		"description": "Button title: 'Save page with SingleFile Lite'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "Tej strony nie można zapisać z SingleFile",
-		"description": "Button title: 'This page cannot be saved with SingleFile'"
+		"message": "Tej strony nie można zapisać z SingleFile Lite",
+		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "Inicjowanie SingleFile",
-		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
+		"message": "Inicjowanie SingleFile Lite",
+		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -336,8 +336,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "otwieraj strony zapisane z SingleFile w edytorze adnotacji",
-		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
+		"message": "otwieraj strony zapisane z SingleFile Lite w edytorze adnotacji",
+		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "tryb domyślny",
@@ -416,7 +416,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "Potwierdź, że zezwalasz SingleFile na wysyłanie do interfejsu API Woleet skrótu SHA256 każdej strony, którą chcesz zapisać. Więcej informacji na temat tej funkcji można znaleźć na stronie pomocy lub klikając znak zapytania obok opcji.",
+		"message": "Potwierdź, że zezwalasz SingleFile Lite na wysyłanie do interfejsu API Woleet skrótu SHA256 każdej strony, którą chcesz zapisać. Więcej informacji na temat tej funkcji można znaleźć na stronie pomocy lub klikając znak zapytania obok opcji.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

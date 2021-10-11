@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "使用 SingleFile 保存頁面",
-		"description": "Menu entry: 'Save page with SingleFile'"
+		"message": "使用 SingleFile Lite 保存頁面",
+		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "保存所選鏈接",
@@ -72,20 +72,20 @@
 		"description": "Menu entry: 'Save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "使用 SingleFile 保存頁面",
-		"description": "Button title: 'Save page with SingleFile'"
+		"message": "使用 SingleFile Lite 保存頁面",
+		"description": "Button title: 'Save page with SingleFile Lite'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "SingleFile 無法保存此頁面",
-		"description": "Button title: 'This page cannot be saved with SingleFile'"
+		"message": "SingleFile Lite 無法保存此頁面",
+		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "正在初始化 SingleFile",
-		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
+		"message": "正在初始化 SingleFile Lite",
+		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -116,7 +116,7 @@
 		"description": "Options sub-title: 'User interface'"
 	},
 	"optionAddMenuEntry": {
-		"message": "在頁面的上下文菜單中添加 SingleFile 條目",
+		"message": "在頁面的上下文菜單中添加 SingleFile Lite 條目",
 		"description": "Options page label: 'add entry in the context menu of the webpage'"
 	},
 	"optionDisplayShadow": {
@@ -336,8 +336,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "在標註編輯器中打開用 SingleFile 保存的頁面",
-		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
+		"message": "在標註編輯器中打開用 SingleFile Lite 保存的頁面",
+		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "默認模式",
@@ -416,7 +416,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "請確認您是否允許 SingleFile 將您要保存的每個頁面的 SHA256 哈希值發送給 Woleet API 。您可以在幫助頁面或者通過點擊該選項旁的問號找到此功能的更多信息。",
+		"message": "請確認您是否允許 SingleFile Lite 將您要保存的每個頁面的 SHA256 哈希值發送給 Woleet API 。您可以在幫助頁面或者通過點擊該選項旁的問號找到此功能的更多信息。",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

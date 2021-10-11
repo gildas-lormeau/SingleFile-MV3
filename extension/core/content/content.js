@@ -225,7 +225,7 @@ async function processPage(options) {
 		}
 		ui.onEndPage();
 		if (options.displayStats) {
-			console.log("SingleFile stats"); // eslint-disable-line no-console
+			console.log("SingleFile Lite stats"); // eslint-disable-line no-console
 			console.table(page.stats); // eslint-disable-line no-console
 		}
 	}
