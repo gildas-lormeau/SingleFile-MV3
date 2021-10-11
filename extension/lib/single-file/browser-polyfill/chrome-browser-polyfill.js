@@ -34,7 +34,7 @@ if (typeof globalThis == "undefined") {
 	if ((!globalThis.browser || NON_COMPLIANT_IMPLEMENTATION) && globalThis.chrome) {
 		const nativeAPI = globalThis.chrome;
 		globalThis.__defineGetter__("browser", () => ({
-			browserAction: {
+			action: {
 				onClicked: {
 					addListener: listener => nativeAPI.action.onClicked.addListener(listener)
 				},
@@ -114,7 +114,7 @@ if (typeof globalThis == "undefined") {
 					));
 				}
 			},
-			menus: {
+			contextMenus: {
 				onClicked: {
 					addListener: listener => nativeAPI.contextMenus.onClicked.addListener(listener)
 				},

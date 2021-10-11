@@ -49,7 +49,7 @@ let BUTTON_STATES;
 
 let business;
 
-browser.browserAction.onClicked.addListener(async tab => {
+browser.action.onClicked.addListener(async tab => {
 	const highlightedTabs = await queryTabs({ currentWindow: true, highlighted: true });
 	if (highlightedTabs.length <= 1) {
 		toggleSaveTab(tab);
@@ -241,10 +241,10 @@ async function refreshAsync(tabId, state) {
 }
 
 async function refreshProperty(tabId, browserActionMethod, browserActionParameter) {
-	if (browser.browserAction[browserActionMethod]) {
+	if (browser.action[browserActionMethod]) {
 		const parameter = JSON.parse(JSON.stringify(browserActionParameter));
 		parameter.tabId = tabId;
-		await browser.browserAction[browserActionMethod](parameter);
+		await browser.action[browserActionMethod](parameter);
 	}
 }
 
