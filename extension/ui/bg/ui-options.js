@@ -102,6 +102,7 @@ const defaultEditorModeLabel = document.getElementById("defaultEditorModeLabel")
 const applySystemThemeLabel = document.getElementById("applySystemThemeLabel");
 const warnUnsavedPageLabel = document.getElementById("warnUnsavedPageLabel");
 const infobarTemplateLabel = document.getElementById("infobarTemplateLabel");
+const blockMixedContentLabel = document.getElementById("blockMixedContentLabel");
 const includeInfobarLabel = document.getElementById("includeInfobarLabel");
 const miscLabel = document.getElementById("miscLabel");
 const helpLabel = document.getElementById("helpLabel");
@@ -160,6 +161,7 @@ const allowedBookmarkFoldersInput = document.getElementById("allowedBookmarkFold
 const ignoredBookmarkFoldersInput = document.getElementById("ignoredBookmarkFoldersInput");
 const groupDuplicateImagesInput = document.getElementById("groupDuplicateImagesInput");
 const infobarTemplateInput = document.getElementById("infobarTemplateInput");
+const blockMixedContentInput = document.getElementById("blockMixedContentInput");
 const includeInfobarInput = document.getElementById("includeInfobarInput");
 const confirmInfobarInput = document.getElementById("confirmInfobarInput");
 const autoCloseInput = document.getElementById("autoCloseInput");
@@ -486,6 +488,7 @@ async function init() {
 	miscLabel.textContent = messages.optionsMiscSubTitle.message;
 	helpLabel.textContent = messages.optionsHelpLink.message;
 	infobarTemplateLabel.textContent = messages.optionInfobarTemplate.message;
+	blockMixedContentLabel.textContent = messages.optionBlockMixedContent.message;
 	includeInfobarLabel.textContent = messages.optionIncludeInfobar.message;
 	confirmInfobarLabel.textContent = messages.optionConfirmInfobar.message;
 	autoCloseLabel.textContent = messages.optionAutoClose.message;
@@ -671,6 +674,7 @@ async function refresh(profileName) {
 	ignoredBookmarkFoldersInput.value = profileOptions.ignoredBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(","); // eslint-disable-line no-useless-escape
 	ignoredBookmarkFoldersInput.disabled = !profileOptions.saveCreatedBookmarks;
 	infobarTemplateInput.value = profileOptions.infobarTemplate;
+	blockMixedContentInput.checked = profileOptions.blockMixedContent;	
 	includeInfobarInput.checked = profileOptions.includeInfobar;
 	confirmInfobarInput.checked = profileOptions.confirmInfobarContent;
 	autoCloseInput.checked = profileOptions.autoClose;
@@ -741,6 +745,7 @@ async function update() {
 			ignoredBookmarkFolders: ignoredBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),
 			groupDuplicateImages: groupDuplicateImagesInput.checked,
 			infobarTemplate: infobarTemplateInput.value,
+			blockMixedContent: blockMixedContentInput.checked,			
 			includeInfobar: includeInfobarInput.checked,
 			confirmInfobarContent: confirmInfobarInput.checked,
 			autoClose: autoCloseInput.checked,
