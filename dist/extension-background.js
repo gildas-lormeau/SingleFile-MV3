@@ -335,7 +335,7 @@
 
 		})();
 
-	}());
+	})();
 
 	/*
 	 * Copyright 2010-2020 Gildas Lormeau
@@ -456,7 +456,7 @@
 	let persistentData, temporaryData, cleanedUp;
 	setTimeout(() => getPersistent().then(tabsData => persistentData = tabsData), 0);
 
-	function onMessage(message) {
+	function onMessage$a(message) {
 		if (message.method.endsWith(".get")) {
 			return getPersistent();
 		}
@@ -615,6 +615,7 @@
 		insertMetaNoIndex: false,
 		insertMetaCSP: true,
 		insertSingleFileComment: true,
+		blockMixedContent: false,
 		woleetKey: ""
 	};
 
@@ -684,7 +685,7 @@
 		return rule.url.toLowerCase().startsWith(REGEXP_RULE_PREFIX);
 	}
 
-	async function onMessage$1(message) {
+	async function onMessage$9(message) {
 		if (message.method.endsWith(".deleteRules")) {
 			await deleteRules(message.profileName);
 		}
@@ -892,7 +893,7 @@
 		await configStorage.set({ rules: config.rules });
 	}
 
-	async function getAuthInfo() {
+	async function getAuthInfo$1() {
 		return (await configStorage.get()).authInfo;
 	}
 
@@ -901,7 +902,7 @@
 	}
 
 	async function removeAuthInfo() {
-		let authInfo = getAuthInfo();
+		let authInfo = getAuthInfo$1();
 		if (authInfo.revokableAccessToken) {
 			setAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
 		} else {
@@ -1024,7 +1025,7 @@
 	 *   Source.
 	 */
 
-	async function onMessage$2(message, sender) {
+	async function onMessage$8(message, sender) {
 		if (message.method.endsWith(".init")) {
 			const [options, messages] = await Promise.all([getOptions(sender.tab.url), getMessages()]);
 			return { options, tabId: sender.tab.id, tabIndex: sender.tab.index, messages };
@@ -1057,7 +1058,7 @@
 	const MAX_CONTENT_SIZE = 32 * (1024 * 1024);
 	const EDITOR_PAGE_URL = "/extension/ui/pages/editor.html";
 	const tabsData = new Map();
-	const partialContents = new Map();
+	const partialContents$1 = new Map();
 	const EDITOR_URL = browser.runtime.getURL(EDITOR_PAGE_URL);
 
 	async function open({ tabIndex, content, filename }) {
@@ -1069,7 +1070,7 @@
 		tabsData.set(tab.id, { content, filename });
 	}
 
-	function onTabRemoved(tabId) {
+	function onTabRemoved$1(tabId) {
 		tabsData.delete(tabId);
 	}
 
@@ -1077,7 +1078,7 @@
 		return tab.url == EDITOR_URL;
 	}
 
-	async function onMessage$3(message, sender) {
+	async function onMessage$7(message, sender) {
 		if (message.method.endsWith(".getTabData")) {
 			const tab = sender.tab;
 			const tabData = tabsData.get(tab.id);
@@ -1112,14 +1113,14 @@
 			let contents;
 			const tab = sender.tab;
 			if (message.truncated) {
-				contents = partialContents.get(tab.id);
+				contents = partialContents$1.get(tab.id);
 				if (!contents) {
 					contents = [];
-					partialContents.set(tab.id, contents);
+					partialContents$1.set(tab.id, contents);
 				}
 				contents.push(message.content);
 				if (message.finished) {
-					partialContents.delete(tab.id);
+					partialContents$1.delete(tab.id);
 				}
 			} else if (message.content) {
 				contents = [message.content];
@@ -1269,31 +1270,31 @@
 	const ACTIVE_COLOR = [4, 229, 36, 192];
 	const FORBIDDEN_COLOR = [255, 255, 255, 1];
 	const ERROR_COLOR = [229, 4, 12, 192];
-	const INJECT_SCRIPTS_STEP = 1;
+	const INJECT_SCRIPTS_STEP$1 = 1;
 
 	let BUTTON_STATES;
 
-	let business;
+	let business$2;
 
 	browser.action.onClicked.addListener(async tab => {
 		const highlightedTabs = await queryTabs({ currentWindow: true, highlighted: true });
 		if (highlightedTabs.length <= 1) {
 			toggleSaveTab(tab);
 		} else {
-			business.saveTabs(highlightedTabs);
+			business$2.saveTabs(highlightedTabs);
 		}
 
 		function toggleSaveTab(tab) {
-			if (business.isSavingTab(tab)) {
-				business.cancelTab(tab.id);
+			if (business$2.isSavingTab(tab)) {
+				business$2.cancelTab(tab.id);
 			} else {
-				business.saveTabs([tab]);
+				business$2.saveTabs([tab]);
 			}
 		}
 	});
 
-	async function init(businessApi) {
-		business = businessApi;
+	async function init$3(businessApi) {
+		business$2 = businessApi;
 		const messages = await getMessages();
 		BUTTON_DEFAULT_TOOLTIP_MESSAGE = messages.buttonDefaultTooltip.message;
 		BUTTON_BLOCKED_TOOLTIP_MESSAGE = messages.buttonBlockedTooltip.message;
@@ -1351,11 +1352,11 @@
 		};
 	}
 
-	function onMessage$4(message, sender) {
+	function onMessage$6(message, sender) {
 		if (message.method.endsWith(".processInit")) {
 			const allTabsData = getTemporary(sender.tab.id);
 			delete allTabsData[sender.tab.id].button;
-			refreshTab(sender.tab);
+			refreshTab$1(sender.tab);
 		}
 		if (message.method.endsWith(".processProgress")) {
 			if (message.maxIndex) {
@@ -1363,52 +1364,52 @@
 			}
 		}
 		if (message.method.endsWith(".processEnd")) {
-			onEnd(sender.tab.id);
+			onEnd$1(sender.tab.id);
 		}
 		if (message.method.endsWith(".processError")) {
 			if (message.error) {
 				console.error("Initialization error", message.error); // eslint-disable-line no-console
 			}
-			onError(sender.tab.id);
+			onError$1(sender.tab.id);
 		}
 		if (message.method.endsWith(".processCancelled")) {
-			onCancelled(sender.tab);
+			onCancelled$1(sender.tab);
 		}
 		return Promise.resolve({});
 	}
 
-	function onStart(tabId, step) {
-		const state = step == INJECT_SCRIPTS_STEP ? getButtonState("inject") : getButtonState("execute");
+	function onStart$1(tabId, step) {
+		const state = step == INJECT_SCRIPTS_STEP$1 ? getButtonState("inject") : getButtonState("execute");
 		state.setTitle = { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE + " (" + step + "/2)" };
 		state.setIcon = { path: WAIT_ICON_PATH_PREFIX + "0.png" };
 		refresh(tabId, state);
 	}
 
-	function onError(tabId) {
+	function onError$1(tabId) {
 		refresh(tabId, getButtonState("error"));
 	}
 
-	function onEdit(tabId) {
+	function onEdit$1(tabId) {
 		refresh(tabId, getButtonState("edit"));
 	}
 
-	function onEnd(tabId) {
+	function onEnd$1(tabId) {
 		refresh(tabId, getButtonState("end"));
 	}
 
-	function onForbiddenDomain(tab) {
+	function onForbiddenDomain$1(tab) {
 		refresh(tab.id, getButtonState("forbidden"));
 	}
 
-	function onCancelled(tab) {
-		refreshTab(tab);
+	function onCancelled$1(tab) {
+		refreshTab$1(tab);
 	}
 
 	function onSaveProgress(tabId, index, maxIndex) {
 		onProgress(tabId, index, maxIndex, BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE);
 	}
 
-	function onUploadProgress(tabId, index, maxIndex) {
+	function onUploadProgress$1(tabId, index, maxIndex) {
 		onProgress(tabId, index, maxIndex, BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE);
 	}
 
@@ -1422,7 +1423,7 @@
 		refresh(tabId, state);
 	}
 
-	async function refreshTab(tab) {
+	async function refreshTab$1(tab) {
 		const state = getButtonState("default");
 		await refresh(tab.id, state);
 	}
@@ -1541,7 +1542,7 @@
 	let menusCreated, pendingRefresh, business$1;
 	Promise.resolve().then(initialize);
 
-	async function init$1(businessApi) {
+	async function init$2(businessApi) {
 		business$1 = businessApi;
 		const messages = await getMessages();
 		MENU_CREATE_DOMAIN_RULE_MESSAGE = messages.menuCreateDomainRule.message;
@@ -1792,7 +1793,7 @@
 		menusCreated = true;
 		if (pendingRefresh) {
 			pendingRefresh = false;
-			(await browser.tabs.query({})).forEach(async tab => await refreshTab$1(tab));
+			(await browser.tabs.query({})).forEach(async tab => await refreshTab(tab));
 		}
 	}
 
@@ -1891,14 +1892,14 @@
 			if (menusCreated) {
 				pendingRefresh = true;
 			} else {
-				(await browser.tabs.query({})).forEach(async tab => await refreshTab$1(tab));
+				(await browser.tabs.query({})).forEach(async tab => await refreshTab(tab));
 			}
 		}
 	}
 
 	async function refreshExternalComponents(tab) {
 		const allTabsData = await getPersistent(tab.id);
-		await refreshTab(tab);
+		await refreshTab$1(tab);
 		try {
 			await browser.runtime.sendMessage({ method: "options.refresh", profileName: allTabsData.profileName });
 		} catch (error) {
@@ -1906,7 +1907,7 @@
 		}
 	}
 
-	async function refreshTab$1(tab) {
+	async function refreshTab(tab) {
 		if (BROWSER_MENUS_API_SUPPORTED && menusCreated) {
 			const promises = [];
 			const allTabsData = await getPersistent(tab.id);
@@ -2010,21 +2011,21 @@
 	const commands = browser.commands;
 	const BROWSER_COMMANDS_API_SUPPORTED = commands && commands.onCommand && commands.onCommand.addListener;
 
-	let business$2;
+	let business;
 
-	function init$2(businessApi) {
-		business$2 = businessApi;
+	function init$1(businessApi) {
+		business = businessApi;
 	}
 
 	if (BROWSER_COMMANDS_API_SUPPORTED) {
 		commands.onCommand.addListener(async command => {
 			if (command == "save-selected-tabs") {
 				const highlightedTabs = await queryTabs({ currentWindow: true, highlighted: true });
-				business$2.saveTabs(highlightedTabs, { optionallySelected: true });
+				business.saveTabs(highlightedTabs, { optionallySelected: true });
 			}
 			if (command == "save-all-tabs") {
 				const tabs = await queryTabs({ currentWindow: true });
-				business$2.saveTabs(tabs);
+				business.saveTabs(tabs);
 			}
 		});
 	}
@@ -2052,61 +2053,61 @@
 	 *   Source.
 	 */
 
-	function init$3(businessApi) {
-		init$1(businessApi);
-		init(businessApi);
+	function init(businessApi) {
 		init$2(businessApi);
+		init$3(businessApi);
+		init$1(businessApi);
 	}
 
-	function onMessage$6(message, sender) {
+	function onMessage$4(message, sender) {
 		if (message.method.endsWith(".refreshMenu")) {
 			return onMessage$5(message);
 		} else {
-			return onMessage$4(message, sender);
+			return onMessage$6(message, sender);
 		}
 	}
 
-	function onForbiddenDomain$1(tab) {
-		onForbiddenDomain(tab);
+	function onForbiddenDomain(tab) {
+		onForbiddenDomain$1(tab);
 	}
 
-	function onStart$1(tabId, step) {
-		onStart(tabId, step);
+	function onStart(tabId, step) {
+		onStart$1(tabId, step);
 	}
 
-	async function onError$1(tabId, message, link) {
-		onError(tabId);
+	async function onError(tabId, message, link) {
+		onError$1(tabId);
 		if (message) {
 			await browser.tabs.sendMessage(tabId, { method: "content.error", error: message.toString(), link });
 		}
 	}
 
-	function onEdit$1(tabId) {
-		onEdit(tabId);
+	function onEdit(tabId) {
+		onEdit$1(tabId);
 	}
 
-	function onEnd$1(tabId) {
-		onEnd(tabId);
+	function onEnd(tabId) {
+		onEnd$1(tabId);
 	}
 
-	function onCancelled$1(tabId) {
-		onCancelled(tabId);
+	function onCancelled(tabId) {
+		onCancelled$1(tabId);
 	}
 
-	function onUploadProgress$1(tabId, index, maxIndex) {
-		onUploadProgress(tabId, index, maxIndex);
+	function onUploadProgress(tabId, index, maxIndex) {
+		onUploadProgress$1(tabId, index, maxIndex);
 	}
 
-	function onTabCreated(tab) {
-		refreshTab$1(tab);
+	function onTabCreated$1(tab) {
+		refreshTab(tab);
 	}
 
-	function onTabActivated(tab) {
-		refreshTab$1(tab);
+	function onTabActivated$1(tab) {
+		refreshTab(tab);
 	}
 
-	function onInit(tab) {
-		refreshTab$1(tab);
+	function onInit$2(tab) {
+		refreshTab(tab);
 	}
 
 	/*
@@ -2136,7 +2137,7 @@
 	const ERROR_CONNECTION_LOST_CHROMIUM = "The message port closed before a response was received.";
 	const ERROR_CONNECTION_LOST_GECKO = "Message manager disconnected";
 	const ERROR_EDITOR_PAGE_CHROMIUM = "Cannot access contents of url ";
-	const INJECT_SCRIPTS_STEP$1 = 1;
+	const INJECT_SCRIPTS_STEP = 1;
 	const EXECUTE_SCRIPTS_STEP = 2;
 	const TASK_PENDING_STATE = "pending";
 	const TASK_PROCESSING_STATE = "processing";
@@ -2152,7 +2153,7 @@
 
 	const tasks = [];
 	let currentTaskId = 0, maxParallelWorkers;
-	init$3({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
+	init({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLinks });
 
 	async function saveSelectedLinks(tab) {
 		const scriptsInjected = await injectScripts(tab.id);
@@ -2162,7 +2163,7 @@
 				await saveUrls(response.urls);
 			}
 		} else {
-			onForbiddenDomain$1(tab);
+			onForbiddenDomain(tab);
 		}
 	}
 
@@ -2190,10 +2191,10 @@
 			Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 			tabOptions.tabId = tabId;
 			tabOptions.tabIndex = tab.index;
-			onStart$1(tabId, INJECT_SCRIPTS_STEP$1);
+			onStart(tabId, INJECT_SCRIPTS_STEP);
 			const scriptsInjected = await injectScripts(tab.id, options);
 			if (scriptsInjected || isEditor(tab)) {
-				onStart$1(tabId, EXECUTE_SCRIPTS_STEP);
+				onStart(tabId, EXECUTE_SCRIPTS_STEP);
 				addTask({
 					status: TASK_PENDING_STATE,
 					tab,
@@ -2201,7 +2202,7 @@
 					method: "content.save"
 				});
 			} else {
-				onForbiddenDomain$1(tab);
+				onForbiddenDomain(tab);
 			}
 		}));
 		runTasks();
@@ -2253,13 +2254,13 @@
 				const tab = await createTabAndWaitUntilComplete({ url: taskInfo.tab.url, active: false });
 				taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 				taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
-				onStart$1(taskInfo.tab.id, INJECT_SCRIPTS_STEP$1);
+				onStart(taskInfo.tab.id, INJECT_SCRIPTS_STEP);
 				scriptsInjected = await injectScripts(tab.id, taskInfo.options);
 			} catch (tabId) {
 				taskInfo.tab.id = tabId;
 			}
 			if (scriptsInjected) {
-				onStart$1(taskInfo.tab.id, EXECUTE_SCRIPTS_STEP);
+				onStart(taskInfo.tab.id, EXECUTE_SCRIPTS_STEP);
 			} else {
 				taskInfo.done();
 				return;
@@ -2271,7 +2272,7 @@
 		} catch (error) {
 			if (error && (!error.message || !isIgnoredError(error))) {
 				console.log(error.message ? error.message : error); // eslint-disable-line no-console
-				onError$1(taskInfo.tab.id, error.message, error.link);
+				onError(taskInfo.tab.id, error.message, error.link);
 				taskInfo.done();
 			}
 		}
@@ -2393,7 +2394,7 @@
 		if (taskInfo.cancel) {
 			taskInfo.cancel();
 		}
-		onCancelled$1(taskInfo.tab);
+		onCancelled(taskInfo.tab);
 		taskInfo.done();
 	}
 
@@ -2426,7 +2427,7 @@
 
 	Promise.resolve().then(enable);
 
-	async function onMessage$7(message) {
+	async function onMessage$3(message) {
 		if (message.method.endsWith(".saveCreatedBookmarks")) {
 			enable();
 			return {};
@@ -2553,7 +2554,7 @@
 	 *   Source.
 	 */
 
-	async function onMessage$8(message) {
+	async function onMessage$2(message) {
 		if (message.method.endsWith(".resourceCommitted")) {
 			if (message.tabId && message.url && (message.type == "stylesheet" || message.type == "script")) {
 				await browser.tabs.sendMessage(message.tabId, message);
@@ -3130,7 +3131,7 @@
 	 *   Source.
 	 */
 
-	const partialContents$1 = new Map();
+	const partialContents = new Map();
 	const MIMETYPE_HTML = "text/html";
 	const CLIENT_ID = "207618107333-3pj2pmelhnl4sf3rpctghs9cean3q8nj.apps.googleusercontent.com";
 	const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
@@ -3142,12 +3143,12 @@
 	const requestPermissionIdentity = manifest.optional_permissions && manifest.optional_permissions.includes("identity");
 	const gDrive = new GDrive(CLIENT_ID, SCOPES);
 
-	async function onMessage$9(message, sender) {
+	async function onMessage$1(message, sender) {
 		if (message.method.endsWith(".download")) {
 			return downloadTabPage(message, sender.tab);
 		}
 		if (message.method.endsWith(".disableGDrive")) {
-			const authInfo = await getAuthInfo();
+			const authInfo = await getAuthInfo$1();
 			removeAuthInfo();
 			await gDrive.revokeAuthToken(authInfo && (authInfo.accessToken || authInfo.revokableAccessToken));
 			return {};
@@ -3157,7 +3158,7 @@
 				try {
 					await anchor(message.hash, message.woleetKey);
 				} catch (error) {
-					onError$1(sender.tab.id, error.message, error.link);
+					onError(sender.tab.id, error.message, error.link);
 				}
 			}
 			onSaveEnd(message.taskId);
@@ -3183,25 +3184,25 @@
 	async function downloadTabPage(message, tab) {
 		let contents;
 		if (message.truncated) {
-			contents = partialContents$1.get(tab.id);
+			contents = partialContents.get(tab.id);
 			if (!contents) {
 				contents = [];
-				partialContents$1.set(tab.id, contents);
+				partialContents.set(tab.id, contents);
 			}
 			contents.push(message.content);
 			if (message.finished) {
-				partialContents$1.delete(tab.id);
+				partialContents.delete(tab.id);
 			}
 		} else if (message.content) {
 			contents = [message.content];
 		}
 		if (!message.truncated || message.finished) {
 			if (message.openEditor) {
-				onEdit$1(tab.id);
+				onEdit(tab.id);
 				await open({ tabIndex: tab.index + 1, filename: message.filename, content: contents.join("") });
 			} else {
 				if (message.saveToClipboard) {
-					onEnd$1(tab.id);
+					onEnd(tab.id);
 				} else {
 					await downloadContent(contents, tab, tab.incognito, message);
 				}
@@ -3217,7 +3218,7 @@
 					forceWebAuthFlow: message.forceWebAuthFlow,
 					extractAuthCode: message.extractAuthCode
 				}, {
-					onProgress: (offset, size) => onUploadProgress$1(tab.id, offset, size)
+					onProgress: (offset, size) => onUploadProgress(tab.id, offset, size)
 				})).uploadPromise;
 			} else if (message.saveToGitHub) {
 				await (await saveToGitHub(message.taskId, message.filename, contents.join(""), message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
@@ -3237,7 +3238,7 @@
 					includeInfobar: message.includeInfobar
 				});
 			}
-			onEnd$1(tab.id);
+			onEnd(tab.id);
 			if (message.openSavedPage) {
 				const createTabProperties = { active: true, url: "data:text/html," + encodeURIComponent(contents.join("")) };
 				if (tab.index != null) {
@@ -3248,7 +3249,7 @@
 		} catch (error) {
 			if (!error.message || error.message != "upload_cancelled") {
 				console.error(error); // eslint-disable-line no-console
-				onError$1(tab.id, error.message, error.link);
+				onError(tab.id, error.message, error.link);
 			}
 		}
 	}
@@ -3257,8 +3258,8 @@
 		return string.replace(REGEXP_ESCAPE, "\\$1");
 	}
 
-	async function getAuthInfo$1(authOptions, force) {
-		let authInfo = await getAuthInfo();
+	async function getAuthInfo(authOptions, force) {
+		let authInfo = await getAuthInfo$1();
 		const options = {
 			interactive: true,
 			auto: authOptions.extractAuthCode,
@@ -3296,7 +3297,7 @@
 
 	async function saveToGDrive(taskId, filename, blob, authOptions, uploadOptions) {
 		try {
-			await getAuthInfo$1(authOptions);
+			await getAuthInfo(authOptions);
 			const taskInfo = getTaskInfo(taskId);
 			if (!taskInfo || !taskInfo.cancelled) {
 				const uploadInfo = await gDrive.upload(filename, blob, uploadOptions);
@@ -3311,7 +3312,7 @@
 					authInfo = await gDrive.refreshAuthToken();
 				} catch (error) {
 					if (error.message == "unknown_token") {
-						authInfo = await getAuthInfo$1(authOptions, true);
+						authInfo = await getAuthInfo(authOptions, true);
 					} else {
 						throw new Error(error.message + " (Google Drive)");
 					}
@@ -3390,15 +3391,15 @@
 
 	const DELAY_MAYBE_INIT = 1500;
 
-	browser.tabs.onCreated.addListener(tab => onTabCreated$1(tab));
-	browser.tabs.onActivated.addListener(activeInfo => onTabActivated$1(activeInfo));
-	browser.tabs.onRemoved.addListener(tabId => onTabRemoved$1(tabId));
+	browser.tabs.onCreated.addListener(tab => onTabCreated(tab));
+	browser.tabs.onActivated.addListener(activeInfo => onTabActivated(activeInfo));
+	browser.tabs.onRemoved.addListener(tabId => onTabRemoved(tabId));
 	browser.tabs.onUpdated.addListener((tabId, changeInfo) => onTabUpdated(tabId, changeInfo));
 
-	async function onMessage$a(message, sender) {
+	async function onMessage(message, sender) {
 		if (message.method.endsWith(".init")) {
-			await onInit$2(sender.tab, message);
-			onInit(sender.tab);
+			await onInit(sender.tab, message);
+			onInit$2(sender.tab);
 			onInit$1(sender.tab);		
 		}
 		if (message.method.endsWith(".promptValueResponse")) {
@@ -3412,7 +3413,7 @@
 		}
 	}
 
-	async function onInit$2(tab, options) {
+	async function onInit(tab, options) {
 		await remove(tab.id);
 		const allTabsData = await getPersistent(tab.id);
 		allTabsData[tab.id].savedPageDetected = options.savedPageDetected;
@@ -3434,23 +3435,23 @@
 				const allTabsData = await getPersistent(tab.id);
 				allTabsData[tab.id].editorDetected = true;
 				await setPersistent(allTabsData);
-				onTabActivated(tab);
+				onTabActivated$1(tab);
 			}
 		}
 	}
 
-	function onTabCreated$1(tab) {
-		onTabCreated(tab);
+	function onTabCreated(tab) {
+		onTabCreated$1(tab);
 	}
 
-	async function onTabActivated$1(activeInfo) {
+	async function onTabActivated(activeInfo) {
 		const tab = await browser.tabs.get(activeInfo.tabId);
-		onTabActivated(tab);
+		onTabActivated$1(tab);
 	}
 
-	function onTabRemoved$1(tabId) {
+	function onTabRemoved(tabId) {
 		remove(tabId);
-		onTabRemoved(tabId);
+		onTabRemoved$1(tabId);
 		cancelTab(tabId);
 	}
 
@@ -3651,32 +3652,32 @@
 
 	browser.runtime.onMessage.addListener((message, sender) => {
 		if (message.method.startsWith("tabs.")) {
-			return onMessage$a(message, sender);
+			return onMessage(message, sender);
 		}
 		if (message.method.startsWith("downloads.")) {
-			return onMessage$9(message, sender);
+			return onMessage$1(message, sender);
 		}
 		if (message.method.startsWith("bootstrap.")) {
-			return onMessage$2(message, sender);
+			return onMessage$8(message, sender);
 		}
 		if (message.method.startsWith("ui.")) {
-			return onMessage$6(message, sender);
+			return onMessage$4(message, sender);
 		}
 		if (message.method.startsWith("config.")) {
-			return onMessage$1(message);
+			return onMessage$9(message);
 		}
 		if (message.method.startsWith("tabsData.")) {
-			return onMessage(message);
+			return onMessage$a(message);
 		}
 		if (message.method.startsWith("devtools.")) {
-			return onMessage$8(message);
+			return onMessage$2(message);
 		}
 		if (message.method.startsWith("editor.")) {
-			return onMessage$3(message, sender);
+			return onMessage$7(message, sender);
 		}
 		if (message.method.startsWith("bookmarks.")) {
-			return onMessage$7(message);
+			return onMessage$3(message);
 		}
 	});
 
-}());
+})();

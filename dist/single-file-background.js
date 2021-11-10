@@ -173,4 +173,4 @@
 		framesTimeouts.delete(type);
 	}
 
-}());
+})();

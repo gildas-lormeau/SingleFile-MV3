@@ -234,10 +234,12 @@
 		function resetScreenSize() {
 			const scrollingElement = document.scrollingElement || document.documentElement;
 			if (globalThis._singleFile_innerHeight != null) {
+				delete globalThis.innerHeight;
 				globalThis.innerHeight = globalThis._singleFile_innerHeight;
 				delete globalThis._singleFile_innerHeight;
 			}
 			if (globalThis._singleFile_innerWidth != null) {
+				delete globalThis.innerWidth;
 				globalThis.innerWidth = globalThis._singleFile_innerWidth;
 				delete globalThis._singleFile_innerWidth;
 			}
@@ -390,4 +392,4 @@
 
 	})(typeof globalThis == "object" ? globalThis : window);
 
-}());
+})();

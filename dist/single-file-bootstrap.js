@@ -2,7 +2,7 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.singlefileBootstrap = {}));
-}(this, (function (exports) { 'use strict';
+})(this, (function (exports) { 'use strict';
 
 	/*
 	 * Copyright 2010-2020 Gildas Lormeau
@@ -43,11 +43,11 @@
 	const DELETE_FONT_EVENT = "single-file-delete-font";
 	const CLEAR_FONTS_EVENT = "single-file-clear-fonts";
 
-	const browser = globalThis.browser;
-	const addEventListener = (type, listener, options) => globalThis.addEventListener(type, listener, options);
-	const dispatchEvent = event => globalThis.dispatchEvent(event);
+	const browser$2 = globalThis.browser;
+	const addEventListener$3 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const dispatchEvent$1 = event => globalThis.dispatchEvent(event);
 	const CustomEvent$1 = globalThis.CustomEvent;
-	const document = globalThis.document;
+	const document$2 = globalThis.document;
 	const Document = globalThis.Document;
 
 	let fontFaces;
@@ -57,58 +57,58 @@
 		fontFaces = window._singleFile_fontFaces = new Map();
 	}
 
-	if (document instanceof Document) {
-		if (browser && browser.runtime && browser.runtime.getURL) {
-			addEventListener(NEW_FONT_FACE_EVENT, event => {
+	if (document$2 instanceof Document) {
+		if (browser$2 && browser$2.runtime && browser$2.runtime.getURL) {
+			addEventListener$3(NEW_FONT_FACE_EVENT, event => {
 				const detail = event.detail;
 				const key = Object.assign({}, detail);
 				delete key.src;
 				fontFaces.set(JSON.stringify(key), detail);
 			});
-			addEventListener(DELETE_FONT_EVENT, event => {
+			addEventListener$3(DELETE_FONT_EVENT, event => {
 				const detail = event.detail;
 				const key = Object.assign({}, detail);
 				delete key.src;
 				fontFaces.delete(JSON.stringify(key));
 			});
-			addEventListener(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
-			const scriptElement = document.createElement("script");
-			scriptElement.src = browser.runtime.getURL("/dist/web/hooks/hooks-frames-web.js");
+			addEventListener$3(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
+			const scriptElement = document$2.createElement("script");
+			scriptElement.src = browser$2.runtime.getURL("/dist/web/hooks/hooks-frames-web.js");
 			scriptElement.async = false;
-			(document.documentElement || document).appendChild(scriptElement);
+			(document$2.documentElement || document$2).appendChild(scriptElement);
 			scriptElement.remove();
 		}
 	}
 
-	function getFontsData() {
+	function getFontsData$1() {
 		return Array.from(fontFaces.values());
 	}
 
 	function loadDeferredImagesStart(options) {
 		if (options.loadDeferredImagesBlockCookies) {
-			dispatchEvent(new CustomEvent$1(BLOCK_COOKIES_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_COOKIES_START_EVENT));
 		}
 		if (options.loadDeferredImagesBlockStorage) {
-			dispatchEvent(new CustomEvent$1(BLOCK_STORAGE_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_STORAGE_START_EVENT));
 		}
 		if (options.loadDeferredImagesKeepZoomLevel) {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_START_EVENT));
 		} else {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_START_EVENT));
 		}
 	}
 
 	function loadDeferredImagesEnd(options) {
 		if (options.loadDeferredImagesBlockCookies) {
-			dispatchEvent(new CustomEvent$1(BLOCK_COOKIES_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_COOKIES_END_EVENT));
 		}
 		if (options.loadDeferredImagesBlockStorage) {
-			dispatchEvent(new CustomEvent$1(BLOCK_STORAGE_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_STORAGE_END_EVENT));
 		}
 		if (options.loadDeferredImagesKeepZoomLevel) {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_END_EVENT));
 		} else {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_END_EVENT));
 		}
 	}
 
@@ -164,7 +164,7 @@
 	const whitespace = "[\\x20\\t\\r\\n\\f]";
 	const unescapeRegExp = new RegExp("\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig");
 
-	function process(str) {
+	function process$2(str) {
 		return str.replace(unescapeRegExp, (_, escaped, escapedWhitespace) => {
 			const high = "0x" + escaped - 0x10000;
 
@@ -236,14 +236,14 @@
 	const COMMENT_HEADER = "Page saved with SingleFile";
 	const COMMENT_HEADER_LEGACY = "Archive processed by SingleFile";
 	const SINGLE_FILE_UI_ELEMENT_CLASS = "single-file-ui-element";
-	const addEventListener$1 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
-	const dispatchEvent$1 = event => globalThis.dispatchEvent(event);
+	const addEventListener$2 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const dispatchEvent = event => globalThis.dispatchEvent(event);
 
 	function initUserScriptHandler() {
-		addEventListener$1("single-file-user-script-init", () => globalThis._singleFile_waitForUserScript = async eventPrefixName => {
+		addEventListener$2("single-file-user-script-init", () => globalThis._singleFile_waitForUserScript = async eventPrefixName => {
 			const event = new CustomEvent(eventPrefixName + "-request", { cancelable: true });
-			const promiseResponse = new Promise(resolve => addEventListener$1(eventPrefixName + "-response", resolve));
-			dispatchEvent$1(event);
+			const promiseResponse = new Promise(resolve => addEventListener$2(eventPrefixName + "-response", resolve));
+			dispatchEvent(event);
 			if (event.defaultPrevented) {
 				await promiseResponse;
 			}
@@ -289,7 +289,7 @@
 		}
 		return {
 			canvases: elementsInfo.canvases,
-			fonts: getFontsData$1(),
+			fonts: getFontsData(),
 			stylesheets: getStylesheetsData(doc),
 			images: elementsInfo.images,
 			posters: elementsInfo.posters,
@@ -426,7 +426,7 @@
 		}
 		if (element.tagName == "LINK") {
 			if (element.import && element.import.documentElement) {
-				data.imports.push({ content: serialize(element.import) });
+				data.imports.push({ content: serialize$1(element.import) });
 				element.setAttribute(HTML_IMPORT_ATTRIBUTE_NAME, data.imports.length - 1);
 				data.markedElements.push(element);
 			}
@@ -493,7 +493,7 @@
 	}
 
 	function normalizeFontFamily(fontFamilyName = "") {
-		return removeQuotes(process(fontFamilyName.trim())).toLowerCase();
+		return removeQuotes(process$2(fontFamilyName.trim())).toLowerCase();
 	}
 
 	function testHiddenElement(element, computedStyle) {
@@ -609,11 +609,11 @@
 		}
 	}
 
-	function getFontsData$1() {
-		return getFontsData();
+	function getFontsData() {
+		return getFontsData$1();
 	}
 
-	function serialize(doc) {
+	function serialize$1(doc) {
 		const docType = doc.doctype;
 		let docTypeString = "";
 		if (docType) {
@@ -668,7 +668,7 @@
 	 *   notice and a URL through which recipients can access the Corresponding 
 	 *   Source.
 	 */
-	const helper = {
+	const helper$2 = {
 		LAZY_SRC_ATTRIBUTE_NAME,
 		SINGLE_FILE_UI_ELEMENT_CLASS
 	};
@@ -679,7 +679,7 @@
 	const browser$1 = globalThis.browser;
 	const document$1 = globalThis.document;
 	const MutationObserver = globalThis.MutationObserver;
-	const addEventListener$2 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const addEventListener$1 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
 	const removeEventListener = (type, listener, options) => globalThis.removeEventListener(type, listener, options);
 	const timeouts = new Map();
 
@@ -722,11 +722,11 @@
 				if (mutations.length) {
 					const updated = mutations.filter(mutation => {
 						if (mutation.attributeName == "src") {
-							mutation.target.setAttribute(helper.LAZY_SRC_ATTRIBUTE_NAME, mutation.target.src);
+							mutation.target.setAttribute(helper$2.LAZY_SRC_ATTRIBUTE_NAME, mutation.target.src);
 							mutation.target.addEventListener("load", onResourceLoad);
 						}
 						if (mutation.attributeName == "src" || mutation.attributeName == "srcset" || mutation.target.tagName == "SOURCE") {
-							return !mutation.target.classList || !mutation.target.classList.contains(helper.SINGLE_FILE_UI_ELEMENT_CLASS);
+							return !mutation.target.classList || !mutation.target.classList.contains(helper$2.SINGLE_FILE_UI_ELEMENT_CLASS);
 						}
 					});
 					if (updated.length) {
@@ -741,8 +741,8 @@
 			await setIdleTimeout(options.loadDeferredImagesMaxIdleTime * 2);
 			await deferForceLazyLoadEnd(observer, options, cleanupAndResolve);
 			observer.observe(document$1, { subtree: true, childList: true, attributes: true });
-			addEventListener$2(LOAD_IMAGE_EVENT, onImageLoadEvent);
-			addEventListener$2(IMAGE_LOADED_EVENT, onImageLoadedEvent);
+			addEventListener$1(LOAD_IMAGE_EVENT, onImageLoadEvent);
+			addEventListener$1(IMAGE_LOADED_EVENT, onImageLoadedEvent);
 			loadDeferredImagesStart(options);
 
 			async function setIdleTimeout(delay) {
@@ -761,7 +761,7 @@
 
 			function onResourceLoad(event) {
 				const element = event.target;
-				element.removeAttribute(helper.LAZY_SRC_ATTRIBUTE_NAME);
+				element.removeAttribute(helper$2.LAZY_SRC_ATTRIBUTE_NAME);
 				element.removeEventListener("load", onResourceLoad);
 			}
 
@@ -887,7 +887,7 @@
 		ON_AFTER_CAPTURE_EVENT_NAME,
 		WIN_ID_ATTRIBUTE_NAME,
 		preProcessDoc,
-		serialize,
+		serialize: serialize$1,
 		postProcessDoc,
 		getShadowRoot
 	};
@@ -900,24 +900,24 @@
 	const CLEANUP_REQUEST_MESSAGE = "singlefile.frameTree.cleanupRequest";
 	const INIT_RESPONSE_MESSAGE = "singlefile.frameTree.initResponse";
 	const TARGET_ORIGIN = "*";
-	const TIMEOUT_INIT_REQUEST_MESSAGE = 750;
+	const TIMEOUT_INIT_REQUEST_MESSAGE = 5000;
 	const TIMEOUT_INIT_RESPONSE_MESSAGE = 10000;
 	const TOP_WINDOW_ID = "0";
 	const WINDOW_ID_SEPARATOR = ".";
 	const TOP_WINDOW = globalThis.window == globalThis.top;
 
-	const browser$2 = globalThis.browser;
-	const addEventListener$3 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const browser = globalThis.browser;
+	const addEventListener = (type, listener, options) => globalThis.addEventListener(type, listener, options);
 	const top = globalThis.top;
 	const MessageChannel = globalThis.MessageChannel;
-	const document$2 = globalThis.document;
+	const document = globalThis.document;
 
 	const sessions = new Map();
 	let windowId;
 	if (TOP_WINDOW) {
 		windowId = TOP_WINDOW_ID;
-		if (browser$2 && browser$2.runtime && browser$2.runtime.onMessage && browser$2.runtime.onMessage.addListener) {
-			browser$2.runtime.onMessage.addListener(message => {
+		if (browser && browser.runtime && browser.runtime.onMessage && browser.runtime.onMessage.addListener) {
+			browser.runtime.onMessage.addListener(message => {
 				if (message.method == INIT_RESPONSE_MESSAGE) {
 					initResponse(message);
 					return Promise.resolve({});
@@ -929,7 +929,7 @@
 			});
 		}
 	}
-	addEventListener$3("message", async event => {
+	addEventListener("message", async event => {
 		if (typeof event.data == "string" && event.data.startsWith(MESSAGE_PREFIX)) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -1003,16 +1003,16 @@
 		if (!TOP_WINDOW) {
 			windowId = globalThis.frameId = message.windowId;
 		}
-		processFrames(document$2, message.options, windowId, sessionId);
+		processFrames(document, message.options, windowId, sessionId);
 		if (!TOP_WINDOW) {
 			if (message.options.userScriptEnabled && waitForUserScript) {
 				waitForUserScript(helper$1.ON_BEFORE_CAPTURE_EVENT_NAME);
 			}
-			sendInitResponse({ frames: [getFrameData(document$2, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$2.documentElement.dataset.requestedFrameId && windowId });
+			sendInitResponse({ frames: [getFrameData(document, globalThis, windowId, message.options)], sessionId, requestedFrameId: document.documentElement.dataset.requestedFrameId && windowId });
 			if (message.options.userScriptEnabled && waitForUserScript) {
 				waitForUserScript(helper$1.ON_AFTER_CAPTURE_EVENT_NAME);
 			}
-			delete document$2.documentElement.dataset.requestedFrameId;
+			delete document.documentElement.dataset.requestedFrameId;
 		}
 	}
 
@@ -1022,22 +1022,22 @@
 		if (!TOP_WINDOW) {
 			windowId = globalThis.frameId = message.windowId;
 		}
-		processFrames(document$2, message.options, windowId, sessionId);
+		processFrames(document, message.options, windowId, sessionId);
 		if (!TOP_WINDOW) {
 			if (message.options.userScriptEnabled && waitForUserScript) {
 				await waitForUserScript(helper$1.ON_BEFORE_CAPTURE_EVENT_NAME);
 			}
-			sendInitResponse({ frames: [getFrameData(document$2, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$2.documentElement.dataset.requestedFrameId && windowId });
+			sendInitResponse({ frames: [getFrameData(document, globalThis, windowId, message.options)], sessionId, requestedFrameId: document.documentElement.dataset.requestedFrameId && windowId });
 			if (message.options.userScriptEnabled && waitForUserScript) {
 				await waitForUserScript(helper$1.ON_AFTER_CAPTURE_EVENT_NAME);
 			}
-			delete document$2.documentElement.dataset.requestedFrameId;
+			delete document.documentElement.dataset.requestedFrameId;
 		}
 	}
 
 	function cleanupRequest(message) {
 		const sessionId = message.sessionId;
-		cleanupFrames(getFrames(document$2), message.windowId, sessionId);
+		cleanupFrames(getFrames(document), message.windowId, sessionId);
 	}
 
 	function initResponse(message) {
@@ -1201,8 +1201,8 @@
 	}
 
 	function sendMessage(targetWindow, message, useChannel) {
-		if (targetWindow == top && browser$2 && browser$2.runtime && browser$2.runtime.sendMessage) {
-			browser$2.runtime.sendMessage(message);
+		if (targetWindow == top && browser && browser.runtime && browser.runtime.sendMessage) {
+			browser.runtime.sendMessage(message);
 		} else {
 			if (useChannel) {
 				const channel = new MessageChannel();
@@ -1313,7 +1313,7 @@
 	];
 	const TEXT_NODE_TAGS = ["style", "script", "xmp", "iframe", "noembed", "noframes", "plaintext", "noscript"];
 
-	function process$2(doc, compressHTML) {
+	function process(doc, compressHTML) {
 		const docType = doc.doctype;
 		let docTypeString = "";
 		if (docType) {
@@ -1328,10 +1328,10 @@
 				docTypeString += " [" + docType.internalSubset + "]";
 			docTypeString += "> ";
 		}
-		return docTypeString + serialize$1(doc.documentElement, compressHTML);
+		return docTypeString + serialize(doc.documentElement, compressHTML);
 	}
 
-	function serialize$1(node, compressHTML, isSVG) {
+	function serialize(node, compressHTML, isSVG) {
 		if (node.nodeType == Node_TEXT_NODE) {
 			return serializeTextNode(node);
 		} else if (node.nodeType == Node_COMMENT_NODE) {
@@ -1373,7 +1373,7 @@
 		if (element.tagName == "TEMPLATE" && !element.childNodes.length) {
 			content += element.innerHTML;
 		} else {
-			Array.from(element.childNodes).forEach(childNode => content += serialize$1(childNode, compressHTML, isSVG || tagName == "svg"));
+			Array.from(element.childNodes).forEach(childNode => content += serialize(childNode, compressHTML, isSVG || tagName == "svg"));
 		}
 		const omittedEndTag = compressHTML && OMITTED_END_TAGS.find(omittedEndTag => tagName == omittedEndTag.tagName && omittedEndTag.accept(element.nextSibling, element));
 		if (isSVG || (!omittedEndTag && !SELF_CLOSED_TAG_NAMES.includes(tagName))) {
@@ -1434,7 +1434,7 @@
 	}
 
 	const processors = { frameTree };
-	const helper$2 = {
+	const helper = {
 		COMMENT_HEADER,
 		COMMENT_HEADER_LEGACY,
 		ON_BEFORE_CAPTURE_EVENT_NAME,
@@ -1442,16 +1442,16 @@
 		preProcessDoc,
 		postProcessDoc,
 		serialize(doc, compressHTML) {
-			return process$2(doc, compressHTML);
+			return process(doc, compressHTML);
 		},
 		getShadowRoot
 	};
 
 	initUserScriptHandler();
 
-	exports.helper = helper$2;
+	exports.helper = helper;
 	exports.processors = processors;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));

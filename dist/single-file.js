@@ -2,7 +2,7 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.singlefile = {}));
-}(this, (function (exports) { 'use strict';
+})(this, (function (exports) { 'use strict';
 
 	/*
 	 * Copyright 2010-2020 Gildas Lormeau
@@ -45,12 +45,12 @@
 	const DELETE_FONT_EVENT = "single-file-delete-font";
 	const CLEAR_FONTS_EVENT = "single-file-clear-fonts";
 
-	const browser = globalThis.browser;
-	const addEventListener = (type, listener, options) => globalThis.addEventListener(type, listener, options);
-	const dispatchEvent = event => globalThis.dispatchEvent(event);
+	const browser$3 = globalThis.browser;
+	const addEventListener$3 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const dispatchEvent$1 = event => globalThis.dispatchEvent(event);
 	const CustomEvent$1 = globalThis.CustomEvent;
-	const document = globalThis.document;
-	const Document = globalThis.Document;
+	const document$3 = globalThis.document;
+	const Document$1 = globalThis.Document;
 
 	let fontFaces;
 	if (window._singleFile_fontFaces) {
@@ -59,72 +59,72 @@
 		fontFaces = window._singleFile_fontFaces = new Map();
 	}
 
-	if (document instanceof Document) {
-		if (browser && browser.runtime && browser.runtime.getURL) {
-			addEventListener(NEW_FONT_FACE_EVENT, event => {
+	if (document$3 instanceof Document$1) {
+		if (browser$3 && browser$3.runtime && browser$3.runtime.getURL) {
+			addEventListener$3(NEW_FONT_FACE_EVENT, event => {
 				const detail = event.detail;
 				const key = Object.assign({}, detail);
 				delete key.src;
 				fontFaces.set(JSON.stringify(key), detail);
 			});
-			addEventListener(DELETE_FONT_EVENT, event => {
+			addEventListener$3(DELETE_FONT_EVENT, event => {
 				const detail = event.detail;
 				const key = Object.assign({}, detail);
 				delete key.src;
 				fontFaces.delete(JSON.stringify(key));
 			});
-			addEventListener(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
-			const scriptElement = document.createElement("script");
-			scriptElement.src = browser.runtime.getURL("/dist/web/hooks/hooks-frames-web.js");
+			addEventListener$3(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
+			const scriptElement = document$3.createElement("script");
+			scriptElement.src = browser$3.runtime.getURL("/dist/web/hooks/hooks-frames-web.js");
 			scriptElement.async = false;
-			(document.documentElement || document).appendChild(scriptElement);
+			(document$3.documentElement || document$3).appendChild(scriptElement);
 			scriptElement.remove();
 		}
 	}
 
-	function getFontsData() {
+	function getFontsData$1() {
 		return Array.from(fontFaces.values());
 	}
 
 	function loadDeferredImagesStart(options) {
 		if (options.loadDeferredImagesBlockCookies) {
-			dispatchEvent(new CustomEvent$1(BLOCK_COOKIES_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_COOKIES_START_EVENT));
 		}
 		if (options.loadDeferredImagesBlockStorage) {
-			dispatchEvent(new CustomEvent$1(BLOCK_STORAGE_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_STORAGE_START_EVENT));
 		}
 		if (options.loadDeferredImagesKeepZoomLevel) {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_START_EVENT));
 		} else {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_START_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_START_EVENT));
 		}
 	}
 
 	function loadDeferredImagesEnd(options) {
 		if (options.loadDeferredImagesBlockCookies) {
-			dispatchEvent(new CustomEvent$1(BLOCK_COOKIES_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_COOKIES_END_EVENT));
 		}
 		if (options.loadDeferredImagesBlockStorage) {
-			dispatchEvent(new CustomEvent$1(BLOCK_STORAGE_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(BLOCK_STORAGE_END_EVENT));
 		}
 		if (options.loadDeferredImagesKeepZoomLevel) {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_KEEP_ZOOM_LEVEL_END_EVENT));
 		} else {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_END_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_END_EVENT));
 		}
 	}
 
 	function loadDeferredImagesResetZoomLevel(options) {
 		if (options.loadDeferredImagesKeepZoomLevel) {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_RESET_ZOOM_LEVEL_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_RESET_ZOOM_LEVEL_EVENT));
 		} else {
-			dispatchEvent(new CustomEvent$1(LOAD_DEFERRED_IMAGES_RESET_EVENT));
+			dispatchEvent$1(new CustomEvent$1(LOAD_DEFERRED_IMAGES_RESET_EVENT));
 		}
 	}
 
 	var contentHooksFrames = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		getFontsData: getFontsData,
+		getFontsData: getFontsData$1,
 		loadDeferredImagesStart: loadDeferredImagesStart,
 		loadDeferredImagesEnd: loadDeferredImagesEnd,
 		loadDeferredImagesResetZoomLevel: loadDeferredImagesResetZoomLevel,
@@ -184,7 +184,7 @@
 	const whitespace = "[\\x20\\t\\r\\n\\f]";
 	const unescapeRegExp = new RegExp("\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig");
 
-	function process(str) {
+	function process$9(str) {
 		return str.replace(unescapeRegExp, (_, escaped, escapedWhitespace) => {
 			const high = "0x" + escaped - 0x10000;
 
@@ -203,7 +203,7 @@
 
 	var cssUnescape = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process
+		process: process$9
 	});
 
 	/*
@@ -250,8 +250,8 @@
 	const ASYNC_SCRIPT_ATTRIBUTE_NAME = "data-single-file-async-script";
 	const FLOW_ELEMENTS_SELECTOR = "*:not(base):not(link):not(meta):not(noscript):not(script):not(style):not(template):not(title)";
 	const KEPT_TAG_NAMES = ["NOSCRIPT", "DISABLED-NOSCRIPT", "META", "LINK", "STYLE", "TITLE", "TEMPLATE", "SOURCE", "OBJECT", "SCRIPT", "HEAD"];
-	const REGEXP_SIMPLE_QUOTES_STRING = /^'(.*?)'$/;
-	const REGEXP_DOUBLE_QUOTES_STRING = /^"(.*?)"$/;
+	const REGEXP_SIMPLE_QUOTES_STRING$2 = /^'(.*?)'$/;
+	const REGEXP_DOUBLE_QUOTES_STRING$2 = /^"(.*?)"$/;
 	const FONT_WEIGHTS = {
 		regular: "400",
 		normal: "400",
@@ -262,14 +262,14 @@
 	const COMMENT_HEADER = "Page saved with SingleFile";
 	const COMMENT_HEADER_LEGACY = "Archive processed by SingleFile";
 	const SINGLE_FILE_UI_ELEMENT_CLASS = "single-file-ui-element";
-	const addEventListener$1 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
-	const dispatchEvent$1 = event => globalThis.dispatchEvent(event);
+	const addEventListener$2 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const dispatchEvent = event => globalThis.dispatchEvent(event);
 
 	function initUserScriptHandler() {
-		addEventListener$1("single-file-user-script-init", () => globalThis._singleFile_waitForUserScript = async eventPrefixName => {
+		addEventListener$2("single-file-user-script-init", () => globalThis._singleFile_waitForUserScript = async eventPrefixName => {
 			const event = new CustomEvent(eventPrefixName + "-request", { cancelable: true });
-			const promiseResponse = new Promise(resolve => addEventListener$1(eventPrefixName + "-response", resolve));
-			dispatchEvent$1(event);
+			const promiseResponse = new Promise(resolve => addEventListener$2(eventPrefixName + "-response", resolve));
+			dispatchEvent(event);
 			if (event.defaultPrevented) {
 				await promiseResponse;
 			}
@@ -315,7 +315,7 @@
 		}
 		return {
 			canvases: elementsInfo.canvases,
-			fonts: getFontsData$1(),
+			fonts: getFontsData(),
 			stylesheets: getStylesheetsData(doc),
 			images: elementsInfo.images,
 			posters: elementsInfo.posters,
@@ -452,7 +452,7 @@
 		}
 		if (element.tagName == "LINK") {
 			if (element.import && element.import.documentElement) {
-				data.imports.push({ content: serialize(element.import) });
+				data.imports.push({ content: serialize$1(element.import) });
 				element.setAttribute(HTML_IMPORT_ATTRIBUTE_NAME, data.imports.length - 1);
 				data.markedElements.push(element);
 			}
@@ -519,7 +519,7 @@
 	}
 
 	function normalizeFontFamily(fontFamilyName = "") {
-		return removeQuotes(process(fontFamilyName.trim())).toLowerCase();
+		return removeQuotes$1(process$9(fontFamilyName.trim())).toLowerCase();
 	}
 
 	function testHiddenElement(element, computedStyle) {
@@ -635,11 +635,11 @@
 		}
 	}
 
-	function getFontsData$1() {
-		return getFontsData();
+	function getFontsData() {
+		return getFontsData$1();
 	}
 
-	function serialize(doc) {
+	function serialize$1(doc) {
 		const docType = doc.doctype;
 		let docTypeString = "";
 		if (docType) {
@@ -659,11 +659,11 @@
 		return docTypeString + doc.documentElement.outerHTML;
 	}
 
-	function removeQuotes(string) {
-		if (string.match(REGEXP_SIMPLE_QUOTES_STRING)) {
-			string = string.replace(REGEXP_SIMPLE_QUOTES_STRING, "$1");
+	function removeQuotes$1(string) {
+		if (string.match(REGEXP_SIMPLE_QUOTES_STRING$2)) {
+			string = string.replace(REGEXP_SIMPLE_QUOTES_STRING$2, "$1");
 		} else {
-			string = string.replace(REGEXP_DOUBLE_QUOTES_STRING, "$1");
+			string = string.replace(REGEXP_DOUBLE_QUOTES_STRING$2, "$1");
 		}
 		return string.trim();
 	}
@@ -682,8 +682,8 @@
 		initDoc: initDoc,
 		preProcessDoc: preProcessDoc,
 		postProcessDoc: postProcessDoc,
-		serialize: serialize,
-		removeQuotes: removeQuotes,
+		serialize: serialize$1,
+		removeQuotes: removeQuotes$1,
 		flatten: flatten,
 		getFontWeight: getFontWeight,
 		normalizeFontFamily: normalizeFontFamily,
@@ -732,7 +732,7 @@
 	 *   notice and a URL through which recipients can access the Corresponding 
 	 *   Source.
 	 */
-	const helper = {
+	const helper$4 = {
 		LAZY_SRC_ATTRIBUTE_NAME,
 		SINGLE_FILE_UI_ELEMENT_CLASS
 	};
@@ -740,17 +740,17 @@
 	const MAX_IDLE_TIMEOUT_CALLS = 10;
 	const ATTRIBUTES_MUTATION_TYPE = "attributes";
 
-	const browser$1 = globalThis.browser;
-	const document$1 = globalThis.document;
+	const browser$2 = globalThis.browser;
+	const document$2 = globalThis.document;
 	const MutationObserver = globalThis.MutationObserver;
-	const addEventListener$2 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const addEventListener$1 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
 	const removeEventListener = (type, listener, options) => globalThis.removeEventListener(type, listener, options);
 	const timeouts = new Map();
 
 	let idleTimeoutCalls;
 
-	if (browser$1 && browser$1.runtime && browser$1.runtime.onMessage && browser$1.runtime.onMessage.addListener) {
-		browser$1.runtime.onMessage.addListener(message => {
+	if (browser$2 && browser$2.runtime && browser$2.runtime.onMessage && browser$2.runtime.onMessage.addListener) {
+		browser$2.runtime.onMessage.addListener(message => {
 			if (message.method == "singlefile.lazyTimeout.onTimeout") {
 				const timeoutData = timeouts.get(message.type);
 				if (timeoutData) {
@@ -765,11 +765,11 @@
 		});
 	}
 
-	async function process$1(options) {
-		if (document$1.documentElement) {
+	async function process$8(options) {
+		if (document$2.documentElement) {
 			timeouts.clear();
-			const maxScrollY = Math.max(document$1.documentElement.scrollHeight - (document$1.documentElement.clientHeight * 1.5), 0);
-			const maxScrollX = Math.max(document$1.documentElement.scrollWidth - (document$1.documentElement.clientWidth * 1.5), 0);
+			const maxScrollY = Math.max(document$2.documentElement.scrollHeight - (document$2.documentElement.clientHeight * 1.5), 0);
+			const maxScrollX = Math.max(document$2.documentElement.scrollWidth - (document$2.documentElement.clientWidth * 1.5), 0);
 			if (globalThis.scrollY <= maxScrollY && globalThis.scrollX <= maxScrollX) {
 				return triggerLazyLoading(options);
 			}
@@ -790,11 +790,11 @@
 				if (mutations.length) {
 					const updated = mutations.filter(mutation => {
 						if (mutation.attributeName == "src") {
-							mutation.target.setAttribute(helper.LAZY_SRC_ATTRIBUTE_NAME, mutation.target.src);
+							mutation.target.setAttribute(helper$4.LAZY_SRC_ATTRIBUTE_NAME, mutation.target.src);
 							mutation.target.addEventListener("load", onResourceLoad);
 						}
 						if (mutation.attributeName == "src" || mutation.attributeName == "srcset" || mutation.target.tagName == "SOURCE") {
-							return !mutation.target.classList || !mutation.target.classList.contains(helper.SINGLE_FILE_UI_ELEMENT_CLASS);
+							return !mutation.target.classList || !mutation.target.classList.contains(helper$4.SINGLE_FILE_UI_ELEMENT_CLASS);
 						}
 					});
 					if (updated.length) {
@@ -808,9 +808,9 @@
 			});
 			await setIdleTimeout(options.loadDeferredImagesMaxIdleTime * 2);
 			await deferForceLazyLoadEnd(observer, options, cleanupAndResolve);
-			observer.observe(document$1, { subtree: true, childList: true, attributes: true });
-			addEventListener$2(LOAD_IMAGE_EVENT, onImageLoadEvent);
-			addEventListener$2(IMAGE_LOADED_EVENT, onImageLoadedEvent);
+			observer.observe(document$2, { subtree: true, childList: true, attributes: true });
+			addEventListener$1(LOAD_IMAGE_EVENT, onImageLoadEvent);
+			addEventListener$1(IMAGE_LOADED_EVENT, onImageLoadedEvent);
 			loadDeferredImagesStart(options);
 
 			async function setIdleTimeout(delay) {
@@ -829,7 +829,7 @@
 
 			function onResourceLoad(event) {
 				const element = event.target;
-				element.removeAttribute(helper.LAZY_SRC_ATTRIBUTE_NAME);
+				element.removeAttribute(helper$4.LAZY_SRC_ATTRIBUTE_NAME);
 				element.removeEventListener("load", onResourceLoad);
 			}
 
@@ -882,12 +882,12 @@
 	}
 
 	async function setAsyncTimeout(type, callback, delay) {
-		if (browser$1 && browser$1.runtime && browser$1.runtime.sendMessage) {
+		if (browser$2 && browser$2.runtime && browser$2.runtime.sendMessage) {
 			if (!timeouts.get(type) || !timeouts.get(type).pending) {
 				const timeoutData = { callback, pending: true };
 				timeouts.set(type, timeoutData);
 				try {
-					await browser$1.runtime.sendMessage({ method: "singlefile.lazyTimeout.setTimeout", type, delay });
+					await browser$2.runtime.sendMessage({ method: "singlefile.lazyTimeout.setTimeout", type, delay });
 				} catch (error) {
 					setRegularTimeout(type, callback, delay);
 				}
@@ -908,9 +908,9 @@
 	}
 
 	async function clearAsyncTimeout(type) {
-		if (browser$1 && browser$1.runtime && browser$1.runtime.sendMessage) {
+		if (browser$2 && browser$2.runtime && browser$2.runtime.sendMessage) {
 			try {
-				await browser$1.runtime.sendMessage({ method: "singlefile.lazyTimeout.clearTimeout", type });
+				await browser$2.runtime.sendMessage({ method: "singlefile.lazyTimeout.clearTimeout", type });
 			} catch (error) {
 				clearRegularTimeout(type);
 			}
@@ -929,7 +929,7 @@
 
 	var contentLazyLoader = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$1,
+		process: process$8,
 		resetZoomLevel: resetZoomLevel
 	});
 
@@ -956,12 +956,12 @@
 	 *   Source.
 	 */
 
-	const helper$1 = {
+	const helper$3 = {
 		ON_BEFORE_CAPTURE_EVENT_NAME,
 		ON_AFTER_CAPTURE_EVENT_NAME,
 		WIN_ID_ATTRIBUTE_NAME,
 		preProcessDoc,
-		serialize,
+		serialize: serialize$1,
 		postProcessDoc,
 		getShadowRoot
 	};
@@ -974,24 +974,24 @@
 	const CLEANUP_REQUEST_MESSAGE = "singlefile.frameTree.cleanupRequest";
 	const INIT_RESPONSE_MESSAGE = "singlefile.frameTree.initResponse";
 	const TARGET_ORIGIN = "*";
-	const TIMEOUT_INIT_REQUEST_MESSAGE = 750;
+	const TIMEOUT_INIT_REQUEST_MESSAGE = 5000;
 	const TIMEOUT_INIT_RESPONSE_MESSAGE = 10000;
 	const TOP_WINDOW_ID = "0";
 	const WINDOW_ID_SEPARATOR = ".";
 	const TOP_WINDOW = globalThis.window == globalThis.top;
 
-	const browser$2 = globalThis.browser;
-	const addEventListener$3 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const browser$1 = globalThis.browser;
+	const addEventListener = (type, listener, options) => globalThis.addEventListener(type, listener, options);
 	const top = globalThis.top;
 	const MessageChannel = globalThis.MessageChannel;
-	const document$2 = globalThis.document;
+	const document$1 = globalThis.document;
 
 	const sessions = new Map();
 	let windowId;
 	if (TOP_WINDOW) {
 		windowId = TOP_WINDOW_ID;
-		if (browser$2 && browser$2.runtime && browser$2.runtime.onMessage && browser$2.runtime.onMessage.addListener) {
-			browser$2.runtime.onMessage.addListener(message => {
+		if (browser$1 && browser$1.runtime && browser$1.runtime.onMessage && browser$1.runtime.onMessage.addListener) {
+			browser$1.runtime.onMessage.addListener(message => {
 				if (message.method == INIT_RESPONSE_MESSAGE) {
 					initResponse(message);
 					return Promise.resolve({});
@@ -1003,7 +1003,7 @@
 			});
 		}
 	}
-	addEventListener$3("message", async event => {
+	addEventListener("message", async event => {
 		if (typeof event.data == "string" && event.data.startsWith(MESSAGE_PREFIX)) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -1015,7 +1015,7 @@
 				if (!TOP_WINDOW) {
 					globalThis.stop();
 					if (message.options.loadDeferredImages) {
-						process$1(message.options);
+						process$8(message.options);
 					}
 					await initRequestAsync(message);
 				}
@@ -1077,16 +1077,16 @@
 		if (!TOP_WINDOW) {
 			windowId = globalThis.frameId = message.windowId;
 		}
-		processFrames(document$2, message.options, windowId, sessionId);
+		processFrames(document$1, message.options, windowId, sessionId);
 		if (!TOP_WINDOW) {
 			if (message.options.userScriptEnabled && waitForUserScript) {
-				waitForUserScript(helper$1.ON_BEFORE_CAPTURE_EVENT_NAME);
+				waitForUserScript(helper$3.ON_BEFORE_CAPTURE_EVENT_NAME);
 			}
-			sendInitResponse({ frames: [getFrameData(document$2, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$2.documentElement.dataset.requestedFrameId && windowId });
+			sendInitResponse({ frames: [getFrameData(document$1, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$1.documentElement.dataset.requestedFrameId && windowId });
 			if (message.options.userScriptEnabled && waitForUserScript) {
-				waitForUserScript(helper$1.ON_AFTER_CAPTURE_EVENT_NAME);
+				waitForUserScript(helper$3.ON_AFTER_CAPTURE_EVENT_NAME);
 			}
-			delete document$2.documentElement.dataset.requestedFrameId;
+			delete document$1.documentElement.dataset.requestedFrameId;
 		}
 	}
 
@@ -1096,22 +1096,22 @@
 		if (!TOP_WINDOW) {
 			windowId = globalThis.frameId = message.windowId;
 		}
-		processFrames(document$2, message.options, windowId, sessionId);
+		processFrames(document$1, message.options, windowId, sessionId);
 		if (!TOP_WINDOW) {
 			if (message.options.userScriptEnabled && waitForUserScript) {
-				await waitForUserScript(helper$1.ON_BEFORE_CAPTURE_EVENT_NAME);
+				await waitForUserScript(helper$3.ON_BEFORE_CAPTURE_EVENT_NAME);
 			}
-			sendInitResponse({ frames: [getFrameData(document$2, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$2.documentElement.dataset.requestedFrameId && windowId });
+			sendInitResponse({ frames: [getFrameData(document$1, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$1.documentElement.dataset.requestedFrameId && windowId });
 			if (message.options.userScriptEnabled && waitForUserScript) {
-				await waitForUserScript(helper$1.ON_AFTER_CAPTURE_EVENT_NAME);
+				await waitForUserScript(helper$3.ON_AFTER_CAPTURE_EVENT_NAME);
 			}
-			delete document$2.documentElement.dataset.requestedFrameId;
+			delete document$1.documentElement.dataset.requestedFrameId;
 		}
 	}
 
 	function cleanupRequest(message) {
 		const sessionId = message.sessionId;
-		cleanupFrames(getFrames(document$2), message.windowId, sessionId);
+		cleanupFrames(getFrames(document$1), message.windowId, sessionId);
 	}
 
 	function initResponse(message) {
@@ -1177,7 +1177,7 @@
 		}
 		frameElements.forEach((frameElement, frameIndex) => {
 			const windowId = parentWindowId + WINDOW_ID_SEPARATOR + frameIndex;
-			frameElement.setAttribute(helper$1.WIN_ID_ATTRIBUTE_NAME, windowId);
+			frameElement.setAttribute(helper$3.WIN_ID_ATTRIBUTE_NAME, windowId);
 			frames.push({ windowId });
 		});
 		sendInitResponse({ frames, sessionId, requestedFrameId: doc.documentElement.dataset.requestedFrameId && parentWindowId });
@@ -1240,7 +1240,7 @@
 	function cleanupFrames(frameElements, parentWindowId, sessionId) {
 		frameElements.forEach((frameElement, frameIndex) => {
 			const windowId = parentWindowId + WINDOW_ID_SEPARATOR + frameIndex;
-			frameElement.removeAttribute(helper$1.WIN_ID_ATTRIBUTE_NAME);
+			frameElement.removeAttribute(helper$3.WIN_ID_ATTRIBUTE_NAME);
 			try {
 				sendMessage(frameElement.contentWindow, { method: CLEANUP_REQUEST_MESSAGE, windowId, sessionId });
 			} catch (error) {
@@ -1275,8 +1275,8 @@
 	}
 
 	function sendMessage(targetWindow, message, useChannel) {
-		if (targetWindow == top && browser$2 && browser$2.runtime && browser$2.runtime.sendMessage) {
-			browser$2.runtime.sendMessage(message);
+		if (targetWindow == top && browser$1 && browser$1.runtime && browser$1.runtime.sendMessage) {
+			browser$1.runtime.sendMessage(message);
 		} else {
 			if (useChannel) {
 				const channel = new MessageChannel();
@@ -1289,9 +1289,9 @@
 	}
 
 	function getFrameData(document, globalThis, windowId, options) {
-		const docData = helper$1.preProcessDoc(document, globalThis, options);
-		const content = helper$1.serialize(document);
-		helper$1.postProcessDoc(document, docData.markedElements);
+		const docData = helper$3.preProcessDoc(document, globalThis, options);
+		const content = helper$3.serialize(document);
+		helper$3.postProcessDoc(document, docData.markedElements);
 		const baseURI = document.baseURI.split("#")[0];
 		return {
 			windowId,
@@ -1313,7 +1313,7 @@
 	function getFrames(document) {
 		let frames = Array.from(document.querySelectorAll(FRAMES_CSS_SELECTOR));
 		document.querySelectorAll(ALL_ELEMENTS_CSS_SELECTOR).forEach(element => {
-			const shadowRoot = helper$1.getShadowRoot(element);
+			const shadowRoot = helper$3.getShadowRoot(element);
 			if (shadowRoot) {
 				frames = frames.concat(...shadowRoot.querySelectorAll(FRAMES_CSS_SELECTOR));
 			}
@@ -1355,18 +1355,18 @@
 
 	/* global globalThis */
 
-	const browser$3 = globalThis.browser;
-	const document$3 = globalThis.document;
-	const Document$1 = globalThis.Document;
+	const browser = globalThis.browser;
+	const document = globalThis.document;
+	const Document = globalThis.Document;
 
-	if (document$3 instanceof Document$1) {
-		const scriptElement = document$3.createElement("script");
+	if (document instanceof Document) {
+		const scriptElement = document.createElement("script");
 		scriptElement.async = false;
-		if (browser$3 && browser$3.runtime && browser$3.runtime.getURL) {
-			scriptElement.src = browser$3.runtime.getURL("/dist/web/hooks/hooks-web.js");
+		if (browser && browser.runtime && browser.runtime.getURL) {
+			scriptElement.src = browser.runtime.getURL("/dist/web/hooks/hooks-web.js");
 			scriptElement.async = false;
 		}
-		(document$3.documentElement || document$3).appendChild(scriptElement);
+		(document.documentElement || document).appendChild(scriptElement);
 		scriptElement.remove();
 	}
 
@@ -1397,7 +1397,7 @@
 	 *   Source.
 	 */
 
-	var index = /*#__PURE__*/Object.freeze({
+	var index$2 = /*#__PURE__*/Object.freeze({
 		__proto__: null,
 		frameTree: contentFrameTree,
 		hooks: contentHooks,
@@ -1531,12 +1531,12 @@
 
 	const errorPrefix = "[parse-css-font] ";
 
-	function parse(value) {
+	function parse$1(value) {
 		if (typeof value !== "string") {
 			throw new TypeError(errorPrefix + "Expected a string.");
 		}
 		if (value === "") {
-			throw error("Cannot parse an empty string.");
+			throw error$1("Cannot parse an empty string.");
 		}
 		if (systemFontKeywords.indexOf(value) !== -1) {
 			return { system: value };
@@ -1597,14 +1597,14 @@
 					font.lineHeight = parseLineHeight(tokens.shift());
 				}
 				if (!tokens.length) {
-					throw error("Missing required font-family.");
+					throw error$1("Missing required font-family.");
 				}
-				font.family = cssListHelpers.splitByCommas(tokens.join(" ")).map(removeQuotes$1);
+				font.family = cssListHelpers.splitByCommas(tokens.join(" ")).map(removeQuotes);
 				return font;
 			}
 
 			if (font.variant !== "normal") {
-				throw error("Unknown or unsupported font token: " + font.variant);
+				throw error$1("Unknown or unsupported font token: " + font.variant);
 			}
 
 			if (isLocked) {
@@ -1613,10 +1613,10 @@
 			font.variant = token;
 		}
 
-		throw error("Missing required font-size.");
+		throw error$1("Missing required font-size.");
 	}
 
-	function error(message) {
+	function error$1(message) {
 		return new Error(errorPrefix + message);
 	}
 
@@ -1736,7 +1736,7 @@
 			|| cssFontSizeKeywords.indexOf(value) !== -1;
 	}
 
-	function removeQuotes$1(string) {
+	function removeQuotes(string) {
 		if (string.match(REGEXP_SIMPLE_QUOTES_STRING$1)) {
 			string = string.replace(REGEXP_SIMPLE_QUOTES_STRING$1, "$1");
 		} else {
@@ -1747,7 +1747,7 @@
 
 	var cssFontPropertyParser = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		parse: parse
+		parse: parse$1
 	});
 
 	/*
@@ -4261,7 +4261,7 @@
 	  return offset;
 	}
 
-	var utils = {
+	var utils$1 = {
 	  consumeEscaped: consumeEscaped,
 	  consumeName: consumeName,
 	  consumeNumber: consumeNumber,
@@ -4279,7 +4279,7 @@
 	var NAME$1 = _const.NAME;
 
 
-	var cmpStr$1 = utils.cmpStr;
+	var cmpStr$1 = utils$1.cmpStr;
 
 	var EOF$1 = TYPE$1.EOF;
 	var WHITESPACE = TYPE$1.WhiteSpace;
@@ -4745,7 +4745,7 @@
 	  return error;
 	};
 
-	var error$1 = {
+	var error = {
 	  SyntaxReferenceError,
 	  SyntaxMatchError
 	};
@@ -4878,13 +4878,13 @@
 	var isBOM$1 = charCodeDefinitions.isBOM;
 
 
-	var cmpStr$2 = utils.cmpStr;
-	var getNewlineLength$1 = utils.getNewlineLength;
-	var findWhiteSpaceEnd$1 = utils.findWhiteSpaceEnd;
-	var consumeEscaped$1 = utils.consumeEscaped;
-	var consumeName$1 = utils.consumeName;
-	var consumeNumber$1 = utils.consumeNumber;
-	var consumeBadUrlRemnants$1 = utils.consumeBadUrlRemnants;
+	var cmpStr$2 = utils$1.cmpStr;
+	var getNewlineLength$1 = utils$1.getNewlineLength;
+	var findWhiteSpaceEnd$1 = utils$1.findWhiteSpaceEnd;
+	var consumeEscaped$1 = utils$1.consumeEscaped;
+	var consumeName$1 = utils$1.consumeName;
+	var consumeNumber$1 = utils$1.consumeNumber;
+	var consumeBadUrlRemnants$1 = utils$1.consumeBadUrlRemnants;
 
 	var OFFSET_MASK$1 = 0x00FFFFFF;
 	var TYPE_SHIFT$1 = 24;
@@ -5448,8 +5448,8 @@
 	Object.keys(charCodeDefinitions).forEach(function(key) {
 	  tokenize[key] = charCodeDefinitions[key];
 	});
-	Object.keys(utils).forEach(function(key) {
-	  tokenize[key] = utils[key];
+	Object.keys(utils$1).forEach(function(key) {
+	  tokenize[key] = utils$1[key];
 	});
 
 	var tokenizer = tokenize;
@@ -7048,7 +7048,7 @@
 	  }
 	}
 
-	function parse$1(source) {
+	function parse(source) {
 	  var tokenizer = new tokenizer$1(source);
 	  var result = readImplicitGroup(tokenizer);
 
@@ -7066,9 +7066,9 @@
 
 	// warm up parse to elimitate code branches that never execute
 	// fix soft deoptimizations (insufficient type feedback)
-	parse$1('[a&&<b>#|<\'c\'>*||e() f{2} /,(% g#{1,2} h{2,})]!');
+	parse('[a&&<b>#|<\'c\'>*||e() f{2} /,(% g#{1,2} h{2,})]!');
 
-	var parse_1 = parse$1;
+	var parse_1 = parse;
 
 	var noop$1 = function() {};
 
@@ -8592,8 +8592,8 @@
 	  }
 	};
 
-	var SyntaxReferenceError$1 = error$1.SyntaxReferenceError;
-	var SyntaxMatchError$1 = error$1.SyntaxMatchError;
+	var SyntaxReferenceError$1 = error.SyntaxReferenceError;
+	var SyntaxMatchError$1 = error.SyntaxMatchError;
 
 
 
@@ -9212,7 +9212,7 @@
 	  return children;
 	};
 
-	var { findWhiteSpaceStart: findWhiteSpaceStart$1, cmpStr: cmpStr$4 } = utils;
+	var { findWhiteSpaceStart: findWhiteSpaceStart$1, cmpStr: cmpStr$4 } = utils$1;
 
 	var noop$2 = function() {};
 
@@ -9222,7 +9222,7 @@
 	var COMMENT$3 = TYPE$8.Comment;
 	var IDENT$2 = TYPE$8.Ident;
 	var FUNCTION = TYPE$8.Function;
-	var URL = TYPE$8.Url;
+	var URL$1 = TYPE$8.Url;
 	var HASH = TYPE$8.Hash;
 	var PERCENTAGE = TYPE$8.Percentage;
 	var NUMBER$2 = TYPE$8.Number;
@@ -9361,7 +9361,7 @@
 	              switch (tokenType) {
 	                  case IDENT$2:
 	                      // when identifier is expected but there is a function or url
-	                      if (this.scanner.tokenType === FUNCTION || this.scanner.tokenType === URL) {
+	                      if (this.scanner.tokenType === FUNCTION || this.scanner.tokenType === URL$1) {
 	                          offset = this.scanner.tokenEnd - 1;
 	                          message = 'Identifier is expected but function found';
 	                      } else {
@@ -9738,7 +9738,7 @@
 	return n && n['default'] || n;
 	}
 
-	var util = createCommonjsModule(function (module, exports) {
+	var util$1 = createCommonjsModule(function (module, exports) {
 	/* -*- Mode: js; js-indent-level: 2; -*- */
 	/*
 	* Copyright 2011 Mozilla Foundation and contributors
@@ -10228,20 +10228,20 @@
 	}
 	exports.computeSourceURL = computeSourceURL;
 	});
-	var util_1 = util.getArg;
-	var util_2 = util.urlParse;
-	var util_3 = util.urlGenerate;
-	var util_4 = util.normalize;
-	var util_5 = util.join;
-	var util_6 = util.isAbsolute;
-	var util_7 = util.relative;
-	var util_8 = util.toSetString;
-	var util_9 = util.fromSetString;
-	var util_10 = util.compareByOriginalPositions;
-	var util_11 = util.compareByGeneratedPositionsDeflated;
-	var util_12 = util.compareByGeneratedPositionsInflated;
-	var util_13 = util.parseSourceMapInput;
-	var util_14 = util.computeSourceURL;
+	util$1.getArg;
+	util$1.urlParse;
+	util$1.urlGenerate;
+	util$1.normalize;
+	util$1.join;
+	util$1.isAbsolute;
+	util$1.relative;
+	util$1.toSetString;
+	util$1.fromSetString;
+	util$1.compareByOriginalPositions;
+	util$1.compareByGeneratedPositionsDeflated;
+	util$1.compareByGeneratedPositionsInflated;
+	util$1.parseSourceMapInput;
+	util$1.computeSourceURL;
 
 	/* -*- Mode: js; js-indent-level: 2; -*- */
 	/*
@@ -10292,7 +10292,7 @@
 	* @param String aStr
 	*/
 	ArraySet.prototype.add = function ArraySet_add(aStr, aAllowDuplicates) {
-	var sStr = hasNativeMap ? aStr : util.toSetString(aStr);
+	var sStr = hasNativeMap ? aStr : util$1.toSetString(aStr);
 	var isDuplicate = hasNativeMap ? this.has(aStr) : has.call(this._set, sStr);
 	var idx = this._array.length;
 	if (!isDuplicate || aAllowDuplicates) {
@@ -10316,7 +10316,7 @@
 	if (hasNativeMap) {
 	  return this._set.has(aStr);
 	} else {
-	  var sStr = util.toSetString(aStr);
+	  var sStr = util$1.toSetString(aStr);
 	  return has.call(this._set, sStr);
 	}
 	};
@@ -10333,7 +10333,7 @@
 	      return idx;
 	  }
 	} else {
-	  var sStr = util.toSetString(aStr);
+	  var sStr = util$1.toSetString(aStr);
 	  if (has.call(this._set, sStr)) {
 	    return this._set[sStr];
 	  }
@@ -10389,7 +10389,7 @@
 	var columnA = mappingA.generatedColumn;
 	var columnB = mappingB.generatedColumn;
 	return lineB > lineA || lineB == lineA && columnB >= columnA ||
-	       util.compareByGeneratedPositionsInflated(mappingA, mappingB) <= 0;
+	       util$1.compareByGeneratedPositionsInflated(mappingA, mappingB) <= 0;
 	}
 
 	/**
@@ -10441,7 +10441,7 @@
 	*/
 	MappingList.prototype.toArray = function MappingList_toArray() {
 	if (!this._sorted) {
-	  this._array.sort(util.compareByGeneratedPositionsInflated);
+	  this._array.sort(util$1.compareByGeneratedPositionsInflated);
 	  this._sorted = true;
 	}
 	return this._array;
@@ -10477,9 +10477,9 @@
 	if (!aArgs) {
 	  aArgs = {};
 	}
-	this._file = util.getArg(aArgs, 'file', null);
-	this._sourceRoot = util.getArg(aArgs, 'sourceRoot', null);
-	this._skipValidation = util.getArg(aArgs, 'skipValidation', false);
+	this._file = util$1.getArg(aArgs, 'file', null);
+	this._sourceRoot = util$1.getArg(aArgs, 'sourceRoot', null);
+	this._skipValidation = util$1.getArg(aArgs, 'skipValidation', false);
 	this._sources = new ArraySet$1();
 	this._names = new ArraySet$1();
 	this._mappings = new MappingList$1();
@@ -10511,7 +10511,7 @@
 	    if (mapping.source != null) {
 	      newMapping.source = mapping.source;
 	      if (sourceRoot != null) {
-	        newMapping.source = util.relative(sourceRoot, newMapping.source);
+	        newMapping.source = util$1.relative(sourceRoot, newMapping.source);
 	      }
 
 	      newMapping.original = {
@@ -10529,7 +10529,7 @@
 	  aSourceMapConsumer.sources.forEach(function (sourceFile) {
 	    var sourceRelative = sourceFile;
 	    if (sourceRoot !== null) {
-	      sourceRelative = util.relative(sourceRoot, sourceFile);
+	      sourceRelative = util$1.relative(sourceRoot, sourceFile);
 	    }
 
 	    if (!generator._sources.has(sourceRelative)) {
@@ -10556,10 +10556,10 @@
 	*/
 	SourceMapGenerator.prototype.addMapping =
 	function SourceMapGenerator_addMapping(aArgs) {
-	  var generated = util.getArg(aArgs, 'generated');
-	  var original = util.getArg(aArgs, 'original', null);
-	  var source = util.getArg(aArgs, 'source', null);
-	  var name = util.getArg(aArgs, 'name', null);
+	  var generated = util$1.getArg(aArgs, 'generated');
+	  var original = util$1.getArg(aArgs, 'original', null);
+	  var source = util$1.getArg(aArgs, 'source', null);
+	  var name = util$1.getArg(aArgs, 'name', null);
 
 	  if (!this._skipValidation) {
 	    this._validateMapping(generated, original, source, name);
@@ -10596,7 +10596,7 @@
 	function SourceMapGenerator_setSourceContent(aSourceFile, aSourceContent) {
 	  var source = aSourceFile;
 	  if (this._sourceRoot != null) {
-	    source = util.relative(this._sourceRoot, source);
+	    source = util$1.relative(this._sourceRoot, source);
 	  }
 
 	  if (aSourceContent != null) {
@@ -10605,11 +10605,11 @@
 	    if (!this._sourcesContents) {
 	      this._sourcesContents = Object.create(null);
 	    }
-	    this._sourcesContents[util.toSetString(source)] = aSourceContent;
+	    this._sourcesContents[util$1.toSetString(source)] = aSourceContent;
 	  } else if (this._sourcesContents) {
 	    // Remove the source file from the _sourcesContents map.
 	    // If the _sourcesContents map is empty, set the property to null.
-	    delete this._sourcesContents[util.toSetString(source)];
+	    delete this._sourcesContents[util$1.toSetString(source)];
 	    if (Object.keys(this._sourcesContents).length === 0) {
 	      this._sourcesContents = null;
 	    }
@@ -10648,7 +10648,7 @@
 	  var sourceRoot = this._sourceRoot;
 	  // Make "sourceFile" relative if an absolute Url is passed.
 	  if (sourceRoot != null) {
-	    sourceFile = util.relative(sourceRoot, sourceFile);
+	    sourceFile = util$1.relative(sourceRoot, sourceFile);
 	  }
 	  // Applying the SourceMap can add and remove items from the sources and
 	  // the names array.
@@ -10667,10 +10667,10 @@
 	        // Copy mapping
 	        mapping.source = original.source;
 	        if (aSourceMapPath != null) {
-	          mapping.source = util.join(aSourceMapPath, mapping.source);
+	          mapping.source = util$1.join(aSourceMapPath, mapping.source);
 	        }
 	        if (sourceRoot != null) {
-	          mapping.source = util.relative(sourceRoot, mapping.source);
+	          mapping.source = util$1.relative(sourceRoot, mapping.source);
 	        }
 	        mapping.originalLine = original.line;
 	        mapping.originalColumn = original.column;
@@ -10699,10 +10699,10 @@
 	    var content = aSourceMapConsumer.sourceContentFor(sourceFile);
 	    if (content != null) {
 	      if (aSourceMapPath != null) {
-	        sourceFile = util.join(aSourceMapPath, sourceFile);
+	        sourceFile = util$1.join(aSourceMapPath, sourceFile);
 	      }
 	      if (sourceRoot != null) {
-	        sourceFile = util.relative(sourceRoot, sourceFile);
+	        sourceFile = util$1.relative(sourceRoot, sourceFile);
 	      }
 	      this.setSourceContent(sourceFile, content);
 	    }
@@ -10791,7 +10791,7 @@
 	    }
 	    else {
 	      if (i > 0) {
-	        if (!util.compareByGeneratedPositionsInflated(mapping, mappings[i - 1])) {
+	        if (!util$1.compareByGeneratedPositionsInflated(mapping, mappings[i - 1])) {
 	          continue;
 	        }
 	        next += ',';
@@ -10836,9 +10836,9 @@
 	      return null;
 	    }
 	    if (aSourceRoot != null) {
-	      source = util.relative(aSourceRoot, source);
+	      source = util$1.relative(aSourceRoot, source);
 	    }
-	    var key = util.toSetString(source);
+	    var key = util$1.toSetString(source);
 	    return Object.prototype.hasOwnProperty.call(this._sourcesContents, key)
 	      ? this._sourcesContents[key]
 	      : null;
@@ -13797,7 +13797,7 @@
 	  }
 	};
 
-	var consumeNumber$3 = utils.consumeNumber;
+	var consumeNumber$3 = utils$1.consumeNumber;
 	var TYPE$l = tokenizer.TYPE;
 
 	var DIMENSION$3 = TYPE$l.Dimension;
@@ -14255,7 +14255,7 @@
 	  }
 	};
 
-	var consumeNumber$4 = utils.consumeNumber;
+	var consumeNumber$4 = utils$1.consumeNumber;
 	var TYPE$t = tokenizer.TYPE;
 
 	var PERCENTAGE$1 = TYPE$t.Percentage;
@@ -14936,7 +14936,7 @@
 	var TYPE$C = tokenizer.TYPE;
 
 	var FUNCTION$3 = TYPE$C.Function;
-	var URL$1 = TYPE$C.Url;
+	var URL$1$1 = TYPE$C.Url;
 	var RIGHTPARENTHESIS$7 = TYPE$C.RightParenthesis;
 
 	// <url-token> | <function-token> <string> )
@@ -14950,7 +14950,7 @@
 	      var value;
 
 	      switch (this.scanner.tokenType) {
-	          case URL$1:
+	          case URL$1$1:
 	              var rawStart = start + 4;
 	              var rawEnd = this.scanner.tokenEnd - 1;
 
@@ -14968,7 +14968,7 @@
 	                  value: this.scanner.source.substring(rawStart, rawEnd)
 	              };
 
-	              this.eat(URL$1);
+	              this.eat(URL$1$1);
 	              break;
 
 	          case FUNCTION$3:
@@ -15594,7 +15594,7 @@
 	  'slotted': slotted
 	};
 
-	var parser = {
+	var parser$1 = {
 	  parseContext: {
 	      default: 'StyleSheet',
 	      stylesheet: 'StyleSheet',
@@ -15653,7 +15653,7 @@
 	var syntax = create$4.create(
 	  merge(
 	      lexer,
-	      parser,
+	      parser$1,
 	      walker
 	  )
 	);
@@ -15665,7 +15665,7 @@
 	const libGenerate = lib.generate;
 	const libParse = lib.parse;
 
-	var cssTree = /*#__PURE__*/Object.freeze({
+	var cssTree$1 = /*#__PURE__*/Object.freeze({
 		__proto__: null,
 		generate: libGenerate,
 		parse: libParse
@@ -15696,7 +15696,7 @@
 	 */
 
 	// 1. Let input be the value passed to this algorithm.
-	function process$2(input) {
+	function process$7(input) {
 
 		// UTILITY FUNCTIONS
 
@@ -15988,7 +15988,7 @@
 
 	var htmlSrcsetParser = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$2
+		process: process$7
 	});
 
 	/*
@@ -16039,37 +16039,37 @@
 	 * SOFTWARE.
 	 */
 
-	let utils$1, parser$1, serializer, MIMEType;
+	let utils, parser, serializer, MIMEType;
 
 	// lib/utils.js
 	{
-		utils$1 = {};
-		utils$1.removeLeadingAndTrailingHTTPWhitespace = string => {
+		utils = {};
+		utils.removeLeadingAndTrailingHTTPWhitespace = string => {
 			return string.replace(/^[ \t\n\r]+/, "").replace(/[ \t\n\r]+$/, "");
 		};
 
-		utils$1.removeTrailingHTTPWhitespace = string => {
+		utils.removeTrailingHTTPWhitespace = string => {
 			return string.replace(/[ \t\n\r]+$/, "");
 		};
 
-		utils$1.isHTTPWhitespaceChar = char => {
+		utils.isHTTPWhitespaceChar = char => {
 			return char === " " || char === "\t" || char === "\n" || char === "\r";
 		};
 
-		utils$1.solelyContainsHTTPTokenCodePoints = string => {
+		utils.solelyContainsHTTPTokenCodePoints = string => {
 			return /^[-!#$%&'*+.^_`|~A-Za-z0-9]*$/.test(string);
 		};
 
-		utils$1.soleyContainsHTTPQuotedStringTokenCodePoints = string => {
+		utils.soleyContainsHTTPQuotedStringTokenCodePoints = string => {
 			return /^[\t\u0020-\u007E\u0080-\u00FF]*$/.test(string);
 		};
 
-		utils$1.asciiLowercase = string => {
+		utils.asciiLowercase = string => {
 			return string.replace(/[A-Z]/g, l => l.toLowerCase());
 		};
 
 		// This variant only implements it with the extract-value flag set.
-		utils$1.collectAnHTTPQuotedString = (input, position) => {
+		utils.collectAnHTTPQuotedString = (input, position) => {
 			let value = "";
 
 			position++;
@@ -16107,7 +16107,7 @@
 
 	// lib/serializer.js
 	{
-		const { solelyContainsHTTPTokenCodePoints } = utils$1;
+		const { solelyContainsHTTPTokenCodePoints } = utils;
 		serializer = mimeType => {
 			let serialization = `${mimeType.type}/${mimeType.subtype}`;
 
@@ -16142,9 +16142,9 @@
 			soleyContainsHTTPQuotedStringTokenCodePoints,
 			asciiLowercase,
 			collectAnHTTPQuotedString
-		} = utils$1;
+		} = utils;
 
-		parser$1 = input => {
+		parser = input => {
 			input = removeLeadingAndTrailingHTTPWhitespace(input);
 
 			let position = 0;
@@ -16242,13 +16242,13 @@
 
 	// lib/mime-type.js
 	{
-		const parse = parser$1;
+		const parse = parser;
 		const serialize = serializer;
 		const {
 			asciiLowercase,
 			solelyContainsHTTPTokenCodePoints,
 			soleyContainsHTTPQuotedStringTokenCodePoints
-		} = utils$1;
+		} = utils;
 
 		MIMEType = class MIMEType {
 			constructor(string) {
@@ -16462,7 +16462,7 @@
 		fontPropertyParser: cssFontPropertyParser,
 		mediaQueryParser: cssMediaQueryParser,
 		cssMinifier: cssMinifier,
-		cssTree: cssTree,
+		cssTree: cssTree$1,
 		cssUnescape: cssUnescape,
 		srcsetParser: htmlSrcsetParser,
 		get MIMEType () { return MIMEType; }
@@ -16498,12 +16498,12 @@
 
 	const FontFace = globalThis.FontFace;
 
-	const REGEXP_URL_SIMPLE_QUOTES_FN = /url\s*\(\s*'(.*?)'\s*\)/i;
-	const REGEXP_URL_DOUBLE_QUOTES_FN = /url\s*\(\s*"(.*?)"\s*\)/i;
-	const REGEXP_URL_NO_QUOTES_FN = /url\s*\(\s*(.*?)\s*\)/i;
+	const REGEXP_URL_SIMPLE_QUOTES_FN$1 = /url\s*\(\s*'(.*?)'\s*\)/i;
+	const REGEXP_URL_DOUBLE_QUOTES_FN$1 = /url\s*\(\s*"(.*?)"\s*\)/i;
+	const REGEXP_URL_NO_QUOTES_FN$1 = /url\s*\(\s*(.*?)\s*\)/i;
 	const REGEXP_URL_FUNCTION = /(url|local)\(.*?\)\s*(,|$)/g;
-	const REGEXP_SIMPLE_QUOTES_STRING$2 = /^'(.*?)'$/;
-	const REGEXP_DOUBLE_QUOTES_STRING$2 = /^"(.*?)"$/;
+	const REGEXP_SIMPLE_QUOTES_STRING = /^'(.*?)'$/;
+	const REGEXP_DOUBLE_QUOTES_STRING = /^"(.*?)"$/;
 	const REGEXP_URL_FUNCTION_WOFF = /^url\(\s*["']?data:font\/(woff2?)/;
 	const REGEXP_URL_FUNCTION_WOFF_ALT = /^url\(\s*["']?data:application\/x-font-(woff)/;
 	const REGEXP_FONT_FORMAT = /\.([^.?#]+)((\?|#).*?)?$/;
@@ -16511,7 +16511,7 @@
 	const REGEXP_FONT_SRC = /(.*?)\s*,?$/;
 	const EMPTY_URL_SOURCE = /^url\(["']?data:[^,]*,?["']?\)/;
 	const LOCAL_SOURCE = "local(";
-	const MEDIA_ALL = "all";
+	const MEDIA_ALL$2 = "all";
 	const FONT_STRETCHES = {
 		"ultra-condensed": "50%",
 		"extra-condensed": "62.5%",
@@ -16525,7 +16525,7 @@
 	};
 	const FONT_MAX_LOAD_DELAY = 5000;
 
-	async function process$3(doc, stylesheets, fontURLs, fontTests) {
+	async function process$6(doc, stylesheets, fontURLs, fontTests) {
 		const fontsDetails = {
 			fonts: new Map(),
 			medias: new Map(),
@@ -16538,7 +16538,7 @@
 			if (cssRules) {
 				stats.rules.processed += cssRules.getSize();
 				stats.rules.discarded += cssRules.getSize();
-				if (stylesheetInfo.mediaText && stylesheetInfo.mediaText != MEDIA_ALL) {
+				if (stylesheetInfo.mediaText && stylesheetInfo.mediaText != MEDIA_ALL$2) {
 					const mediaFontsDetails = createFontsDetailsInfo();
 					fontsDetails.medias.set("media-" + sheetIndex + "-" + stylesheetInfo.mediaText, mediaFontsDetails);
 					getFontsDetails(doc, cssRules, sheetIndex, mediaFontsDetails);
@@ -16553,7 +16553,7 @@
 			const cssRules = stylesheetInfo.stylesheet.children;
 			const media = stylesheetInfo.mediaText;
 			if (cssRules) {
-				if (media && media != MEDIA_ALL) {
+				if (media && media != MEDIA_ALL$2) {
 					await processFontFaceRules(cssRules, sheetIndex, fontsDetails.medias.get("media-" + sheetIndex + "-" + media), fontURLs, fontTests, stats);
 				} else {
 					await processFontFaceRules(cssRules, sheetIndex, fontsDetails, fontURLs, fontTests, stats);
@@ -16602,12 +16602,12 @@
 			fontsDetails.fonts.set(fontKey, fontInfo.map(fontSource => {
 				const fontFormatMatch = fontSource.match(REGEXP_FONT_FORMAT_VALUE);
 				let fontFormat;
-				const urlMatch = fontSource.match(REGEXP_URL_SIMPLE_QUOTES_FN) ||
-					fontSource.match(REGEXP_URL_DOUBLE_QUOTES_FN) ||
-					fontSource.match(REGEXP_URL_NO_QUOTES_FN);
+				const urlMatch = fontSource.match(REGEXP_URL_SIMPLE_QUOTES_FN$1) ||
+					fontSource.match(REGEXP_URL_DOUBLE_QUOTES_FN$1) ||
+					fontSource.match(REGEXP_URL_NO_QUOTES_FN$1);
 				const fontUrl = urlMatch && urlMatch[1];
 				if (fontFormatMatch && fontFormatMatch[1]) {
-					fontFormat = fontFormatMatch[1].replace(REGEXP_SIMPLE_QUOTES_STRING$2, "$1").replace(REGEXP_DOUBLE_QUOTES_STRING$2, "$1").toLowerCase();
+					fontFormat = fontFormatMatch[1].replace(REGEXP_SIMPLE_QUOTES_STRING, "$1").replace(REGEXP_DOUBLE_QUOTES_STRING, "$1").toLowerCase();
 				}
 				if (!fontFormat) {
 					const fontFormatMatch = fontSource.match(REGEXP_URL_FUNCTION_WOFF);
@@ -16680,9 +16680,11 @@
 					if (FontFace) {
 						const fontFace = new FontFace("test-font", source.src);
 						try {
-							await fontFace.load();
-							await fontFace.loaded;
-							source.valid = true;
+							let timeout;
+							await Promise.race([
+								fontFace.load().then(() => fontFace.loaded).then(() => { source.valid = true; globalThis.clearTimeout(timeout); }),
+								new Promise(resolve => timeout = globalThis.setTimeout(() => { source.valid = true; resolve(); }, FONT_MAX_LOAD_DELAY))
+							]);						
 						} catch (error) {
 							const declarationFontURLs = fontURLs.get(srcDeclaration.data);
 							if (declarationFontURLs) {
@@ -16690,11 +16692,11 @@
 								if (fontURL) {
 									const fontFace = new FontFace("test-font", "url(" + fontURL + ")");
 									try {
-										await Promise.race(
-											[
-												fontFace.load().then(() => fontFace.loaded).then(() => source.valid = true),
-												new Promise(resolve => globalThis.setTimeout(() => { source.valid = true; resolve(); }, FONT_MAX_LOAD_DELAY))
-											]);
+										let timeout;
+										await Promise.race([
+											fontFace.load().then(() => fontFace.loaded).then(() => { source.valid = true; globalThis.clearTimeout(timeout); }),
+											new Promise(resolve => timeout = globalThis.setTimeout(() => { source.valid = true; resolve(); }, FONT_MAX_LOAD_DELAY))
+										]);
 									} catch (error) {
 										// ignored
 									}
@@ -16790,7 +16792,7 @@
 
 	var cssFontsAltMinifier = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$3
+		process: process$6
 	});
 
 	/*
@@ -16816,11 +16818,11 @@
 	 *   Source.
 	 */
 
-	const helper$3 = {
+	const helper$1 = {
 		normalizeFontFamily,
 		flatten,
 		getFontWeight,
-		removeQuotes
+		removeQuotes: removeQuotes$1
 	};
 
 	const REGEXP_COMMA = /\s*,\s*/;
@@ -16829,7 +16831,7 @@
 	const REGEXP_STARTS_U_PLUS = /^U\+/i;
 	const VALID_FONT_STYLES = [/^normal$/, /^italic$/, /^oblique$/, /^oblique\s+/];
 
-	function process$4(doc, stylesheets, styles, options) {
+	function process$5(doc, stylesheets, styles, options) {
 		const stats = { rules: { processed: 0, discarded: 0 }, fonts: { processed: 0, discarded: 0 } };
 		const fontsInfo = { declared: [], used: [] };
 		const workStyleElement = doc.createElement("style");
@@ -16858,11 +16860,11 @@
 				const matchedVar = familyName.match(/^var\((--.*)\)$/);
 				if (matchedVar && matchedVar[1]) {
 					const computedFamilyName = globalThis.getComputedStyle(options.doc.body).getPropertyValue(matchedVar[1]);
-					return (computedFamilyName && computedFamilyName.split(",").map(name => helper$3.normalizeFontFamily(name))) || familyName;
+					return (computedFamilyName && computedFamilyName.split(",").map(name => helper$1.normalizeFontFamily(name))) || familyName;
 				}
 				return familyName;
 			}));
-			fontsInfo.used = fontsInfo.used.map(fontNames => helper$3.flatten(fontNames));
+			fontsInfo.used = fontsInfo.used.map(fontNames => helper$1.flatten(fontNames));
 		}
 		const variableFound = fontsInfo.used.find(fontNames => fontNames.find(fontName => fontName.startsWith("var(--")));
 		let unusedFonts, filteredUsedFonts;
@@ -16901,13 +16903,13 @@
 				}
 			} else {
 				if (ruleData.type == "Atrule" && ruleData.name == "font-face") {
-					const fontFamily = helper$3.normalizeFontFamily(getDeclarationValue(ruleData.block.children, "font-family"));
+					const fontFamily = helper$1.normalizeFontFamily(getDeclarationValue(ruleData.block.children, "font-family"));
 					if (fontFamily) {
 						const fontWeight = getDeclarationValue(ruleData.block.children, "font-weight") || "400";
 						const fontStyle = getDeclarationValue(ruleData.block.children, "font-style") || "normal";
 						const fontVariant = getDeclarationValue(ruleData.block.children, "font-variant") || "normal";
 						fontWeight.split(",").forEach(weightValue =>
-							fontsInfo.declared.push({ fontFamily, fontWeight: helper$3.getFontWeight(helper$3.removeQuotes(weightValue)), fontStyle, fontVariant }));
+							fontsInfo.declared.push({ fontFamily, fontWeight: helper$1.getFontWeight(helper$1.removeQuotes(weightValue)), fontStyle, fontVariant }));
 					}
 				}
 			}
@@ -16921,7 +16923,7 @@
 			if (ruleData.type == "Atrule" && (ruleData.name == "media" || ruleData.name == "supports") && ruleData.block && ruleData.block.children) {
 				filterUnusedFonts(ruleData.block.children, declaredFonts, unusedFonts, filteredUsedFonts, docContent);
 			} else if (ruleData.type == "Atrule" && ruleData.name == "font-face") {
-				const fontFamily = helper$3.normalizeFontFamily(getDeclarationValue(ruleData.block.children, "font-family"));
+				const fontFamily = helper$1.normalizeFontFamily(getDeclarationValue(ruleData.block.children, "font-family"));
 				if (fontFamily) {
 					const unicodeRange = getDeclarationValue(ruleData.block.children, "unicode-range");
 					if (unusedFonts.find(fontInfo => fontInfo.fontFamily == fontFamily) || !testUnicodeRange(docContent, unicodeRange) || !testUsedFont(ruleData, fontFamily, declaredFonts, filteredUsedFonts)) {
@@ -16948,7 +16950,7 @@
 		if (optionalUsedFonts && optionalUsedFonts.length) {
 			let fontStyle = getDeclarationValue(ruleData.block.children, "font-style") || "normal";
 			if (VALID_FONT_STYLES.find(rule => fontStyle.trim().match(rule))) {
-				const fontWeight = helper$3.getFontWeight(getDeclarationValue(ruleData.block.children, "font-weight") || "400");
+				const fontWeight = helper$1.getFontWeight(getDeclarationValue(ruleData.block.children, "font-weight") || "400");
 				const declaredFontsWeights = declaredFonts
 					.filter(fontInfo => fontInfo.fontFamily == familyName && fontInfo.fontStyle == fontStyle)
 					.map(fontInfo => fontInfo.fontWeight)
@@ -16973,7 +16975,7 @@
 	}
 
 	function testFontweight(fontWeight, usedFontWeights) {
-		return fontWeight.split(",").find(weightValue => usedFontWeights.includes(helper$3.getFontWeight(helper$3.removeQuotes(weightValue))));
+		return fontWeight.split(",").find(weightValue => usedFontWeights.includes(helper$1.getFontWeight(helper$1.removeQuotes(weightValue))));
 	}
 
 	function getDeclarationValue(declarations, propertyName) {
@@ -16983,7 +16985,7 @@
 		}
 		if (property) {
 			try {
-				return helper$3.removeQuotes(libGenerate(property.data.value)).toLowerCase();
+				return helper$1.removeQuotes(libGenerate(property.data.value)).toLowerCase();
 			} catch (error) {
 				// ignored
 			}
@@ -16998,7 +17000,7 @@
 			if (fontFamilyName.data.value.children) {
 				fontFamilyName.data.value.children.forEach(node => {
 					if (node.type == "Operator" && node.value == "," && familyName) {
-						fontFamilyNames.push(helper$3.normalizeFontFamily(familyName));
+						fontFamilyNames.push(helper$1.normalizeFontFamily(familyName));
 						familyName = "";
 					} else {
 						familyName += libGenerate(node);
@@ -17008,14 +17010,14 @@
 				fontFamilyName = libGenerate(fontFamilyName.data.value);
 			}
 			if (familyName) {
-				fontFamilyNames.push(helper$3.normalizeFontFamily(familyName));
+				fontFamilyNames.push(helper$1.normalizeFontFamily(familyName));
 			}
 		}
 		const font = declarations.children.filter(node => node.property == "font").tail;
 		if (font && font.data && font.data.value) {
 			try {
-				const parsedFont = parse(libGenerate(font.data.value));
-				parsedFont.family.forEach(familyName => fontFamilyNames.push(helper$3.normalizeFontFamily(familyName)));
+				const parsedFont = parse$1(libGenerate(font.data.value));
+				parsedFont.family.forEach(familyName => fontFamilyNames.push(helper$1.normalizeFontFamily(familyName)));
 			} catch (error) {
 				// ignored				
 			}
@@ -17094,7 +17096,7 @@
 		if (rawValue) {
 			workStylesheet.textContent = "tmp { content:\"" + rawValue + "\"}";
 			if (workStylesheet.sheet && workStylesheet.sheet.cssRules) {
-				return helper$3.removeQuotes(workStylesheet.sheet.cssRules[0].style.getPropertyValue("content"));
+				return helper$1.removeQuotes(workStylesheet.sheet.cssRules[0].style.getPropertyValue("content"));
 			} else {
 				return rawValue;
 			}
@@ -17147,7 +17149,7 @@
 
 	var cssFontsMinifier = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$4
+		process: process$5
 	});
 
 	/*
@@ -17497,18 +17499,18 @@
 	 *   Source.
 	 */
 
-	const helper$4 = {
+	const helper = {
 		flatten
 	};
 
-	const MEDIA_ALL$2 = "all";
+	const MEDIA_ALL = "all";
 	const MEDIA_SCREEN = "screen";
 
-	function process$5(stylesheets) {
+	function process$4(stylesheets) {
 		const stats = { processed: 0, discarded: 0 };
 		stylesheets.forEach((stylesheetInfo, element) => {
-			if (matchesMediaType(stylesheetInfo.mediaText || MEDIA_ALL$2, MEDIA_SCREEN) && stylesheetInfo.stylesheet.children) {
-				const removedRules = processRules(stylesheetInfo.stylesheet.children, stats);
+			if (matchesMediaType(stylesheetInfo.mediaText || MEDIA_ALL, MEDIA_SCREEN) && stylesheetInfo.stylesheet.children) {
+				const removedRules = processRules$1(stylesheetInfo.stylesheet.children, stats);
 				removedRules.forEach(({ cssRules, cssRule }) => cssRules.remove(cssRule));
 			} else {
 				stylesheets.delete(element);
@@ -17517,13 +17519,13 @@
 		return stats;
 	}
 
-	function processRules(cssRules, stats, removedRules = []) {
+	function processRules$1(cssRules, stats, removedRules = []) {
 		for (let cssRule = cssRules.head; cssRule; cssRule = cssRule.next) {
 			const ruleData = cssRule.data;
 			if (ruleData.type == "Atrule" && ruleData.name == "media" && ruleData.block && ruleData.block.children && ruleData.prelude && ruleData.prelude.children) {
 				stats.processed++;
 				if (matchesMediaType(libGenerate(ruleData.prelude), MEDIA_SCREEN)) {
-					processRules(ruleData.block.children, stats, removedRules);
+					processRules$1(ruleData.block.children, stats, removedRules);
 				} else {
 					removedRules.push({ cssRules, cssRule });
 					stats.discarded++;
@@ -17534,9 +17536,9 @@
 	}
 
 	function matchesMediaType(mediaText, mediaType) {
-		const foundMediaTypes = helper$4.flatten(parseMediaList(mediaText).map(node => getMediaTypes(node, mediaType)));
-		return foundMediaTypes.find(mediaTypeInfo => (!mediaTypeInfo.not && (mediaTypeInfo.value == mediaType || mediaTypeInfo.value == MEDIA_ALL$2))
-			|| (mediaTypeInfo.not && (mediaTypeInfo.value == MEDIA_ALL$2 || mediaTypeInfo.value != mediaType)));
+		const foundMediaTypes = helper.flatten(parseMediaList(mediaText).map(node => getMediaTypes(node, mediaType)));
+		return foundMediaTypes.find(mediaTypeInfo => (!mediaTypeInfo.not && (mediaTypeInfo.value == mediaType || mediaTypeInfo.value == MEDIA_ALL))
+			|| (mediaTypeInfo.not && (mediaTypeInfo.value == MEDIA_ALL || mediaTypeInfo.value != mediaType)));
 	}
 
 	function getMediaTypes(parentNode, mediaType, mediaTypes = []) {
@@ -17553,14 +17555,14 @@
 			}
 		});
 		if (!mediaTypes.length) {
-			mediaTypes.push({ not: false, value: MEDIA_ALL$2 });
+			mediaTypes.push({ not: false, value: MEDIA_ALL });
 		}
 		return mediaTypes;
 	}
 
 	var cssMediasAltMinifier = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$5
+		process: process$4
 	});
 
 	/*
@@ -17586,7 +17588,7 @@
 	 *   Source.
 	 */
 
-	function process$6(stylesheets, styles, mediaAllInfo) {
+	function process$3(stylesheets, styles, mediaAllInfo) {
 		const stats = { processed: 0, discarded: 0 };
 		let sheetIndex = 0;
 		stylesheets.forEach(stylesheetInfo => {
@@ -17601,7 +17603,7 @@
 					} else {
 						mediaInfo = mediaAllInfo;
 					}
-					processRules$1(cssRules, sheetIndex, mediaInfo);
+					processRules(cssRules, sheetIndex, mediaInfo);
 					stats.discarded -= cssRules.getSize();
 				}
 			}
@@ -17611,7 +17613,7 @@
 		return stats;
 	}
 
-	function processRules$1(cssRules, sheetIndex, mediaInfo) {
+	function processRules(cssRules, sheetIndex, mediaInfo) {
 		let mediaRuleIndex = 0;
 		const removedCssRules = [];
 		for (let cssRule = cssRules.head; cssRule; cssRule = cssRule.next) {
@@ -17619,7 +17621,7 @@
 			if (ruleData.block && ruleData.block.children && ruleData.prelude && ruleData.prelude.children) {
 				if (ruleData.type == "Atrule" && ruleData.name == "media") {
 					const mediaText = libGenerate(ruleData.prelude);
-					processRules$1(ruleData.block.children, sheetIndex, mediaInfo.medias.get("rule-" + sheetIndex + "-" + mediaRuleIndex + "-" + mediaText));
+					processRules(ruleData.block.children, sheetIndex, mediaInfo.medias.get("rule-" + sheetIndex + "-" + mediaRuleIndex + "-" + mediaText));
 					if (!ruleData.prelude.children.getSize() || !ruleData.block.children.getSize()) {
 						removedCssRules.push(cssRule);
 					}
@@ -17685,7 +17687,7 @@
 
 	var cssRulesMinifier = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$6
+		process: process$3
 	});
 
 	/*
@@ -17711,9 +17713,9 @@
 	 *   Source.
 	 */
 
-	const EMPTY_IMAGE = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+	const EMPTY_IMAGE$1 = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-	function process$7(doc) {
+	function process$2(doc) {
 		doc.querySelectorAll("picture").forEach(pictureElement => {
 			const imgElement = pictureElement.querySelector("img");
 			if (imgElement) {
@@ -17733,11 +17735,11 @@
 
 	function getImgSrcData(imgElement) {
 		let src = imgElement.getAttribute("src");
-		if (src == EMPTY_IMAGE) {
+		if (src == EMPTY_IMAGE$1) {
 			src = null;
 		}
 		let srcset = getSourceSrc(imgElement.getAttribute("srcset"));
-		if (srcset == EMPTY_IMAGE) {
+		if (srcset == EMPTY_IMAGE$1) {
 			srcset = null;
 		}
 		return { src, srcset };
@@ -17750,14 +17752,14 @@
 		if (!src) {
 			source = sources.find(source => getSourceSrc(source.src));
 			src = source && source.src;
-			if (src == EMPTY_IMAGE) {
+			if (src == EMPTY_IMAGE$1) {
 				src = null;
 			}
 		}
 		if (!srcset) {
 			source = sources.find(source => getSourceSrc(source.srcset));
 			srcset = source && source.srcset;
-			if (srcset == EMPTY_IMAGE) {
+			if (srcset == EMPTY_IMAGE$1) {
 				srcset = null;
 			}
 		}
@@ -17770,7 +17772,7 @@
 			imgElement.setAttribute("srcset", "");
 			imgElement.setAttribute("sizes", "");
 		} else {
-			imgElement.setAttribute("src", EMPTY_IMAGE);
+			imgElement.setAttribute("src", EMPTY_IMAGE$1);
 			if (srcData.srcset) {
 				imgElement.setAttribute("srcset", srcData.srcset);
 			} else {
@@ -17785,7 +17787,7 @@
 
 	function getSourceSrc(sourceSrcSet) {
 		if (sourceSrcSet) {
-			const srcset = process$2(sourceSrcSet);
+			const srcset = process$7(sourceSrcSet);
 			if (srcset.length) {
 				return (srcset.find(srcset => srcset.url)).url;
 			}
@@ -17794,7 +17796,7 @@
 
 	var htmlImagesAltMinifier = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$7
+		process: process$2
 	});
 
 	/*
@@ -17915,9 +17917,9 @@
 	const REGEXP_NEWLINE = /[\n]+/g;
 	const REGEXP_ENDS_WHITESPACE = /^\s+$/;
 	const NodeFilter_SHOW_ALL = 4294967295;
-	const Node_ELEMENT_NODE = 1;
-	const Node_TEXT_NODE = 3;
-	const Node_COMMENT_NODE = 8;
+	const Node_ELEMENT_NODE$1 = 1;
+	const Node_TEXT_NODE$1 = 3;
+	const Node_COMMENT_NODE$1 = 8;
 
 	const modules = [
 		collapseBooleanAttributes,
@@ -17930,7 +17932,7 @@
 		node => mergeElements(node, "style", (node, previousSibling) => node.parentElement && node.parentElement.tagName == "HEAD" && node.media == previousSibling.media && node.title == previousSibling.title)
 	];
 
-	function process$8(doc, options) {
+	function process$1(doc, options) {
 		removeEmptyInlineElements(doc);
 		const nodesWalker = doc.createTreeWalker(doc.documentElement, NodeFilter_SHOW_ALL, null, false);
 		let node = nodesWalker.nextNode();
@@ -17945,7 +17947,7 @@
 	}
 
 	function collapseBooleanAttributes(node) {
-		if (node.nodeType == Node_ELEMENT_NODE) {
+		if (node.nodeType == Node_ELEMENT_NODE$1) {
 			Array.from(node.attributes).forEach(attribute => {
 				if (booleanAttributes.includes(attribute.name)) {
 					node.setAttribute(attribute.name, "");
@@ -17955,8 +17957,8 @@
 	}
 
 	function mergeTextNodes(node) {
-		if (node.nodeType == Node_TEXT_NODE) {
-			if (node.previousSibling && node.previousSibling.nodeType == Node_TEXT_NODE) {
+		if (node.nodeType == Node_TEXT_NODE$1) {
+			if (node.previousSibling && node.previousSibling.nodeType == Node_TEXT_NODE$1) {
 				node.textContent = node.previousSibling.textContent + node.textContent;
 				node.previousSibling.remove();
 			}
@@ -17964,14 +17966,14 @@
 	}
 
 	function mergeElements(node, tagName, acceptMerge) {
-		if (node.nodeType == Node_ELEMENT_NODE && node.tagName.toLowerCase() == tagName.toLowerCase()) {
+		if (node.nodeType == Node_ELEMENT_NODE$1 && node.tagName.toLowerCase() == tagName.toLowerCase()) {
 			let previousSibling = node.previousSibling;
 			const previousSiblings = [];
-			while (previousSibling && previousSibling.nodeType == Node_TEXT_NODE && !previousSibling.textContent.trim()) {
+			while (previousSibling && previousSibling.nodeType == Node_TEXT_NODE$1 && !previousSibling.textContent.trim()) {
 				previousSiblings.push(previousSibling);
 				previousSibling = previousSibling.previousSibling;
 			}
-			if (previousSibling && previousSibling.nodeType == Node_ELEMENT_NODE && previousSibling.tagName == node.tagName && acceptMerge(node, previousSibling)) {
+			if (previousSibling && previousSibling.nodeType == Node_ELEMENT_NODE$1 && previousSibling.tagName == node.tagName && acceptMerge(node, previousSibling)) {
 				node.textContent = previousSibling.textContent + node.textContent;
 				previousSiblings.forEach(node => node.remove());
 				previousSibling.remove();
@@ -17980,7 +17982,7 @@
 	}
 
 	function collapseWhitespace(node, options) {
-		if (node.nodeType == Node_TEXT_NODE) {
+		if (node.nodeType == Node_TEXT_NODE$1) {
 			let element = node.parentElement;
 			const spacePreserved = element.getAttribute(options.PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME) == "";
 			if (!spacePreserved) {
@@ -18006,13 +18008,13 @@
 	}
 
 	function removeComments(node) {
-		if (node.nodeType == Node_COMMENT_NODE && node.parentElement.tagName != "HTML") {
+		if (node.nodeType == Node_COMMENT_NODE$1 && node.parentElement.tagName != "HTML") {
 			return !node.textContent.toLowerCase().trim().startsWith("[if");
 		}
 	}
 
 	function removeEmptyAttributes(node) {
-		if (node.nodeType == Node_ELEMENT_NODE) {
+		if (node.nodeType == Node_ELEMENT_NODE$1) {
 			Array.from(node.attributes).forEach(attribute => {
 				if (safeToRemoveAttrs.includes(attribute.name.toLowerCase())) {
 					const attributeValue = node.getAttribute(attribute.name);
@@ -18025,7 +18027,7 @@
 	}
 
 	function removeRedundantAttributes(node) {
-		if (node.nodeType == Node_ELEMENT_NODE) {
+		if (node.nodeType == Node_ELEMENT_NODE$1) {
 			const tagRedundantAttributes = redundantAttributes[node.tagName.toLowerCase()];
 			if (tagRedundantAttributes) {
 				Object.keys(tagRedundantAttributes).forEach(redundantAttributeName => {
@@ -18039,7 +18041,7 @@
 	}
 
 	function compressJSONLD(node) {
-		if (node.nodeType == Node_ELEMENT_NODE && node.tagName == "SCRIPT" && node.type == "application/ld+json" && node.textContent.trim()) {
+		if (node.nodeType == Node_ELEMENT_NODE$1 && node.tagName == "SCRIPT" && node.type == "application/ld+json" && node.textContent.trim()) {
 			try {
 				node.textContent = JSON.stringify(JSON.parse(node.textContent));
 			} catch (error) {
@@ -18058,7 +18060,7 @@
 
 	var htmlMinifier = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$8
+		process: process$1
 	});
 
 	/*
@@ -18086,19 +18088,19 @@
 
 	const SELF_CLOSED_TAG_NAMES = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"];
 
-	const Node_ELEMENT_NODE$1 = 1;
-	const Node_TEXT_NODE$1 = 3;
-	const Node_COMMENT_NODE$1 = 8;
+	const Node_ELEMENT_NODE = 1;
+	const Node_TEXT_NODE = 3;
+	const Node_COMMENT_NODE = 8;
 
 	// see https://www.w3.org/TR/html5/syntax.html#optional-tags
 	const OMITTED_START_TAGS = [
-		{ tagName: "head", accept: element => !element.childNodes.length || element.childNodes[0].nodeType == Node_ELEMENT_NODE$1 },
+		{ tagName: "head", accept: element => !element.childNodes.length || element.childNodes[0].nodeType == Node_ELEMENT_NODE },
 		{ tagName: "body", accept: element => !element.childNodes.length }
 	];
 	const OMITTED_END_TAGS = [
-		{ tagName: "html", accept: next => !next || next.nodeType != Node_COMMENT_NODE$1 },
-		{ tagName: "head", accept: next => !next || (next.nodeType != Node_COMMENT_NODE$1 && (next.nodeType != Node_TEXT_NODE$1 || !startsWithSpaceChar(next.textContent))) },
-		{ tagName: "body", accept: next => !next || next.nodeType != Node_COMMENT_NODE$1 },
+		{ tagName: "html", accept: next => !next || next.nodeType != Node_COMMENT_NODE },
+		{ tagName: "head", accept: next => !next || (next.nodeType != Node_COMMENT_NODE && (next.nodeType != Node_TEXT_NODE || !startsWithSpaceChar(next.textContent))) },
+		{ tagName: "body", accept: next => !next || next.nodeType != Node_COMMENT_NODE },
 		{ tagName: "li", accept: (next, element) => (!next && element.parentElement && (element.parentElement.tagName == "UL" || element.parentElement.tagName == "OL")) || (next && ["LI"].includes(next.tagName)) },
 		{ tagName: "dt", accept: next => !next || ["DT", "DD"].includes(next.tagName) },
 		{ tagName: "p", accept: next => next && ["ADDRESS", "ARTICLE", "ASIDE", "BLOCKQUOTE", "DETAILS", "DIV", "DL", "FIELDSET", "FIGCAPTION", "FIGURE", "FOOTER", "FORM", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HR", "MAIN", "NAV", "OL", "P", "PRE", "SECTION", "TABLE", "UL"].includes(next.tagName) },
@@ -18107,8 +18109,8 @@
 		{ tagName: "rp", accept: next => !next || ["RT", "RP"].includes(next.tagName) },
 		{ tagName: "optgroup", accept: next => !next || ["OPTGROUP"].includes(next.tagName) },
 		{ tagName: "option", accept: next => !next || ["OPTION", "OPTGROUP"].includes(next.tagName) },
-		{ tagName: "colgroup", accept: next => !next || (next.nodeType != Node_COMMENT_NODE$1 && (next.nodeType != Node_TEXT_NODE$1 || !startsWithSpaceChar(next.textContent))) },
-		{ tagName: "caption", accept: next => !next || (next.nodeType != Node_COMMENT_NODE$1 && (next.nodeType != Node_TEXT_NODE$1 || !startsWithSpaceChar(next.textContent))) },
+		{ tagName: "colgroup", accept: next => !next || (next.nodeType != Node_COMMENT_NODE && (next.nodeType != Node_TEXT_NODE || !startsWithSpaceChar(next.textContent))) },
+		{ tagName: "caption", accept: next => !next || (next.nodeType != Node_COMMENT_NODE && (next.nodeType != Node_TEXT_NODE || !startsWithSpaceChar(next.textContent))) },
 		{ tagName: "thead", accept: next => !next || ["TBODY", "TFOOT"].includes(next.tagName) },
 		{ tagName: "tbody", accept: next => !next || ["TBODY", "TFOOT"].includes(next.tagName) },
 		{ tagName: "tfoot", accept: next => !next },
@@ -18118,7 +18120,7 @@
 	];
 	const TEXT_NODE_TAGS = ["style", "script", "xmp", "iframe", "noembed", "noframes", "plaintext", "noscript"];
 
-	function process$9(doc, compressHTML) {
+	function process(doc, compressHTML) {
 		const docType = doc.doctype;
 		let docTypeString = "";
 		if (docType) {
@@ -18133,15 +18135,15 @@
 				docTypeString += " [" + docType.internalSubset + "]";
 			docTypeString += "> ";
 		}
-		return docTypeString + serialize$1(doc.documentElement, compressHTML);
+		return docTypeString + serialize(doc.documentElement, compressHTML);
 	}
 
-	function serialize$1(node, compressHTML, isSVG) {
-		if (node.nodeType == Node_TEXT_NODE$1) {
+	function serialize(node, compressHTML, isSVG) {
+		if (node.nodeType == Node_TEXT_NODE) {
 			return serializeTextNode(node);
-		} else if (node.nodeType == Node_COMMENT_NODE$1) {
+		} else if (node.nodeType == Node_COMMENT_NODE) {
 			return serializeCommentNode(node);
-		} else if (node.nodeType == Node_ELEMENT_NODE$1) {
+		} else if (node.nodeType == Node_ELEMENT_NODE) {
 			return serializeElement(node, compressHTML, isSVG);
 		}
 	}
@@ -18149,7 +18151,7 @@
 	function serializeTextNode(textNode) {
 		const parentNode = textNode.parentNode;
 		let parentTagName;
-		if (parentNode && parentNode.nodeType == Node_ELEMENT_NODE$1) {
+		if (parentNode && parentNode.nodeType == Node_ELEMENT_NODE) {
 			parentTagName = parentNode.tagName.toLowerCase();
 		}
 		if (!parentTagName || TEXT_NODE_TAGS.includes(parentTagName)) {
@@ -18178,7 +18180,7 @@
 		if (element.tagName == "TEMPLATE" && !element.childNodes.length) {
 			content += element.innerHTML;
 		} else {
-			Array.from(element.childNodes).forEach(childNode => content += serialize$1(childNode, compressHTML, isSVG || tagName == "svg"));
+			Array.from(element.childNodes).forEach(childNode => content += serialize(childNode, compressHTML, isSVG || tagName == "svg"));
 		}
 		const omittedEndTag = compressHTML && OMITTED_END_TAGS.find(omittedEndTag => tagName == omittedEndTag.tagName && omittedEndTag.accept(element.nextSibling, element));
 		if (isSVG || (!omittedEndTag && !SELF_CLOSED_TAG_NAMES.includes(tagName))) {
@@ -18240,7 +18242,7 @@
 
 	var htmlSerializer = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		process: process$9
+		process: process
 	});
 
 	/*
@@ -18266,7 +18268,7 @@
 	 *   Source.
 	 */
 
-	var index$2 = /*#__PURE__*/Object.freeze({
+	var index = /*#__PURE__*/Object.freeze({
 		__proto__: null,
 		fontsAltMinifier: cssFontsAltMinifier,
 		fontsMinifier: cssFontsMinifier,
@@ -18304,10 +18306,10 @@
 	const Set$1 = globalThis.Set;
 	const Map$1 = globalThis.Map;
 
-	let util$1, cssTree$1;
+	let util, cssTree;
 
 	function getClass(...args) {
-		[util$1, cssTree$1] = args;
+		[util, cssTree] = args;
 		return SingleFileClass;
 	}
 
@@ -18318,13 +18320,13 @@
 		async run() {
 			const waitForUserScript = globalThis._singleFile_waitForUserScript;
 			if (this.options.userScriptEnabled && waitForUserScript) {
-				await waitForUserScript(util$1.ON_BEFORE_CAPTURE_EVENT_NAME);
+				await waitForUserScript(util.ON_BEFORE_CAPTURE_EVENT_NAME);
 			}
 			this.runner = new Runner(this.options, true);
 			await this.runner.loadPage();
 			await this.runner.initialize();
 			if (this.options.userScriptEnabled && waitForUserScript) {
-				await waitForUserScript(util$1.ON_AFTER_CAPTURE_EVENT_NAME);
+				await waitForUserScript(util.ON_AFTER_CAPTURE_EVENT_NAME);
 			}
 			await this.runner.run();
 		}
@@ -18443,7 +18445,7 @@
 			this.batchRequest = new BatchRequest();
 			this.processor = new Processor(options, this.batchRequest);
 			if (rootDocDefined) {
-				const docData = util$1.preProcessDoc(this.options.doc, this.options.win, this.options);
+				const docData = util.preProcessDoc(this.options.doc, this.options.win, this.options);
 				this.options.canvases = docData.canvases;
 				this.options.fonts = docData.fonts;
 				this.options.stylesheets = docData.stylesheets;
@@ -18458,7 +18460,7 @@
 			if (this.options.saveRawPage) {
 				this.options.removeFrames = true;
 			}
-			this.options.content = this.options.content || (rootDocDefined ? util$1.serialize(this.options.doc) : null);
+			this.options.content = this.options.content || (rootDocDefined ? util.serialize(this.options.doc) : null);
 			this.onprogress = options.onprogress || (() => { });
 		}
 
@@ -18473,7 +18475,7 @@
 			await this.executeStage(RESOLVE_URLS_STAGE);
 			this.pendingPromises = this.executeStage(REPLACE_DATA_STAGE);
 			if (this.root && this.options.doc) {
-				util$1.postProcessDoc(this.options.doc, this.markedElements);
+				util.postProcessDoc(this.options.doc, this.markedElements);
 			}
 		}
 
@@ -18570,9 +18572,9 @@
 			this.duplicates = new Map$1();
 		}
 
-		addURL(resourceURL, asBinary, expectedType, groupDuplicates) {
+		addURL(resourceURL, { asBinary, expectedType, groupDuplicates, baseURI, blockMixedContent } = {}) {
 			return new Promise((resolve, reject) => {
-				const requestKey = JSON.stringify([resourceURL, asBinary, expectedType]);
+				const requestKey = JSON.stringify([resourceURL, asBinary, expectedType, baseURI, blockMixedContent]);
 				let resourceRequests = this.requests.get(requestKey);
 				if (!resourceRequests) {
 					resourceRequests = [];
@@ -18599,18 +18601,20 @@
 			const resourceURLs = [...this.requests.keys()];
 			let indexResource = 0;
 			return Promise.all(resourceURLs.map(async requestKey => {
-				const [resourceURL, asBinary, expectedType] = JSON.parse(requestKey);
+				const [resourceURL, asBinary, expectedType, baseURI, blockMixedContent] = JSON.parse(requestKey);
 				const resourceRequests = this.requests.get(requestKey);
 				try {
 					const currentIndexResource = indexResource;
 					indexResource = indexResource + 1;
-					const content = await util$1.getContent(resourceURL, {
+					const content = await util.getContent(resourceURL, {
 						asBinary,
 						expectedType,
 						maxResourceSize: options.maxResourceSize,
 						maxResourceSizeEnabled: options.maxResourceSizeEnabled,
 						frameId: options.windowId,
-						resourceReferrer: options.resourceReferrer
+						resourceReferrer: options.resourceReferrer,
+						baseURI,
+						blockMixedContent
 					});
 					onloadListener({ url: resourceURL });
 					if (!this.cancelled) {
@@ -18645,7 +18649,7 @@
 	// ---------
 	const PREFIXES_FORBIDDEN_DATA_URI = ["data:text/"];
 	const PREFIX_DATA_URI_IMAGE_SVG = "data:image/svg+xml";
-	const EMPTY_IMAGE$1 = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+	const EMPTY_IMAGE = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 	const SCRIPT_TAG_FOUND = /<script/gi;
 	const NOSCRIPT_TAG_FOUND = /<noscript/gi;
 	const CANVAS_TAG_FOUND = /<canvas/gi;
@@ -18670,7 +18674,7 @@
 			this.options.saveDate = new Date();
 			this.options.saveUrl = this.options.url;
 			if (this.options.enableMaff) {
-				this.maffMetaDataPromise = this.batchRequest.addURL(util$1.resolveURL("index.rdf", this.options.baseURI || this.options.url));
+				this.maffMetaDataPromise = this.batchRequest.addURL(util.resolveURL("index.rdf", this.options.baseURI || this.options.url));
 			}
 			this.maxResources = this.batchRequest.getMaxResources();
 			if (!this.options.saveRawPage && !this.options.removeFrames && this.options.frames) {
@@ -18685,7 +18689,7 @@
 		async loadPage(pageContent, charset) {
 			let content;
 			if (!pageContent || this.options.saveRawPage) {
-				content = await util$1.getContent(this.baseURI, {
+				content = await util.getContent(this.baseURI, {
 					maxResourceSize: this.options.maxResourceSize,
 					maxResourceSizeEnabled: this.options.maxResourceSizeEnabled,
 					charset,
@@ -18694,7 +18698,7 @@
 				});
 				pageContent = content.data;
 			}
-			this.doc = util$1.parseDocContent(pageContent, this.baseURI);
+			this.doc = util.parseDocContent(pageContent, this.baseURI);
 			if (this.options.saveRawPage) {
 				let charset;
 				this.doc.querySelectorAll("meta[charset], meta[http-equiv=\"content-type\"]").forEach(element => {
@@ -18719,12 +18723,12 @@
 		}
 
 		async getPageData() {
-			util$1.postProcessDoc(this.doc);
-			const url = util$1.parseURL(this.baseURI);
+			util.postProcessDoc(this.doc);
+			const url = util.parseURL(this.baseURI);
 			if (this.options.insertSingleFileComment) {
 				const firstComment = this.doc.documentElement.firstChild;
 				let infobarURL = this.options.saveUrl, infobarSaveDate = this.options.saveDate;
-				if (firstComment.nodeType == 8 && (firstComment.textContent.includes(util$1.COMMENT_HEADER_LEGACY) || firstComment.textContent.includes(util$1.COMMENT_HEADER))) {
+				if (firstComment.nodeType == 8 && (firstComment.textContent.includes(util.COMMENT_HEADER_LEGACY) || firstComment.textContent.includes(util.COMMENT_HEADER))) {
 					const info = this.doc.documentElement.firstChild.textContent.split("\n");
 					const [, , url, saveDate] = info;
 					infobarURL = url.split("url: ")[1];
@@ -18732,7 +18736,7 @@
 					firstComment.remove();
 				}
 				const infobarContent = (this.options.infobarContent || "").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
-				const commentNode = this.doc.createComment("\n " + (this.options.useLegacyCommentHeader ? util$1.COMMENT_HEADER_LEGACY : util$1.COMMENT_HEADER) +
+				const commentNode = this.doc.createComment("\n " + (this.options.useLegacyCommentHeader ? util.COMMENT_HEADER_LEGACY : util.COMMENT_HEADER) +
 					" \n url: " + infobarURL +
 					" \n saved date: " + infobarSaveDate +
 					(infobarContent ? " \n info: " + infobarContent : "") + "\n");
@@ -18766,24 +18770,24 @@
 			}
 			let size;
 			if (this.options.displayStats) {
-				size = util$1.getContentSize(this.doc.documentElement.outerHTML);
+				size = util.getContentSize(this.doc.documentElement.outerHTML);
 			}
-			const content = util$1.serialize(this.doc, this.options.compressHTML);
+			const content = util.serialize(this.doc, this.options.compressHTML);
 			if (this.options.displayStats) {
-				const contentSize = util$1.getContentSize(content);
+				const contentSize = util.getContentSize(content);
 				this.stats.set("processed", "HTML bytes", contentSize);
 				this.stats.add("discarded", "HTML bytes", size - contentSize);
 			}
 			let filename = await ProcessorHelper.evalTemplate(this.options.filenameTemplate, this.options, content) || "";
 			const replacementCharacter = this.options.filenameReplacementCharacter;
-			filename = util$1.getValidFilename(filename, this.options.filenameReplacedCharacters, replacementCharacter);
+			filename = util.getValidFilename(filename, this.options.filenameReplacedCharacters, replacementCharacter);
 			if (!this.options.backgroundSave) {
 				filename = filename.replace(/\//g, replacementCharacter);
 			}
-			if (!this.options.saveToGDrive && !this.options.saveToGitHub && !this.options.saveWithCompanion && util$1.getContentSize(filename) > this.options.filenameMaxLength) {
+			if (!this.options.saveToGDrive && !this.options.saveToGitHub && !this.options.saveWithCompanion && util.getContentSize(filename) > this.options.filenameMaxLength) {
 				const extensionMatch = filename.match(/(\.[^.]{3,4})$/);
 				const extension = extensionMatch && extensionMatch[0] && extensionMatch[0].length > 1 ? extensionMatch[0] : "";
-				filename = await util$1.truncateText(filename, this.options.filenameMaxLength - extension.length);
+				filename = await util.truncateText(filename, this.options.filenameMaxLength - extension.length);
 				filename = filename + "…" + extension;
 			}
 			if (!filename) {
@@ -18797,7 +18801,7 @@
 				content
 			};
 			if (this.options.addProof) {
-				pageData.hash = await util$1.digest("SHA-256", content);
+				pageData.hash = await util.digest("SHA-256", content);
 			}
 			if (this.options.retrieveLinks) {
 				pageData.links = Array.from(new Set$1(Array.from(this.doc.links).map(linkElement => linkElement.href)));
@@ -18810,23 +18814,23 @@
 				this.doc.body.querySelectorAll(":not(svg) title, meta, link[href][rel*=\"icon\"]").forEach(element => element instanceof this.options.win.HTMLElement && this.doc.head.appendChild(element));
 			}
 			if (this.options.images && !this.options.saveRawPage) {
-				this.doc.querySelectorAll("img[" + util$1.IMAGE_ATTRIBUTE_NAME + "]").forEach(imgElement => {
-					const attributeValue = imgElement.getAttribute(util$1.IMAGE_ATTRIBUTE_NAME);
+				this.doc.querySelectorAll("img[" + util.IMAGE_ATTRIBUTE_NAME + "]").forEach(imgElement => {
+					const attributeValue = imgElement.getAttribute(util.IMAGE_ATTRIBUTE_NAME);
 					if (attributeValue) {
 						const imageData = this.options.images[Number(attributeValue)];
 						if (imageData) {
 							if (this.options.removeHiddenElements && (
 								(imageData.size && !imageData.size.pxWidth && !imageData.size.pxHeight) ||
-								(imgElement.getAttribute(util$1.HIDDEN_CONTENT_ATTRIBUTE_NAME) == "")
+								(imgElement.getAttribute(util.HIDDEN_CONTENT_ATTRIBUTE_NAME) == "")
 							)) {
-								imgElement.setAttribute("src", EMPTY_IMAGE$1);
+								imgElement.setAttribute("src", EMPTY_IMAGE);
 							} else {
 								if (imageData.currentSrc) {
 									imgElement.dataset.singleFileOriginURL = imgElement.getAttribute("src");
 									imgElement.setAttribute("src", imageData.currentSrc);
 								}
 								if (this.options.loadDeferredImages) {
-									if ((!imgElement.getAttribute("src") || imgElement.getAttribute("src") == EMPTY_IMAGE$1) && imgElement.getAttribute("data-src")) {
+									if ((!imgElement.getAttribute("src") || imgElement.getAttribute("src") == EMPTY_IMAGE) && imgElement.getAttribute("data-src")) {
 										imageData.src = imgElement.dataset.src;
 										imgElement.setAttribute("src", imgElement.dataset.src);
 										imgElement.removeAttribute("data-src");
@@ -18850,7 +18854,7 @@
 		replaceStyleContents() {
 			if (this.options.stylesheets) {
 				this.doc.querySelectorAll("style").forEach((styleElement, styleIndex) => {
-					const attributeValue = styleElement.getAttribute(util$1.STYLESHEET_ATTRIBUTE_NAME);
+					const attributeValue = styleElement.getAttribute(util.STYLESHEET_ATTRIBUTE_NAME);
 					if (attributeValue) {
 						const stylesheetContent = this.options.stylesheets[Number(styleIndex)];
 						if (stylesheetContent) {
@@ -18863,16 +18867,16 @@
 
 		removeUnselectedElements() {
 			removeUnmarkedElements(this.doc.body);
-			this.doc.body.removeAttribute(util$1.SELECTED_CONTENT_ATTRIBUTE_NAME);
+			this.doc.body.removeAttribute(util.SELECTED_CONTENT_ATTRIBUTE_NAME);
 
 			function removeUnmarkedElements(element) {
 				let selectedElementFound = false;
 				Array.from(element.childNodes).forEach(node => {
 					if (node.nodeType == 1) {
-						const isSelectedElement = node.getAttribute(util$1.SELECTED_CONTENT_ATTRIBUTE_NAME) == "";
+						const isSelectedElement = node.getAttribute(util.SELECTED_CONTENT_ATTRIBUTE_NAME) == "";
 						selectedElementFound = selectedElementFound || isSelectedElement;
 						if (isSelectedElement) {
-							node.removeAttribute(util$1.SELECTED_CONTENT_ATTRIBUTE_NAME);
+							node.removeAttribute(util.SELECTED_CONTENT_ATTRIBUTE_NAME);
 							removeUnmarkedElements(node);
 						} else if (selectedElementFound) {
 							removeNode(node);
@@ -18915,7 +18919,7 @@
 					} else {
 						videoElement = element.parentElement;
 					}
-					const attributeValue = element.getAttribute(util$1.POSTER_ATTRIBUTE_NAME);
+					const attributeValue = element.getAttribute(util.POSTER_ATTRIBUTE_NAME);
 					if (attributeValue) {
 						const posterURL = this.options.posters[Number(attributeValue)];
 						if (!videoElement.poster && posterURL) {
@@ -18978,7 +18982,7 @@
 		}
 
 		removeDiscardedResources() {
-			this.doc.querySelectorAll("." + util$1.SINGLE_FILE_UI_ELEMENT_CLASS).forEach(element => element.remove());
+			this.doc.querySelectorAll("." + util.SINGLE_FILE_UI_ELEMENT_CLASS).forEach(element => element.remove());
 			this.doc.querySelectorAll("button button").forEach(element => element.remove());
 			this.doc.querySelectorAll("meta[http-equiv=refresh], meta[disabled-http-equiv], meta[http-equiv=\"content-security-policy\"]").forEach(element => element.remove());
 			const objectElements = this.doc.querySelectorAll("applet, object[data]:not([type=\"image/svg+xml\"]):not([type=\"image/svg-xml\"]):not([type=\"text/html\"]), embed[src]:not([src*=\".svg\"]):not([src*=\".pdf\"])");
@@ -19033,22 +19037,22 @@
 
 		setInputValues() {
 			this.doc.querySelectorAll("input:not([type=radio]):not([type=checkbox])").forEach(input => {
-				const value = input.getAttribute(util$1.INPUT_VALUE_ATTRIBUTE_NAME);
+				const value = input.getAttribute(util.INPUT_VALUE_ATTRIBUTE_NAME);
 				input.setAttribute("value", value || "");
 			});
 			this.doc.querySelectorAll("input[type=radio], input[type=checkbox]").forEach(input => {
-				const value = input.getAttribute(util$1.INPUT_VALUE_ATTRIBUTE_NAME);
+				const value = input.getAttribute(util.INPUT_VALUE_ATTRIBUTE_NAME);
 				if (value == "true") {
 					input.setAttribute("checked", "");
 				}
 			});
 			this.doc.querySelectorAll("textarea").forEach(textarea => {
-				const value = textarea.getAttribute(util$1.INPUT_VALUE_ATTRIBUTE_NAME);
+				const value = textarea.getAttribute(util.INPUT_VALUE_ATTRIBUTE_NAME);
 				textarea.textContent = value || "";
 			});
 			this.doc.querySelectorAll("select").forEach(select => {
 				select.querySelectorAll("option").forEach(option => {
-					const selected = option.getAttribute(util$1.INPUT_VALUE_ATTRIBUTE_NAME) != null;
+					const selected = option.getAttribute(util.INPUT_VALUE_ATTRIBUTE_NAME) != null;
 					if (selected) {
 						option.setAttribute("selected", "");
 					}
@@ -19073,7 +19077,7 @@
 		replaceCanvasElements() {
 			if (this.options.canvases) {
 				this.doc.querySelectorAll("canvas").forEach(canvasElement => {
-					const attributeValue = canvasElement.getAttribute(util$1.CANVAS_ATTRIBUTE_NAME);
+					const attributeValue = canvasElement.getAttribute(util.CANVAS_ATTRIBUTE_NAME);
 					if (attributeValue) {
 						const canvasData = this.options.canvases[Number(attributeValue)];
 						if (canvasData) {
@@ -19115,8 +19119,8 @@
 		}
 
 		removeHiddenElements() {
-			const hiddenElements = this.doc.querySelectorAll("[" + util$1.HIDDEN_CONTENT_ATTRIBUTE_NAME + "]");
-			const removedElements = this.doc.querySelectorAll("[" + util$1.REMOVED_CONTENT_ATTRIBUTE_NAME + "]");
+			const hiddenElements = this.doc.querySelectorAll("[" + util.HIDDEN_CONTENT_ATTRIBUTE_NAME + "]");
+			const removedElements = this.doc.querySelectorAll("[" + util.REMOVED_CONTENT_ATTRIBUTE_NAME + "]");
 			this.stats.set("discarded", "hidden elements", removedElements.length);
 			this.stats.set("processed", "hidden elements", removedElements.length);
 			if (hiddenElements.length) {
@@ -19142,7 +19146,7 @@
 				if (!testIgnoredPath(href)) {
 					let resolvedURL;
 					try {
-						resolvedURL = util$1.resolveURL(href, this.options.baseURI || this.options.url);
+						resolvedURL = util.resolveURL(href, this.options.baseURI || this.options.url);
 					} catch (error) {
 						// ignored
 					}
@@ -19165,10 +19169,10 @@
 			this.doc.querySelectorAll("[style]").forEach(element => {
 				let styleContent = element.getAttribute("style");
 				if (this.options.compressCSS) {
-					styleContent = util$1.compressCSS(styleContent);
+					styleContent = util.compressCSS(styleContent);
 				}
 				styleContent = ProcessorHelper.resolveStylesheetURLs(styleContent, this.baseURI, this.workStyleElement);
-				const declarationList = cssTree$1.parse(styleContent, { context: "declarationList" });
+				const declarationList = cssTree.parse(styleContent, { context: "declarationList" });
 				this.styles.set(element, declarationList);
 			});
 		}
@@ -19184,7 +19188,8 @@
 					updatedResources: this.options.updatedResources,
 					rootDocument: this.options.rootDocument,
 					frameId: this.options.windowId,
-					resourceReferrer: this.options.resourceReferrer
+					resourceReferrer: this.options.resourceReferrer,
+					blockMixedContent: this.options.blockMixedContent
 				};
 				let mediaText;
 				if (element.media) {
@@ -19220,7 +19225,7 @@
 				}
 				let stylesheet;
 				try {
-					stylesheet = cssTree$1.parse(removeCssComments(stylesheetContent));
+					stylesheet = cssTree.parse(removeCssComments(stylesheetContent));
 				} catch (error) {
 					// ignored
 				}
@@ -19256,7 +19261,7 @@
 						frameElement.removeAttribute("srcdoc");
 					}
 					Array.from(frameElement.childNodes).forEach(node => node.remove());
-					const frameWindowId = frameElement.getAttribute(util$1.WIN_ID_ATTRIBUTE_NAME);
+					const frameWindowId = frameElement.getAttribute(util.WIN_ID_ATTRIBUTE_NAME);
 					if (this.options.frames && frameWindowId) {
 						const frameData = this.options.frames.find(frame => frame.windowId == frameWindowId);
 						if (frameData) {
@@ -19307,16 +19312,16 @@
 			}
 
 			function processElement(element) {
-				const shadowRootElements = Array.from((element.querySelectorAll("[" + util$1.SHADOW_ROOT_ATTRIBUTE_NAME + "]")));
+				const shadowRootElements = Array.from((element.querySelectorAll("[" + util.SHADOW_ROOT_ATTRIBUTE_NAME + "]")));
 				shadowRootElements.forEach(element => {
-					const attributeValue = element.getAttribute(util$1.SHADOW_ROOT_ATTRIBUTE_NAME);
+					const attributeValue = element.getAttribute(util.SHADOW_ROOT_ATTRIBUTE_NAME);
 					if (attributeValue) {
 						const shadowRootData = options.shadowRoots[Number(attributeValue)];
 						if (shadowRootData) {
 							const templateElement = doc.createElement("template");
 							templateElement.setAttribute(SHADOW_MODE_ATTRIBUTE_NAME, shadowRootData.mode);
 							if (shadowRootData.delegatesFocus) {
-								templateElement.setAttribute(SHADOW_DELEGATE_FOCUS_ATTRIBUTE_NAME);
+								templateElement.setAttribute(SHADOW_DELEGATE_FOCUS_ATTRIBUTE_NAME, "");
 							}
 							if (shadowRootData.adoptedStyleSheets) {
 								shadowRootData.adoptedStyleSheets.forEach(stylesheetContent => {
@@ -19325,7 +19330,7 @@
 									templateElement.appendChild(styleElement);
 								});
 							}
-							const shadowDoc = util$1.parseDocContent(shadowRootData.content);
+							const shadowDoc = util.parseDocContent(shadowRootData.content);
 							if (shadowDoc.head) {
 								const metaCharset = shadowDoc.head.querySelector("meta[charset]");
 								if (metaCharset) {
@@ -19363,7 +19368,7 @@
 				options.removeUnusedFonts = false;
 				options.removeHiddenElements = false;
 				options.url = resourceURL;
-				const attributeValue = linkElement.getAttribute(util$1.HTML_IMPORT_ATTRIBUTE_NAME);
+				const attributeValue = linkElement.getAttribute(util.HTML_IMPORT_ATTRIBUTE_NAME);
 				if (attributeValue) {
 					const importData = options.imports[Number(attributeValue)];
 					if (importData) {
@@ -19390,19 +19395,19 @@
 
 		removeUnusedStyles() {
 			if (!this.mediaAllInfo) {
-				this.mediaAllInfo = util$1.getMediaAllInfo(this.doc, this.stylesheets, this.styles);
+				this.mediaAllInfo = util.getMediaAllInfo(this.doc, this.stylesheets, this.styles);
 			}
-			const stats = util$1.minifyCSSRules(this.stylesheets, this.styles, this.mediaAllInfo);
+			const stats = util.minifyCSSRules(this.stylesheets, this.styles, this.mediaAllInfo);
 			this.stats.set("processed", "CSS rules", stats.processed);
 			this.stats.set("discarded", "CSS rules", stats.discarded);
 		}
 
 		removeUnusedFonts() {
-			util$1.removeUnusedFonts(this.doc, this.stylesheets, this.styles, this.options);
+			util.removeUnusedFonts(this.doc, this.stylesheets, this.styles, this.options);
 		}
 
 		removeAlternativeMedias() {
-			const stats = util$1.minifyMedias(this.stylesheets);
+			const stats = util.minifyMedias(this.stylesheets);
 			this.stats.set("processed", "medias", stats.processed);
 			this.stats.set("discarded", "medias", stats.discarded);
 		}
@@ -19462,7 +19467,7 @@
 				element.removeAttribute("integrity");
 				element.textContent = "";
 				try {
-					resourceURL = util$1.resolveURL(scriptSrc, this.baseURI);
+					resourceURL = util.resolveURL(scriptSrc, this.baseURI);
 				} catch (error) {
 					// ignored
 				}
@@ -19473,18 +19478,20 @@
 						element.removeAttribute("href");
 					}
 					this.stats.add("processed", "scripts", 1);
-					const content = await util$1.getContent(resourceURL, {
+					const content = await util.getContent(resourceURL, {
 						asBinary: true,
 						charset: this.charset != UTF8_CHARSET && this.charset,
 						maxResourceSize: this.options.maxResourceSize,
 						maxResourceSizeEnabled: this.options.maxResourceSizeEnabled,
 						frameId: this.options.windowId,
-						resourceReferrer: this.options.resourceReferrer
+						resourceReferrer: this.options.resourceReferrer,
+						baseURI: this.options.baseURI,
+						blockMixedContent: this.options.blockMixedContent
 					});
 					content.data = getUpdatedResourceContent(resourceURL, content, this.options);
 					if (element.tagName == "SCRIPT") {
 						element.setAttribute("src", content.data);
-						if (element.getAttribute("async") == "" || element.getAttribute("async") == "async" || element.getAttribute(util$1.ASYNC_SCRIPT_ATTRIBUTE_NAME) == "") {
+						if (element.getAttribute("async") == "" || element.getAttribute("async") == "async" || element.getAttribute(util.ASYNC_SCRIPT_ATTRIBUTE_NAME) == "") {
 							element.setAttribute("async", "");
 						}
 					} else {
@@ -19498,27 +19505,27 @@
 		}
 
 		removeAlternativeImages() {
-			util$1.removeAlternativeImages(this.doc);
+			util.removeAlternativeImages(this.doc);
 		}
 
 		async removeAlternativeFonts() {
-			await util$1.removeAlternativeFonts(this.doc, this.stylesheets, this.options.fontURLs, this.options.fontTests);
+			await util.removeAlternativeFonts(this.doc, this.stylesheets, this.options.fontURLs, this.options.fontTests);
 		}
 
 		async processFrames() {
 			if (this.options.frames) {
 				const frameElements = Array.from(this.doc.querySelectorAll("iframe, frame, object[type=\"text/html\"][data]"));
 				await Promise.all(frameElements.map(async frameElement => {
-					const frameWindowId = frameElement.getAttribute(util$1.WIN_ID_ATTRIBUTE_NAME);
+					const frameWindowId = frameElement.getAttribute(util.WIN_ID_ATTRIBUTE_NAME);
 					if (frameWindowId) {
 						const frameData = this.options.frames.find(frame => frame.windowId == frameWindowId);
 						if (frameData) {
 							this.options.frames = this.options.frames.filter(frame => frame.windowId != frameWindowId);
-							if (frameData.runner && frameElement.getAttribute(util$1.HIDDEN_FRAME_ATTRIBUTE_NAME) != "") {
+							if (frameData.runner && frameElement.getAttribute(util.HIDDEN_FRAME_ATTRIBUTE_NAME) != "") {
 								this.stats.add("processed", "frames", 1);
 								await frameData.runner.run();
 								const pageData = await frameData.runner.getPageData();
-								frameElement.removeAttribute(util$1.WIN_ID_ATTRIBUTE_NAME);
+								frameElement.removeAttribute(util.WIN_ID_ATTRIBUTE_NAME);
 								let sandbox = "allow-popups allow-top-navigation allow-top-navigation-by-user-activation";
 								if (pageData.content.match(NOSCRIPT_TAG_FOUND) || pageData.content.match(CANVAS_TAG_FOUND) || pageData.content.match(SCRIPT_TAG_FOUND)) {
 									sandbox += " allow-scripts allow-same-origin";
@@ -19536,7 +19543,7 @@
 								}
 								this.stats.addAll(pageData);
 							} else {
-								frameElement.removeAttribute(util$1.WIN_ID_ATTRIBUTE_NAME);
+								frameElement.removeAttribute(util.WIN_ID_ATTRIBUTE_NAME);
 								this.stats.add("discarded", "frames", 1);
 							}
 						}
@@ -19548,14 +19555,14 @@
 		async processHtmlImports() {
 			const linkElements = Array.from(this.doc.querySelectorAll("link[rel=import]"));
 			await Promise.all(linkElements.map(async linkElement => {
-				const attributeValue = linkElement.getAttribute(util$1.HTML_IMPORT_ATTRIBUTE_NAME);
+				const attributeValue = linkElement.getAttribute(util.HTML_IMPORT_ATTRIBUTE_NAME);
 				if (attributeValue) {
 					const importData = this.options.imports[Number(attributeValue)];
 					if (importData.runner) {
 						this.stats.add("processed", "HTML imports", 1);
 						await importData.runner.run();
 						const pageData = await importData.runner.getPageData();
-						linkElement.removeAttribute(util$1.HTML_IMPORT_ATTRIBUTE_NAME);
+						linkElement.removeAttribute(util.HTML_IMPORT_ATTRIBUTE_NAME);
 						linkElement.setAttribute("href", "data:text/html," + pageData.content);
 						this.stats.addAll(pageData);
 					} else {
@@ -19570,7 +19577,7 @@
 				const stylesheetInfo = this.stylesheets.get(styleElement);
 				if (stylesheetInfo) {
 					this.stylesheets.delete(styleElement);
-					let stylesheetContent = cssTree$1.generate(stylesheetInfo.stylesheet);
+					let stylesheetContent = cssTree.generate(stylesheetInfo.stylesheet);
 					styleElement.textContent = stylesheetContent;
 					if (stylesheetInfo.mediaText) {
 						styleElement.media = stylesheetInfo.mediaText;
@@ -19587,7 +19594,7 @@
 					if (stylesheetInfo.mediaText) {
 						styleElement.media = stylesheetInfo.mediaText;
 					}
-					let stylesheetContent = cssTree$1.generate(stylesheetInfo.stylesheet);
+					let stylesheetContent = cssTree.generate(stylesheetInfo.stylesheet);
 					styleElement.textContent = stylesheetContent;
 					linkElement.parentElement.replaceChild(styleElement, linkElement);
 				} else {
@@ -19601,7 +19608,7 @@
 				const declarations = this.styles.get(element);
 				if (declarations) {
 					this.styles.delete(element);
-					let styleContent = cssTree$1.generate(declarations);
+					let styleContent = cssTree.generate(declarations);
 					element.setAttribute("style", styleContent);
 				} else {
 					element.setAttribute("style", "");
@@ -19633,11 +19640,11 @@
 		compressHTML() {
 			let size;
 			if (this.options.displayStats) {
-				size = util$1.getContentSize(this.doc.documentElement.outerHTML);
+				size = util.getContentSize(this.doc.documentElement.outerHTML);
 			}
-			util$1.minifyHTML(this.doc, { PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME: util$1.PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME });
+			util.minifyHTML(this.doc, { PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME: util.PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME });
 			if (this.options.displayStats) {
-				this.stats.add("discarded", "HTML bytes", size - util$1.getContentSize(this.doc.documentElement.outerHTML));
+				this.stats.add("discarded", "HTML bytes", size - util.getContentSize(this.doc.documentElement.outerHTML));
 			}
 		}
 
@@ -19671,7 +19678,7 @@
 			const maffMetaData = await this.maffMetaDataPromise;
 			if (maffMetaData && maffMetaData.content) {
 				const NAMESPACE_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-				const maffDoc = util$1.parseXMLContent(maffMetaData.content);
+				const maffDoc = util.parseXMLContent(maffMetaData.content);
 				const originalURLElement = maffDoc.querySelector("RDF > Description > originalurl");
 				const archiveTimeElement = maffDoc.querySelector("RDF > Description > archivetime");
 				if (originalURLElement) {
@@ -19721,7 +19728,7 @@
 
 	class ProcessorHelper {
 		static async evalTemplate(template = "", options, content, dontReplaceSlash) {
-			const url = util$1.parseURL(options.saveUrl);
+			const url = util.parseURL(options.saveUrl);
 			template = await evalTemplateVariable(template, "page-title", () => options.title || "No title", dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "page-heading", () => options.info.heading || "No heading", dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "page-language", () => options.info.lang || "No language", dontReplaceSlash, options.filenameReplacementCharacter);
@@ -19754,9 +19761,9 @@
 			template = await evalTemplateVariable(template, "tab-index", () => String(options.tabIndex || "No tab index"), dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "url-last-segment", () => decode(getLastSegment(url, options.filenameReplacementCharacter)) || "No last segment", dontReplaceSlash, options.filenameReplacementCharacter);
 			if (content) {
-				template = await evalTemplateVariable(template, "digest-sha-256", async () => util$1.digest("SHA-256", content), dontReplaceSlash, options.filenameReplacementCharacter);
-				template = await evalTemplateVariable(template, "digest-sha-384", async () => util$1.digest("SHA-384", content), dontReplaceSlash, options.filenameReplacementCharacter);
-				template = await evalTemplateVariable(template, "digest-sha-512", async () => util$1.digest("SHA-512", content), dontReplaceSlash, options.filenameReplacementCharacter);
+				template = await evalTemplateVariable(template, "digest-sha-256", async () => util.digest("SHA-256", content), dontReplaceSlash, options.filenameReplacementCharacter);
+				template = await evalTemplateVariable(template, "digest-sha-384", async () => util.digest("SHA-384", content), dontReplaceSlash, options.filenameReplacementCharacter);
+				template = await evalTemplateVariable(template, "digest-sha-512", async () => util.digest("SHA-512", content), dontReplaceSlash, options.filenameReplacementCharacter);
 			}
 			const bookmarkFolder = (options.bookmarkFolders && options.bookmarkFolders.join("/")) || "";
 			template = await evalTemplateVariable(template, "bookmark-pathname", () => bookmarkFolder, dontReplaceSlash === undefined ? true : dontReplaceSlash, options.filenameReplacementCharacter);
@@ -19847,7 +19854,7 @@
 					let resourceURL = normalizeURL(match.resourceURL);
 					if (!testIgnoredPath(resourceURL) && testValidPath(resourceURL)) {
 						try {
-							resourceURL = util$1.resolveURL(match.resourceURL, baseURI);
+							resourceURL = util.resolveURL(match.resourceURL, baseURI);
 						} catch (error) {
 							// ignored
 						}
@@ -19860,7 +19867,7 @@
 							}
 							let importedStylesheetContent = removeCssComments(content.data);
 							if (options.compressCSS) {
-								importedStylesheetContent = util$1.compressCSS(importedStylesheetContent);
+								importedStylesheetContent = util.compressCSS(importedStylesheetContent);
 							}
 							importedStylesheetContent = wrapMediaQuery(importedStylesheetContent, match.media);
 							if (stylesheetContent.includes(cssImport)) {
@@ -19885,23 +19892,27 @@
 			return stylesheetContent;
 
 			async function getStylesheetContent(resourceURL) {
-				const content = await util$1.getContent(resourceURL, {
+				const content = await util.getContent(resourceURL, {
 					maxResourceSize: options.maxResourceSize,
 					maxResourceSizeEnabled: options.maxResourceSizeEnabled,
 					validateTextContentType: true,
 					frameId: options.frameId,
 					charset: options.charset,
-					resourceReferrer: options.resourceReferrer
+					resourceReferrer: options.resourceReferrer,
+					baseURI: options.baseURI,
+					blockMixedContent: options.blockMixedContent
 				});
 				if (!matchCharsetEquals(content.data, content.charset || options.charset)) {
 					options = Object.assign({}, options, { charset: getCharset(content.data) });
-					return util$1.getContent(resourceURL, {
+					return util.getContent(resourceURL, {
 						maxResourceSize: options.maxResourceSize,
 						maxResourceSizeEnabled: options.maxResourceSizeEnabled,
 						validateTextContentType: true,
 						frameId: options.frameId,
 						charset: options.charset,
-						resourceReferrer: options.resourceReferrer
+						resourceReferrer: options.resourceReferrer,
+						baseURI: options.baseURI,
+						blockMixedContent: options.blockMixedContent
 					});
 				} else {
 					return content;
@@ -19916,14 +19927,14 @@
 				let resourceURL = normalizeURL(originalResourceURL);
 				workStylesheet.textContent = "tmp { content:\"" + resourceURL + "\"}";
 				if (workStylesheet.sheet && workStylesheet.sheet.cssRules) {
-					resourceURL = util$1.removeQuotes(workStylesheet.sheet.cssRules[0].style.getPropertyValue("content"));
+					resourceURL = util.removeQuotes(workStylesheet.sheet.cssRules[0].style.getPropertyValue("content"));
 				}
 				if (!testIgnoredPath(resourceURL)) {
 					if (!resourceURL || testValidPath(resourceURL)) {
 						let resolvedURL;
 						if (!originalResourceURL.startsWith("#")) {
 							try {
-								resolvedURL = util$1.resolveURL(resourceURL, baseURI);
+								resolvedURL = util.resolveURL(resourceURL, baseURI);
 							} catch (error) {
 								// ignored
 							}
@@ -19952,13 +19963,15 @@
 		static async resolveLinkStylesheetURLs(resourceURL, baseURI, options, workStylesheet) {
 			resourceURL = normalizeURL(resourceURL);
 			if (resourceURL && resourceURL != baseURI && resourceURL != ABOUT_BLANK_URI) {
-				const content = await util$1.getContent(resourceURL, {
+				const content = await util.getContent(resourceURL, {
 					maxResourceSize: options.maxResourceSize,
 					maxResourceSizeEnabled: options.maxResourceSizeEnabled,
 					charset: options.charset,
 					frameId: options.frameId,
 					resourceReferrer: options.resourceReferrer,
-					validateTextContentType: true
+					validateTextContentType: true,
+					baseURI: baseURI,
+					blockMixedContent: options.blockMixedContent
 				});
 				if (!matchCharsetEquals(content.data, content.charset || options.charset)) {
 					options = Object.assign({}, options, { charset: getCharset(content.data) });
@@ -19971,7 +19984,7 @@
 				}
 				let stylesheetContent = removeCssComments(content.data);
 				if (options.compressCSS) {
-					stylesheetContent = util$1.compressCSS(stylesheetContent);
+					stylesheetContent = util.compressCSS(stylesheetContent);
 				}
 				stylesheetContent = await ProcessorHelper.resolveImportURLs(stylesheetContent, resourceURL, options, workStylesheet);
 				return stylesheetContent;
@@ -20007,7 +20020,8 @@
 							const resourceURL = normalizeURL(originalResourceURL);
 							if (!testIgnoredPath(resourceURL)) {
 								if (testValidURL(resourceURL)) {
-									let { content } = await batchRequest.addURL(resourceURL, true, "font");
+									let { content } = await batchRequest.addURL(resourceURL,
+										{ asBinary: true, expectedType: "font", baseURI, blockMixedContent: options.blockMixedContent });
 									let resourceURLs = fontURLs.get(declaration);
 									if (!resourceURLs) {
 										resourceURLs = [];
@@ -20023,7 +20037,7 @@
 
 				function replaceURLs(declaration, oldURL, newURL) {
 					declaration.value.children.forEach(token => {
-						if (token.type == "Url" && util$1.removeQuotes(getCSSValue(token.value)) == oldURL) {
+						if (token.type == "Url" && util.removeQuotes(getCSSValue(token.value)) == oldURL) {
 							token.value.value = newURL;
 						}
 					});
@@ -20035,7 +20049,7 @@
 			await Promise.all(declarations.map(async declaration => {
 				if (declaration.value && !declaration.value.children && declaration.value.type == "Raw") {
 					try {
-						declaration.value = cssTree$1.parse(declaration.value.value, { context: "value" });
+						declaration.value = cssTree.parse(declaration.value.value, { context: "value" });
 					} catch (error) {
 						// ignored
 					}
@@ -20047,13 +20061,14 @@
 						const resourceURL = normalizeURL(originalResourceURL);
 						if (!testIgnoredPath(resourceURL)) {
 							if (testValidURL(resourceURL)) {
-								let { content, indexResource, duplicate } = await batchRequest.addURL(resourceURL, true, "image", true);
+								let { content, indexResource, duplicate } = await batchRequest.addURL(resourceURL,
+									{ asBinary: true, expectedType: "image", groupDuplicates: options.groupDuplicateImages });
 								let variableDefined;
 								const tokens = [];
 								findURLToken(originalResourceURL, declaration.value.children, (token, parent, rootFunction) => {
 									if (!originalResourceURL.startsWith("#")) {
-										if (duplicate && options.groupDuplicateImages && rootFunction && util$1.getContentSize(content) < SINGLE_FILE_VARIABLE_MAX_SIZE) {
-											const value = cssTree$1.parse("var(" + SINGLE_FILE_VARIABLE_NAME_PREFIX + indexResource + ")", { context: "value" }).children.head;
+										if (duplicate && options.groupDuplicateImages && rootFunction && util.getContentSize(content) < SINGLE_FILE_VARIABLE_MAX_SIZE) {
+											const value = cssTree.parse("var(" + SINGLE_FILE_VARIABLE_NAME_PREFIX + indexResource + ")", { context: "value" }).children.head;
 											tokens.push({ parent, token, value });
 											variableDefined = true;
 										} else {
@@ -20076,7 +20091,7 @@
 					if (token.data.children) {
 						findURLToken(url, token.data.children, callback, depth + 1);
 					}
-					if (token.data.type == "Url" && util$1.removeQuotes(getCSSValue(token.data.value)) == url) {
+					if (token.data.type == "Url" && util.removeQuotes(getCSSValue(token.data.value)) == url) {
 						callback(token, children, depth == 0);
 					}
 				}
@@ -20091,25 +20106,26 @@
 					let originURL = resourceElement.dataset.singleFileOriginURL;
 					delete resourceElement.dataset.singleFileOriginURL;
 					if (!testIgnoredPath(resourceURL)) {
-						resourceElement.setAttribute(attributeName, EMPTY_IMAGE$1);
+						resourceElement.setAttribute(attributeName, EMPTY_IMAGE);
 						if (testValidPath(resourceURL)) {
 							try {
-								resourceURL = util$1.resolveURL(resourceURL, baseURI);
+								resourceURL = util.resolveURL(resourceURL, baseURI);
 							} catch (error) {
 								// ignored
 							}
 							if (testValidURL(resourceURL)) {
-								let { content, indexResource, duplicate } = await batchRequest.addURL(resourceURL, true, "image", resourceElement.tagName == "IMG" && attributeName == "src");
+								let { content, indexResource, duplicate } = await batchRequest.addURL(resourceURL,
+									{ asBinary: true, expectedType: "image", groupDuplicates: options.groupDuplicateImages && resourceElement.tagName == "IMG" && attributeName == "src" });
 								if (originURL) {
 									if (content == EMPTY_DATA_URI) {
 										try {
-											originURL = util$1.resolveURL(originURL, baseURI);
+											originURL = util.resolveURL(originURL, baseURI);
 										} catch (error) {
 											// ignored
 										}
 										try {
 											resourceURL = originURL;
-											content = (await util$1.getContent(resourceURL, {
+											content = (await util.getContent(resourceURL, {
 												asBinary: true,
 												expectedType: "image",
 												maxResourceSize: options.maxResourceSize,
@@ -20128,10 +20144,10 @@
 									const forbiddenPrefixFound = PREFIXES_FORBIDDEN_DATA_URI.filter(prefixDataURI => content.startsWith(prefixDataURI)).length;
 									if (!forbiddenPrefixFound) {
 										const isSVG = content.startsWith(PREFIX_DATA_URI_IMAGE_SVG);
-										if (processDuplicates && duplicate && options.groupDuplicateImages && !isSVG && util$1.getContentSize(content) < SINGLE_FILE_VARIABLE_MAX_SIZE) {
+										if (processDuplicates && duplicate && options.groupDuplicateImages && !isSVG && util.getContentSize(content) < SINGLE_FILE_VARIABLE_MAX_SIZE) {
 											if (ProcessorHelper.replaceImageSource(resourceElement, SINGLE_FILE_VARIABLE_NAME_PREFIX + indexResource, options)) {
 												cssVariables.set(indexResource, content);
-												const declarationList = cssTree$1.parse(resourceElement.getAttribute("style"), { context: "declarationList" });
+												const declarationList = cssTree.parse(resourceElement.getAttribute("style"), { context: "declarationList" });
 												styles.set(resourceElement, declarationList);
 											} else {
 												resourceElement.setAttribute(attributeName, content);
@@ -20158,9 +20174,9 @@
 				}
 				let resourceURL = normalizeURL(originalResourceURL);
 				if (testValidPath(resourceURL) && !testIgnoredPath(resourceURL)) {
-					resourceElement.setAttribute(attributeName, EMPTY_IMAGE$1);
+					resourceElement.setAttribute(attributeName, EMPTY_IMAGE);
 					try {
-						resourceURL = util$1.resolveURL(resourceURL, baseURI);
+						resourceURL = util.resolveURL(resourceURL, baseURI);
 					} catch (error) {
 						// ignored
 					}
@@ -20170,7 +20186,7 @@
 							resourceElement.setAttribute(attributeName, hashMatch[0]);
 						} else {
 							const response = await batchRequest.addURL(resourceURL);
-							const svgDoc = util$1.parseSVGContent(response.content);
+							const svgDoc = util.parseSVGContent(response.content);
 							if (hashMatch && hashMatch[0]) {
 								let symbolElement;
 								try {
@@ -20196,18 +20212,18 @@
 
 		static async processSrcset(resourceElements, attributeName, baseURI, batchRequest) {
 			await Promise.all(Array.from(resourceElements).map(async resourceElement => {
-				const srcset = util$1.parseSrcset(resourceElement.getAttribute(attributeName));
+				const srcset = util.parseSrcset(resourceElement.getAttribute(attributeName));
 				const srcsetValues = await Promise.all(srcset.map(async srcsetValue => {
 					let resourceURL = normalizeURL(srcsetValue.url);
 					if (!testIgnoredPath(resourceURL)) {
 						if (testValidPath(resourceURL)) {
 							try {
-								resourceURL = util$1.resolveURL(resourceURL, baseURI);
+								resourceURL = util.resolveURL(resourceURL, baseURI);
 							} catch (error) {
 								// ignored
 							}
 							if (testValidURL(resourceURL)) {
-								const { content } = await batchRequest.addURL(resourceURL, true, "image");
+								const { content } = await batchRequest.addURL(resourceURL, { asBinary: true, expectedType: "image" });
 								const forbiddenPrefixFound = PREFIXES_FORBIDDEN_DATA_URI.filter(prefixDataURI => content.startsWith(prefixDataURI)).length;
 								if (forbiddenPrefixFound) {
 									return "";
@@ -20228,9 +20244,9 @@
 		}
 
 		static replaceImageSource(imgElement, variableName, options) {
-			const attributeValue = imgElement.getAttribute(util$1.IMAGE_ATTRIBUTE_NAME);
+			const attributeValue = imgElement.getAttribute(util.IMAGE_ATTRIBUTE_NAME);
 			if (attributeValue) {
-				const imageData = options.images[Number(imgElement.getAttribute(util$1.IMAGE_ATTRIBUTE_NAME))];
+				const imageData = options.images[Number(imgElement.getAttribute(util.IMAGE_ATTRIBUTE_NAME))];
 				if (imageData && imageData.replaceable) {
 					imgElement.setAttribute("src", `${PREFIX_DATA_URI_IMAGE_SVG},<svg xmlns="http://www.w3.org/2000/svg" width="${imageData.size.pxWidth}" height="${imageData.size.pxHeight}"><rect fill-opacity="0"/></svg>`);
 					const backgroundStyle = {};
@@ -20245,7 +20261,7 @@
 						backgroundStyle["background-color"] = imageData.backgroundColor;
 					}
 					ProcessorHelper.setBackgroundImage(imgElement, "var(" + variableName + ")", backgroundStyle);
-					imgElement.removeAttribute(util$1.IMAGE_ATTRIBUTE_NAME);
+					imgElement.removeAttribute(util.IMAGE_ATTRIBUTE_NAME);
 					return true;
 				}
 			}
@@ -20261,9 +20277,9 @@
 	const EMPTY_URL = /^https?:\/\/+\s*$/;
 	const NOT_EMPTY_URL = /^(https?:\/\/|file:\/\/|blob:).+/;
 	const REGEXP_URL_FN = /(url\s*\(\s*'(.*?)'\s*\))|(url\s*\(\s*"(.*?)"\s*\))|(url\s*\(\s*(.*?)\s*\))/gi;
-	const REGEXP_URL_SIMPLE_QUOTES_FN$1 = /^url\s*\(\s*'(.*?)'\s*\)$/i;
-	const REGEXP_URL_DOUBLE_QUOTES_FN$1 = /^url\s*\(\s*"(.*?)"\s*\)$/i;
-	const REGEXP_URL_NO_QUOTES_FN$1 = /^url\s*\(\s*(.*?)\s*\)$/i;
+	const REGEXP_URL_SIMPLE_QUOTES_FN = /^url\s*\(\s*'(.*?)'\s*\)$/i;
+	const REGEXP_URL_DOUBLE_QUOTES_FN = /^url\s*\(\s*"(.*?)"\s*\)$/i;
+	const REGEXP_URL_NO_QUOTES_FN = /^url\s*\(\s*(.*?)\s*\)$/i;
 	const REGEXP_IMPORT_FN = /(@import\s*url\s*\(\s*'(.*?)'\s*\)\s*(.*?)(;|$|}))|(@import\s*url\s*\(\s*"(.*?)"\s*\)\s*(.*?)(;|$|}))|(@import\s*url\s*\(\s*(.*?)\s*\)\s*(.*?)(;|$|}))|(@import\s*'(.*?)'\s*(.*?)(;|$|}))|(@import\s*"(.*?)"\s*(.*?)(;|$|}))|(@import\s*(.*?)\s*(.*?)(;|$|}))/gi;
 	const REGEXP_IMPORT_URL_SIMPLE_QUOTES_FN = /@import\s*url\s*\(\s*'(.*?)'\s*\)\s*(.*?)(;|$|})/i;
 	const REGEXP_IMPORT_URL_DOUBLE_QUOTES_FN = /@import\s*url\s*\(\s*"(.*?)"\s*\)\s*(.*?)(;|$|})/i;
@@ -20293,7 +20309,7 @@
 	function getCSSValue(value) {
 		let result = "";
 		try {
-			result = cssTree$1.generate(value);
+			result = cssTree.generate(value);
 		} catch (error) {
 			// ignored
 		}
@@ -20348,7 +20364,7 @@
 					value = value.replace(/\/+/g, replacementCharacter);
 				}
 				if (maxLength) {
-					value = await util$1.truncateText(value, maxLength);
+					value = await util.truncateText(value, maxLength);
 				}
 				return template.replace(replaceRegExp, value);
 			}
@@ -20395,15 +20411,15 @@
 	}
 
 	function findShortcutIcon(shortcutIcons) {
-		shortcutIcons = shortcutIcons.filter(linkElement => linkElement.href != EMPTY_IMAGE$1);
+		shortcutIcons = shortcutIcons.filter(linkElement => linkElement.href != EMPTY_IMAGE);
 		shortcutIcons.sort((linkElement1, linkElement2) => (parseInt(linkElement2.sizes, 10) || 16) - (parseInt(linkElement1.sizes, 10) || 16));
 		return shortcutIcons[0];
 	}
 
 	function matchURL(stylesheetContent) {
-		const match = stylesheetContent.match(REGEXP_URL_SIMPLE_QUOTES_FN$1) ||
-			stylesheetContent.match(REGEXP_URL_DOUBLE_QUOTES_FN$1) ||
-			stylesheetContent.match(REGEXP_URL_NO_QUOTES_FN$1);
+		const match = stylesheetContent.match(REGEXP_URL_SIMPLE_QUOTES_FN) ||
+			stylesheetContent.match(REGEXP_URL_DOUBLE_QUOTES_FN) ||
+			stylesheetContent.match(REGEXP_URL_NO_QUOTES_FN);
 		return match && match[1];
 	}
 
@@ -20546,7 +20562,7 @@
 	const DEFAULT_REPLACED_CHARACTERS = ["~", "+", "\\\\", "?", "%", "*", ":", "|", "\"", "<", ">", "\x00-\x1f", "\x7F"];
 	const DEFAULT_REPLACEMENT_CHARACTER = "_";
 
-	const URL$4 = globalThis.URL;
+	const URL = globalThis.URL;
 	const DOMParser = globalThis.DOMParser;
 	const Blob = globalThis.Blob;
 	const FileReader = globalThis.FileReader;
@@ -20563,9 +20579,9 @@
 			getContent,
 			parseURL(resourceURL, baseURI) {
 				if (baseURI === undefined) {
-					return new URL$4(resourceURL);
+					return new URL(resourceURL);
 				} else {
-					return new URL$4(resourceURL, baseURI);
+					return new URL(resourceURL, baseURI);
 				}
 			},
 			resolveURL(resourceURL, baseURI) {
@@ -20637,16 +20653,16 @@
 				});
 			},
 			minifyHTML(doc, options) {
-				return process$8(doc, options);
+				return process$1(doc, options);
 			},
 			minifyCSSRules(stylesheets, styles, mediaAllInfo) {
-				return process$6(stylesheets, styles, mediaAllInfo);
+				return process$3(stylesheets, styles, mediaAllInfo);
 			},
 			removeUnusedFonts(doc, stylesheets, styles, options) {
-				return process$4(doc, stylesheets, styles, options);
+				return process$5(doc, stylesheets, styles, options);
 			},
 			removeAlternativeFonts(doc, stylesheets, fontURLs, fontTests) {
-				return process$3(doc, stylesheets, fontURLs, fontTests);
+				return process$6(doc, stylesheets, fontURLs, fontTests);
 			},
 			getMediaAllInfo(doc, stylesheets, styles) {
 				return getMediaAllInfo(doc, stylesheets, styles);
@@ -20655,13 +20671,13 @@
 				return processString(content, options);
 			},
 			minifyMedias(stylesheets) {
-				return process$5(stylesheets);
+				return process$4(stylesheets);
 			},
 			removeAlternativeImages(doc) {
-				return process$7(doc);
+				return process$2(doc);
 			},
 			parseSrcset(srcset) {
-				return process$2(srcset);
+				return process$7(srcset);
 			},
 			preProcessDoc(doc, win, options) {
 				return preProcessDoc(doc, win, options);
@@ -20670,10 +20686,10 @@
 				postProcessDoc(doc, markedElements);
 			},
 			serialize(doc, compressHTML) {
-				return process$9(doc, compressHTML);
+				return process(doc, compressHTML);
 			},
 			removeQuotes(string) {
-				return removeQuotes(string);
+				return removeQuotes$1(string);
 			},
 			ON_BEFORE_CAPTURE_EVENT_NAME: ON_BEFORE_CAPTURE_EVENT_NAME,
 			ON_AFTER_CAPTURE_EVENT_NAME: ON_AFTER_CAPTURE_EVENT_NAME,
@@ -20699,6 +20715,9 @@
 			let response, startTime;
 			const fetchResource = utilOptions.fetch;
 			const fetchFrameResource = utilOptions.frameFetch;
+			if (options.blockMixedContent && /^https:/i.test(options.baseURI) && !/^https:/i.test(resourceURL)) {
+				return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
+			}
 			try {
 				if (options.frameId) {
 					try {
@@ -20877,10 +20896,10 @@
 	 *   Source.
 	 */
 
-
+	exports.SingleFile = void 0;
 
 	function init(initOptions) {
-		exports.SingleFile = getClass(getInstance(initOptions), cssTree);
+		exports.SingleFile = getClass(getInstance(initOptions), cssTree$1);
 	}
 
 	async function getPageData(options = {}, initOptions, doc = globalThis.document, win = globalThis) {
@@ -20901,7 +20920,7 @@
 					preInitializationPromises.push(frameTreePromise);
 				}
 				if (options.loadDeferredImages) {
-					preInitializationPromises.push(process$1(options));
+					preInitializationPromises.push(process$8(options));
 				}
 			}
 			[options.frames] = await Promise.all(preInitializationPromises);
@@ -20926,10 +20945,10 @@
 	exports.getPageData = getPageData;
 	exports.helper = singleFileHelper;
 	exports.init = init;
-	exports.modules = index$2;
-	exports.processors = index;
+	exports.modules = index;
+	exports.processors = index$2;
 	exports.vendor = index$1;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));

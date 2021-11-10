@@ -150,11 +150,11 @@
 
 	browser.runtime.onMessage.addListener(message => {
 		if (message.method == "singlefile.fetchFrame" && window.frameId && window.frameId == message.frameId) {
-			return onMessage(message);
+			return onMessage$1(message);
 		}
 	});
 
-	async function onMessage(message) {
+	async function onMessage$1(message) {
 		try {
 			let response = await fetch(message.url, { cache: "force-cache" });
 			if (response.status == 401 || response.status == 403 || response.status == 404) {
@@ -263,10 +263,10 @@
 
 	/* global document, globalThis, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node */
 
-	const singlefile = globalThis.singlefile;
-	const bootstrap = globalThis.singlefileBootstrap;
+	const singlefile$2 = globalThis.singlefile;
+	const bootstrap$1 = globalThis.singlefileBootstrap;
 
-	const SELECTED_CONTENT_ATTRIBUTE_NAME = singlefile.helper.SELECTED_CONTENT_ATTRIBUTE_NAME;
+	const SELECTED_CONTENT_ATTRIBUTE_NAME = singlefile$2.helper.SELECTED_CONTENT_ATTRIBUTE_NAME;
 
 	const MASK_TAGNAME = "singlefile-mask";
 	const MASK_CONTENT_CLASSNAME = "singlefile-mask-content";
@@ -278,29 +278,29 @@
 	const LOGS_LINE_CLASSNAME = "singlefile-logs-line";
 	const LOGS_LINE_TEXT_ELEMENT_CLASSNAME = "singlefile-logs-line-text";
 	const LOGS_LINE_STATUS_ELEMENT_CLASSNAME = "singlefile-logs-line-icon";
-	const SINGLE_FILE_UI_ELEMENT_CLASS = singlefile.helper.SINGLE_FILE_UI_ELEMENT_CLASS;
+	const SINGLE_FILE_UI_ELEMENT_CLASS$1 = singlefile$2.helper.SINGLE_FILE_UI_ELEMENT_CLASS;
 	const SELECT_PX_THRESHOLD = 8;
 	let LOG_PANEL_DEFERRED_IMAGES_MESSAGE;
 	let LOG_PANEL_FRAME_CONTENTS_MESSAGE;
 	let LOG_PANEL_STEP_MESSAGE;
 	let LOG_PANEL_WIDTH;
-	const CSS_PROPERTIES = new Set(Array.from(getComputedStyle(document.documentElement)));
+	const CSS_PROPERTIES$1 = new Set(Array.from(getComputedStyle(document.documentElement)));
 
 	let selectedAreaElement, logsWindowElement;
-	createLogsWindowElement();
 
 	function promptMessage(message, defaultValue) {
 		return prompt(message, defaultValue);
 	}
 
 	function onStartPage(options) {
-		LOG_PANEL_DEFERRED_IMAGES_MESSAGE = bootstrap.messages.logPanelDeferredImages.message;
-		LOG_PANEL_FRAME_CONTENTS_MESSAGE = bootstrap.messages.logPanelFrameContents.message;
-		LOG_PANEL_STEP_MESSAGE = bootstrap.messages.logPanelStep.message;
-		LOG_PANEL_WIDTH = bootstrap.messages.logPanelWidth.message;
+		LOG_PANEL_DEFERRED_IMAGES_MESSAGE = bootstrap$1.messages.logPanelDeferredImages.message;
+		LOG_PANEL_FRAME_CONTENTS_MESSAGE = bootstrap$1.messages.logPanelFrameContents.message;
+		LOG_PANEL_STEP_MESSAGE = bootstrap$1.messages.logPanelStep.message;
+		LOG_PANEL_WIDTH = bootstrap$1.messages.logPanelWidth.message;
 		let maskElement = document.querySelector(MASK_TAGNAME);
 		if (!maskElement) {
 			if (options.logsEnabled) {
+				createLogsWindowElement();
 				document.body.appendChild(logsWindowElement);
 			}
 			if (options.shadowEnabled) {
@@ -590,7 +590,7 @@
 	function getAreaSelector() {
 		let selectorElement = document.querySelector(SELECTION_ZONE_TAGNAME);
 		if (!selectorElement) {
-			selectorElement = createElement(SELECTION_ZONE_TAGNAME, document.body);
+			selectorElement = createElement$1(SELECTION_ZONE_TAGNAME, document.body);
 			selectorElement.style.setProperty("box-sizing", "border-box", "important");
 			selectorElement.style.setProperty("background-color", "#3ea9d7", "important");
 			selectorElement.style.setProperty("border", "10px solid #0b4892", "important");
@@ -617,7 +617,7 @@
 		try {
 			let maskElement = document.querySelector(MASK_TAGNAME);
 			if (!maskElement) {
-				maskElement = createElement(MASK_TAGNAME, document.body);
+				maskElement = createElement$1(MASK_TAGNAME, document.body);
 				const shadowRoot = maskElement.attachShadow({ mode: "open" });
 				const styleElement = document.createElement("style");
 				styleElement.textContent = `
@@ -702,7 +702,7 @@
 		try {
 			logsWindowElement = document.querySelector(LOGS_WINDOW_TAGNAME);
 			if (!logsWindowElement) {
-				logsWindowElement = createElement(LOGS_WINDOW_TAGNAME);
+				logsWindowElement = createElement$1(LOGS_WINDOW_TAGNAME);
 				const shadowRoot = logsWindowElement.attachShadow({ mode: "open" });
 				const styleElement = document.createElement("style");
 				styleElement.textContent = `
@@ -847,13 +847,13 @@
 		return target;
 	}
 
-	function createElement(tagName, parentElement) {
+	function createElement$1(tagName, parentElement) {
 		const element = document.createElement(tagName);
-		element.className = SINGLE_FILE_UI_ELEMENT_CLASS;
+		element.className = SINGLE_FILE_UI_ELEMENT_CLASS$1;
 		if (parentElement) {
 			parentElement.appendChild(element);
 		}
-		CSS_PROPERTIES.forEach(property => element.style.setProperty(property, "initial", "important"));
+		CSS_PROPERTIES$1.forEach(property => element.style.setProperty(property, "initial", "important"));
 		return element;
 	}
 
@@ -886,10 +886,10 @@
 
 	const CLOSE_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AYht+mSlUqHewg4hChOogFURFHqWIRLJS2QqsOJpf+CE0akhQXR8G14ODPYtXBxVlXB1dBEPwBcXNzUnSREr9LCi1ivOO4h/e+9+XuO0Col5lqdowDqmYZqXhMzOZWxMAruhGiOYohiZl6Ir2Qgef4uoeP73dRnuVd9+foVfImA3wi8SzTDYt4nXh609I57xOHWUlSiM+Jxwy6IPEj12WX3zgXHRZ4ZtjIpOaIw8RisY3lNmYlQyWeIo4oqkb5QtZlhfMWZ7VcZc178hcG89pymuu0BhHHIhJIQoSMKjZQhoUo7RopJlJ0HvPwDzj+JLlkcm2AkWMeFaiQHD/4H/zurVmYnHCTgjGg88W2P4aBwC7QqNn297FtN04A/zNwpbX8lTow80l6raVFjoDQNnBx3dLkPeByB+h/0iVDciQ/LaFQAN7P6JtyQN8t0LPq9q15jtMHIEO9WroBDg6BkSJlr3m8u6u9b//WNPv3A6mTcr3f/E/sAAAABmJLR0QAigCKAIrj2uckAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5QkPDysvCdPVuwAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAELSURBVHja7ZpLFsIwDAPj3v/OsGHDe1BIa8tKO7Mnlkw+dpoxAAAAAGCfx4ur6Yx/B337UUS4mp/VuWUEcjSfOgO+BXCZCWe0hSqQo/npBLglIUNLdAV2MH84Ad1JyIwdLkK6YoabIHWscBWmihHuAqvHtv+XqmdXOK9TxdKy3axUm2vZkXXGgPJksTuz1bVFeeU2Y6ijsLIpXbtKa1kDs2ews69o7+A+ihJ2lvI+/lcS1G21zUVG18XKNm4OS4BNkGOQQohSmGaIdpgLESvzyiRwKepsXjE2H0ZWMF8Zi4+jK5mviM0DiRXNZ2rhkdTK5jO0xermz2o8dCnq+FS2XNNVH0sDAAAA3JYnre9cH8BZmhEAAAAASUVORK5CYII=";
 
-	const SINGLE_FILE_UI_ELEMENT_CLASS$1 = singlefile$1.helper.SINGLE_FILE_UI_ELEMENT_CLASS;
+	const SINGLE_FILE_UI_ELEMENT_CLASS = singlefile$1.helper.SINGLE_FILE_UI_ELEMENT_CLASS;
 	const ERROR_BAR_TAGNAME = "singlefile-error-bar";
 
-	const CSS_PROPERTIES$1 = new Set(Array.from(getComputedStyle(document.documentElement)));
+	const CSS_PROPERTIES = new Set(Array.from(getComputedStyle(document.documentElement)));
 
 	let errorBarElement;
 
@@ -898,7 +898,7 @@
 			console.error("SingleFile Lite", message, link); // eslint-disable-line no-console
 			errorBarElement = document.querySelector(ERROR_BAR_TAGNAME);
 			if (!errorBarElement) {
-				errorBarElement = createElement$1(ERROR_BAR_TAGNAME);
+				errorBarElement = createElement(ERROR_BAR_TAGNAME);
 				const shadowRoot = errorBarElement.attachShadow({ mode: "open" });
 				const styleElement = document.createElement("style");
 				styleElement.textContent = `
@@ -974,13 +974,13 @@
 		}
 	}
 
-	function createElement$1(tagName, parentElement) {
+	function createElement(tagName, parentElement) {
 		const element = document.createElement(tagName);
-		element.className = SINGLE_FILE_UI_ELEMENT_CLASS$1;
+		element.className = SINGLE_FILE_UI_ELEMENT_CLASS;
 		if (parentElement) {
 			parentElement.appendChild(element);
 		}
-		CSS_PROPERTIES$1.forEach(property => element.style.setProperty(property, "initial", "important"));
+		CSS_PROPERTIES.forEach(property => element.style.setProperty(property, "initial", "important"));
 		return element;
 	}
 
@@ -1007,21 +1007,21 @@
 	 *   Source.
 	 */
 
-	const singlefile$2 = globalThis.singlefile;
-	const bootstrap$1 = globalThis.singlefileBootstrap;
+	const singlefile = globalThis.singlefile;
+	const bootstrap = globalThis.singlefileBootstrap;
 
 	const MOZ_EXTENSION_PROTOCOL = "moz-extension:";
 
 	let processor, processing;
 
-	singlefile$2.init({ fetch: fetchResource, frameFetch });
+	singlefile.init({ fetch: fetchResource, frameFetch });
 	browser.runtime.onMessage.addListener(message => {
 		if (message.method == "content.save" || message.method == "content.cancelSave" || message.method == "content.getSelectedLinks" || message.method == "content.error") {
-			return onMessage$1(message);
+			return onMessage(message);
 		}
 	});
 
-	async function onMessage$1(message) {
+	async function onMessage(message) {
 		if (!location.href.startsWith(MOZ_EXTENSION_PROTOCOL)) {
 			if (message.method == "content.save") {
 				await savePage(message);
@@ -1034,7 +1034,7 @@
 					browser.runtime.sendMessage({ method: "ui.processCancelled" });
 				}
 				if (message.options.loadDeferredImages) {
-					singlefile$2.processors.lazy.resetZoomLevel(message.options);
+					singlefile.processors.lazy.resetZoomLevel(message.options);
 				}
 				return {};
 			}
@@ -1055,16 +1055,16 @@
 		if (options.selected || options.optionallySelected) {
 			selectionFound = await markSelection(options.optionallySelected);
 		}
-		if (!processing && (!bootstrap$1 || !bootstrap$1.pageInfo.processing)) {
-			options.updatedResources = bootstrap$1 ? bootstrap$1.pageInfo.updatedResources : {};
-			options.visitDate = bootstrap$1 ? bootstrap$1.pageInfo.visitDate : new Date();
+		if (!processing && (!bootstrap || !bootstrap.pageInfo.processing)) {
+			options.updatedResources = bootstrap ? bootstrap.pageInfo.updatedResources : {};
+			options.visitDate = bootstrap ? bootstrap.pageInfo.visitDate : new Date();
 			Object.keys(options.updatedResources).forEach(url => options.updatedResources[url].retrieved = false);
 			if (options.optionallySelected && selectionFound) {
 				options.selected = true;
 			}
 			if (!options.selected || selectionFound) {
-				if (bootstrap$1) {
-					bootstrap$1.pageInfo.processing = true;
+				if (bootstrap) {
+					bootstrap.pageInfo.processing = true;
 				}
 				try {
 					const pageData = await processPage(options);
@@ -1084,18 +1084,18 @@
 				browser.runtime.sendMessage({ method: "ui.processCancelled" });
 			}
 			processing = false;
-			if (bootstrap$1) {
-				bootstrap$1.pageInfo.processing = false;
+			if (bootstrap) {
+				bootstrap.pageInfo.processing = false;
 			}
 		}
 	}
 
 	async function processPage(options) {
-		const frames = singlefile$2.processors.frameTree;
+		const frames = singlefile.processors.frameTree;
 		let framesSessionId;
-		singlefile$2.helper.initDoc(document);
+		singlefile.helper.initDoc(document);
 		onStartPage(options);
-		processor = new singlefile$2.SingleFile(options);
+		processor = new singlefile.SingleFile(options);
 		const preInitializationPromises = [];
 		options.insertCanonicalLink = true;
 		if (!options.saveRawPage) {
@@ -1115,7 +1115,7 @@
 				preInitializationPromises.push(frameTreePromise);
 			}
 			if (options.loadDeferredImages) {
-				const lazyLoadPromise = singlefile$2.processors.lazy.process(options);
+				const lazyLoadPromise = singlefile.processors.lazy.process(options);
 				onLoadingDeferResources(options);
 				lazyLoadPromise.then(() => {
 					if (!processor.cancelled) {
@@ -1131,7 +1131,7 @@
 				if (event.type == event.RESOURCES_INITIALIZED) {
 					maxIndex = event.detail.max;
 					if (options.loadDeferredImages) {
-						singlefile$2.processors.lazy.resetZoomLevel(options);
+						singlefile.processors.lazy.resetZoomLevel(options);
 					}
 				}
 				if (event.type == event.RESOURCES_INITIALIZED || event.type == event.RESOURCE_LOADED) {
@@ -1207,4 +1207,4 @@
 		return page;
 	}
 
-}());
+})();

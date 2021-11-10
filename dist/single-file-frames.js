@@ -1,7 +1,7 @@
 (function (factory) {
 	typeof define === 'function' && define.amd ? define(factory) :
 	factory();
-}((function () { 'use strict';
+})((function () { 'use strict';
 
 	/*
 	 * Copyright 2010-2020 Gildas Lormeau
@@ -42,11 +42,11 @@
 	const DELETE_FONT_EVENT = "single-file-delete-font";
 	const CLEAR_FONTS_EVENT = "single-file-clear-fonts";
 
-	const browser = globalThis.browser;
-	const addEventListener = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const browser$2 = globalThis.browser;
+	const addEventListener$2 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
 	const dispatchEvent = event => globalThis.dispatchEvent(event);
 	const CustomEvent = globalThis.CustomEvent;
-	const document = globalThis.document;
+	const document$2 = globalThis.document;
 	const Document = globalThis.Document;
 
 	let fontFaces;
@@ -56,30 +56,30 @@
 		fontFaces = window._singleFile_fontFaces = new Map();
 	}
 
-	if (document instanceof Document) {
-		if (browser && browser.runtime && browser.runtime.getURL) {
-			addEventListener(NEW_FONT_FACE_EVENT, event => {
+	if (document$2 instanceof Document) {
+		if (browser$2 && browser$2.runtime && browser$2.runtime.getURL) {
+			addEventListener$2(NEW_FONT_FACE_EVENT, event => {
 				const detail = event.detail;
 				const key = Object.assign({}, detail);
 				delete key.src;
 				fontFaces.set(JSON.stringify(key), detail);
 			});
-			addEventListener(DELETE_FONT_EVENT, event => {
+			addEventListener$2(DELETE_FONT_EVENT, event => {
 				const detail = event.detail;
 				const key = Object.assign({}, detail);
 				delete key.src;
 				fontFaces.delete(JSON.stringify(key));
 			});
-			addEventListener(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
-			const scriptElement = document.createElement("script");
-			scriptElement.src = browser.runtime.getURL("/dist/web/hooks/hooks-frames-web.js");
+			addEventListener$2(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
+			const scriptElement = document$2.createElement("script");
+			scriptElement.src = browser$2.runtime.getURL("/dist/web/hooks/hooks-frames-web.js");
 			scriptElement.async = false;
-			(document.documentElement || document).appendChild(scriptElement);
+			(document$2.documentElement || document$2).appendChild(scriptElement);
 			scriptElement.remove();
 		}
 	}
 
-	function getFontsData() {
+	function getFontsData$1() {
 		return Array.from(fontFaces.values());
 	}
 
@@ -163,7 +163,7 @@
 	const whitespace = "[\\x20\\t\\r\\n\\f]";
 	const unescapeRegExp = new RegExp("\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig");
 
-	function process(str) {
+	function process$1(str) {
 		return str.replace(unescapeRegExp, (_, escaped, escapedWhitespace) => {
 			const high = "0x" + escaped - 0x10000;
 
@@ -273,7 +273,7 @@
 		}
 		return {
 			canvases: elementsInfo.canvases,
-			fonts: getFontsData$1(),
+			fonts: getFontsData(),
 			stylesheets: getStylesheetsData(doc),
 			images: elementsInfo.images,
 			posters: elementsInfo.posters,
@@ -477,7 +477,7 @@
 	}
 
 	function normalizeFontFamily(fontFamilyName = "") {
-		return removeQuotes(process(fontFamilyName.trim())).toLowerCase();
+		return removeQuotes(process$1(fontFamilyName.trim())).toLowerCase();
 	}
 
 	function testHiddenElement(element, computedStyle) {
@@ -593,8 +593,8 @@
 		}
 	}
 
-	function getFontsData$1() {
-		return getFontsData();
+	function getFontsData() {
+		return getFontsData$1();
 	}
 
 	function serialize(doc) {
@@ -652,7 +652,7 @@
 	 *   notice and a URL through which recipients can access the Corresponding 
 	 *   Source.
 	 */
-	const helper = {
+	const helper$1 = {
 		LAZY_SRC_ATTRIBUTE_NAME,
 		SINGLE_FILE_UI_ELEMENT_CLASS
 	};
@@ -685,7 +685,7 @@
 		});
 	}
 
-	async function process$1(options) {
+	async function process(options) {
 		if (document$1.documentElement) {
 			timeouts.clear();
 			const maxScrollY = Math.max(document$1.documentElement.scrollHeight - (document$1.documentElement.clientHeight * 1.5), 0);
@@ -706,11 +706,11 @@
 				if (mutations.length) {
 					const updated = mutations.filter(mutation => {
 						if (mutation.attributeName == "src") {
-							mutation.target.setAttribute(helper.LAZY_SRC_ATTRIBUTE_NAME, mutation.target.src);
+							mutation.target.setAttribute(helper$1.LAZY_SRC_ATTRIBUTE_NAME, mutation.target.src);
 							mutation.target.addEventListener("load", onResourceLoad);
 						}
 						if (mutation.attributeName == "src" || mutation.attributeName == "srcset" || mutation.target.tagName == "SOURCE") {
-							return !mutation.target.classList || !mutation.target.classList.contains(helper.SINGLE_FILE_UI_ELEMENT_CLASS);
+							return !mutation.target.classList || !mutation.target.classList.contains(helper$1.SINGLE_FILE_UI_ELEMENT_CLASS);
 						}
 					});
 					if (updated.length) {
@@ -745,7 +745,7 @@
 
 			function onResourceLoad(event) {
 				const element = event.target;
-				element.removeAttribute(helper.LAZY_SRC_ATTRIBUTE_NAME);
+				element.removeAttribute(helper$1.LAZY_SRC_ATTRIBUTE_NAME);
 				element.removeEventListener("load", onResourceLoad);
 			}
 
@@ -866,7 +866,7 @@
 	 *   Source.
 	 */
 
-	const helper$1 = {
+	const helper = {
 		ON_BEFORE_CAPTURE_EVENT_NAME,
 		ON_AFTER_CAPTURE_EVENT_NAME,
 		WIN_ID_ATTRIBUTE_NAME,
@@ -884,24 +884,24 @@
 	const CLEANUP_REQUEST_MESSAGE = "singlefile.frameTree.cleanupRequest";
 	const INIT_RESPONSE_MESSAGE = "singlefile.frameTree.initResponse";
 	const TARGET_ORIGIN = "*";
-	const TIMEOUT_INIT_REQUEST_MESSAGE = 750;
+	const TIMEOUT_INIT_REQUEST_MESSAGE = 5000;
 	const TIMEOUT_INIT_RESPONSE_MESSAGE = 10000;
 	const TOP_WINDOW_ID = "0";
 	const WINDOW_ID_SEPARATOR = ".";
 	const TOP_WINDOW = globalThis.window == globalThis.top;
 
-	const browser$2 = globalThis.browser;
-	const addEventListener$2 = (type, listener, options) => globalThis.addEventListener(type, listener, options);
+	const browser = globalThis.browser;
+	const addEventListener = (type, listener, options) => globalThis.addEventListener(type, listener, options);
 	const top = globalThis.top;
 	const MessageChannel = globalThis.MessageChannel;
-	const document$2 = globalThis.document;
+	const document = globalThis.document;
 
 	const sessions = new Map();
 	let windowId;
 	if (TOP_WINDOW) {
 		windowId = TOP_WINDOW_ID;
-		if (browser$2 && browser$2.runtime && browser$2.runtime.onMessage && browser$2.runtime.onMessage.addListener) {
-			browser$2.runtime.onMessage.addListener(message => {
+		if (browser && browser.runtime && browser.runtime.onMessage && browser.runtime.onMessage.addListener) {
+			browser.runtime.onMessage.addListener(message => {
 				if (message.method == INIT_RESPONSE_MESSAGE) {
 					initResponse(message);
 					return Promise.resolve({});
@@ -913,7 +913,7 @@
 			});
 		}
 	}
-	addEventListener$2("message", async event => {
+	addEventListener("message", async event => {
 		if (typeof event.data == "string" && event.data.startsWith(MESSAGE_PREFIX)) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -925,7 +925,7 @@
 				if (!TOP_WINDOW) {
 					globalThis.stop();
 					if (message.options.loadDeferredImages) {
-						process$1(message.options);
+						process(message.options);
 					}
 					await initRequestAsync(message);
 				}
@@ -947,22 +947,22 @@
 		if (!TOP_WINDOW) {
 			windowId = globalThis.frameId = message.windowId;
 		}
-		processFrames(document$2, message.options, windowId, sessionId);
+		processFrames(document, message.options, windowId, sessionId);
 		if (!TOP_WINDOW) {
 			if (message.options.userScriptEnabled && waitForUserScript) {
-				await waitForUserScript(helper$1.ON_BEFORE_CAPTURE_EVENT_NAME);
+				await waitForUserScript(helper.ON_BEFORE_CAPTURE_EVENT_NAME);
 			}
-			sendInitResponse({ frames: [getFrameData(document$2, globalThis, windowId, message.options)], sessionId, requestedFrameId: document$2.documentElement.dataset.requestedFrameId && windowId });
+			sendInitResponse({ frames: [getFrameData(document, globalThis, windowId, message.options)], sessionId, requestedFrameId: document.documentElement.dataset.requestedFrameId && windowId });
 			if (message.options.userScriptEnabled && waitForUserScript) {
-				await waitForUserScript(helper$1.ON_AFTER_CAPTURE_EVENT_NAME);
+				await waitForUserScript(helper.ON_AFTER_CAPTURE_EVENT_NAME);
 			}
-			delete document$2.documentElement.dataset.requestedFrameId;
+			delete document.documentElement.dataset.requestedFrameId;
 		}
 	}
 
 	function cleanupRequest(message) {
 		const sessionId = message.sessionId;
-		cleanupFrames(getFrames(document$2), message.windowId, sessionId);
+		cleanupFrames(getFrames(document), message.windowId, sessionId);
 	}
 
 	function initResponse(message) {
@@ -1028,7 +1028,7 @@
 		}
 		frameElements.forEach((frameElement, frameIndex) => {
 			const windowId = parentWindowId + WINDOW_ID_SEPARATOR + frameIndex;
-			frameElement.setAttribute(helper$1.WIN_ID_ATTRIBUTE_NAME, windowId);
+			frameElement.setAttribute(helper.WIN_ID_ATTRIBUTE_NAME, windowId);
 			frames.push({ windowId });
 		});
 		sendInitResponse({ frames, sessionId, requestedFrameId: doc.documentElement.dataset.requestedFrameId && parentWindowId });
@@ -1091,7 +1091,7 @@
 	function cleanupFrames(frameElements, parentWindowId, sessionId) {
 		frameElements.forEach((frameElement, frameIndex) => {
 			const windowId = parentWindowId + WINDOW_ID_SEPARATOR + frameIndex;
-			frameElement.removeAttribute(helper$1.WIN_ID_ATTRIBUTE_NAME);
+			frameElement.removeAttribute(helper.WIN_ID_ATTRIBUTE_NAME);
 			try {
 				sendMessage(frameElement.contentWindow, { method: CLEANUP_REQUEST_MESSAGE, windowId, sessionId });
 			} catch (error) {
@@ -1126,8 +1126,8 @@
 	}
 
 	function sendMessage(targetWindow, message, useChannel) {
-		if (targetWindow == top && browser$2 && browser$2.runtime && browser$2.runtime.sendMessage) {
-			browser$2.runtime.sendMessage(message);
+		if (targetWindow == top && browser && browser.runtime && browser.runtime.sendMessage) {
+			browser.runtime.sendMessage(message);
 		} else {
 			if (useChannel) {
 				const channel = new MessageChannel();
@@ -1140,9 +1140,9 @@
 	}
 
 	function getFrameData(document, globalThis, windowId, options) {
-		const docData = helper$1.preProcessDoc(document, globalThis, options);
-		const content = helper$1.serialize(document);
-		helper$1.postProcessDoc(document, docData.markedElements);
+		const docData = helper.preProcessDoc(document, globalThis, options);
+		const content = helper.serialize(document);
+		helper.postProcessDoc(document, docData.markedElements);
 		const baseURI = document.baseURI.split("#")[0];
 		return {
 			windowId,
@@ -1164,7 +1164,7 @@
 	function getFrames(document) {
 		let frames = Array.from(document.querySelectorAll(FRAMES_CSS_SELECTOR));
 		document.querySelectorAll(ALL_ELEMENTS_CSS_SELECTOR).forEach(element => {
-			const shadowRoot = helper$1.getShadowRoot(element);
+			const shadowRoot = helper.getShadowRoot(element);
 			if (shadowRoot) {
 				frames = frames.concat(...shadowRoot.querySelectorAll(FRAMES_CSS_SELECTOR));
 			}
@@ -1172,4 +1172,4 @@
 		return frames;
 	}
 
-})));
+}));
