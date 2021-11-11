@@ -39,7 +39,7 @@ The objective is summarized as follows:
   > necessary. With the Manifest V3, it's no more possible (cf.
   > https://crbug.com/1149619).
 
-- **no support for fonts dynamically loaded with the `FontFace` API**
+- **limited support for fonts dynamically loaded with the `FontFace` API**
 
   > With the Manifest V2, it was possible to save on page on
   > https://www.theverge.com/ and keep the original fonts. With the Manifest V3,
