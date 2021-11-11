@@ -1,0 +1,11 @@
+{
+	"name": "single-file-lite",
+	"version": "1.0.0",
+	"description": "SingleFile Lite",
+	"author": "Gildas Lormeau",
+	"license": "AGPL-3.0-or-later",
+	"devDependencies": {
+		"rollup": "2.59.0",
+		"rollup-plugin-terser": "7.0.2"
+	}
+}
