@@ -21,7 +21,7 @@ The objective is summarized as follows:
 
   > With the Manifest V2, it was possible to download efficiently pages as
   > `Blob` objects. With the Manifest V3, it's no more possible (cf.
-  > https://crbug.com/1051597).
+  > https://crbug.com/1224027).
 
 - **saved pages limited to 42MB max.**
   > With the Manifest V2, it was possible to download pages weigthing hundreds
