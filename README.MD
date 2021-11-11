@@ -23,6 +23,11 @@ The objective is summarized as follows:
   > `Blob` objects. With the Manifest V3, it's no more possible (cf.
   > https://crbug.com/1051597).
 
+- **saved pages limited to 42MB max.**
+  > With the Manifest V2, it was possible to download pages weigthing hundreds
+  > of MB. With the Manifest V3, it's limited to 42 MB (cf. 
+  > https://crbug.com/1224027).
+
 - **no auto-save**
 
   > With the Manifest V2, it was possible to process a page in background. With
