@@ -41,7 +41,7 @@ The objective is summarized as follows:
 
 - **limited support for fonts dynamically loaded with the `FontFace` API**
 
-  > With the Manifest V2, it was possible to save on page on
+  > With the Manifest V2, it was possible to save a page on
   > https://www.theverge.com/ and keep the original fonts. With the Manifest V3,
   > it's no more possible (cf. https://crbug.com/1054624).
 
