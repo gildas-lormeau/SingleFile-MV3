@@ -15,6 +15,9 @@ The objective is summarized as follows:
 > consideration both the changing web landscape and the future of browser
 > extensions.
 
+## Install
+SingleFile Lite cannot be downloaded from the Chrome store yet. You can however download the zip file (https://github.com/gildas-lormeau/SingleFile-Lite/archive/refs/heads/main.zip) of the project and install it manually by unzipping it somewhere on your disk and following these instructions: https://developer.chrome.com/extensions/getstarted#manifest (omit the manifest creation).
+
 ## Notable features of SingleFile Lite
 
 - **more RAM & CPU intensive**
