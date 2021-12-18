@@ -674,7 +674,7 @@ async function refresh(profileName) {
 	ignoredBookmarkFoldersInput.value = profileOptions.ignoredBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(","); // eslint-disable-line no-useless-escape
 	ignoredBookmarkFoldersInput.disabled = !profileOptions.saveCreatedBookmarks;
 	infobarTemplateInput.value = profileOptions.infobarTemplate;
-	blockMixedContentInput.checked = profileOptions.blockMixedContent;	
+	blockMixedContentInput.checked = profileOptions.blockMixedContent;
 	includeInfobarInput.checked = profileOptions.includeInfobar;
 	confirmInfobarInput.checked = profileOptions.confirmInfobarContent;
 	autoCloseInput.checked = profileOptions.autoClose;
@@ -745,7 +745,7 @@ async function update() {
 			ignoredBookmarkFolders: ignoredBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),
 			groupDuplicateImages: groupDuplicateImagesInput.checked,
 			infobarTemplate: infobarTemplateInput.value,
-			blockMixedContent: blockMixedContentInput.checked,			
+			blockMixedContent: blockMixedContentInput.checked,
 			includeInfobar: includeInfobarInput.checked,
 			confirmInfobarContent: confirmInfobarInput.checked,
 			autoClose: autoCloseInput.checked,
