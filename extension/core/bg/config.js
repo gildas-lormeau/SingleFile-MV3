@@ -103,6 +103,7 @@ const DEFAULT_CONFIG = {
 	insertMetaCSP: true,
 	insertSingleFileComment: true,
 	blockMixedContent: false,
+	saveOriginalURLs: false,
 	woleetKey: ""
 };
 
