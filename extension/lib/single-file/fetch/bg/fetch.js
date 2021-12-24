@@ -35,14 +35,14 @@ browser.runtime.onMessage.addListener((message, sender) => {
 
 function onRequest(message, sender) {
 	if (message.method == "singlefile.fetch") {
-		return fetchResource(message.url);
+		return fetchResource(message.url, { headers: message.headers });
 	} else if (message.method == "singlefile.fetchFrame") {
 		return browser.tabs.sendMessage(sender.tab.id, message);
 	}
 }
 
-async function fetchResource(url) {
-	const response = await fetch(url);
+async function fetchResource(url, options = {}) {
+	const response = await fetch(url, options);
 	const array = Array.from(new Uint8Array(await response.arrayBuffer()));
 	const headers = { "content-type": response.headers.get("content-type") };
 	const status = response.status;
