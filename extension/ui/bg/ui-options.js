@@ -50,6 +50,7 @@ const githubBranchLabel = document.getElementById("githubBranchLabel");
 const saveWithCompanionLabel = document.getElementById("saveWithCompanionLabel");
 const compressHTMLLabel = document.getElementById("compressHTMLLabel");
 const compressCSSLabel = document.getElementById("compressCSSLabel");
+const moveStylesInHeadLabel = document.getElementById("moveStylesInHeadLabel");
 const loadDeferredImagesLabel = document.getElementById("loadDeferredImagesLabel");
 const loadDeferredImagesMaxIdleTimeLabel = document.getElementById("loadDeferredImagesMaxIdleTimeLabel");
 const loadDeferredImagesKeepZoomLevelLabel = document.getElementById("loadDeferredImagesKeepZoomLevelLabel");
@@ -137,6 +138,7 @@ const saveWithCompanionInput = document.getElementById("saveWithCompanionInput")
 const saveToFilesystemInput = document.getElementById("saveToFilesystemInput");
 const compressHTMLInput = document.getElementById("compressHTMLInput");
 const compressCSSInput = document.getElementById("compressCSSInput");
+const moveStylesInHeadInput = document.getElementById("moveStylesInHeadInput");
 const loadDeferredImagesInput = document.getElementById("loadDeferredImagesInput");
 const loadDeferredImagesMaxIdleTimeInput = document.getElementById("loadDeferredImagesMaxIdleTimeInput");
 const loadDeferredImagesKeepZoomLevelInput = document.getElementById("loadDeferredImagesKeepZoomLevelInput");
@@ -449,6 +451,7 @@ async function init() {
 	saveWithCompanionLabel.textContent = messages.optionSaveWithCompanion.message;
 	compressHTMLLabel.textContent = messages.optionCompressHTML.message;
 	compressCSSLabel.textContent = messages.optionCompressCSS.message;
+	moveStylesInHeadLabel.textContent = messages.optionMoveStylesInHead.message;
 	loadDeferredImagesLabel.textContent = messages.optionLoadDeferredImages.message;
 	loadDeferredImagesMaxIdleTimeLabel.textContent = messages.optionLoadDeferredImagesMaxIdleTime.message;
 	loadDeferredImagesKeepZoomLevelLabel.textContent = messages.optionLoadDeferredImagesKeepZoomLevel.message;
@@ -646,6 +649,7 @@ async function refresh(profileName) {
 	saveToFilesystemInput.checked = !profileOptions.saveToGDrive && !profileOptions.saveToGitHub && !profileOptions.saveWithCompanion && !saveToClipboardInput.checked;
 	compressHTMLInput.checked = profileOptions.compressHTML;
 	compressCSSInput.checked = profileOptions.compressCSS;
+	moveStylesInHeadInput.checked = profileOptions.moveStylesInHead;
 	loadDeferredImagesInput.checked = profileOptions.loadDeferredImages;
 	loadDeferredImagesMaxIdleTimeInput.value = profileOptions.loadDeferredImagesMaxIdleTime;
 	loadDeferredImagesKeepZoomLevelInput.checked = profileOptions.loadDeferredImagesKeepZoomLevel;
@@ -724,6 +728,7 @@ async function update() {
 			saveWithCompanion: saveWithCompanionInput.checked,
 			compressHTML: compressHTMLInput.checked,
 			compressCSS: compressCSSInput.checked,
+			moveStylesInHead: moveStylesInHeadInput.checked,
 			loadDeferredImages: loadDeferredImagesInput.checked,
 			loadDeferredImagesMaxIdleTime: Math.max(loadDeferredImagesMaxIdleTimeInput.value, 0),
 			loadDeferredImagesKeepZoomLevel: loadDeferredImagesKeepZoomLevelInput.checked,
