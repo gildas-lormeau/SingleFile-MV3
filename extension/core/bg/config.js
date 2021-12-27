@@ -111,7 +111,7 @@ const DEFAULT_CONFIG = {
 		script: "*/*",
 		document: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 	},
-	moveStylesInHead: true,
+	moveStylesInHead: false,
 	woleetKey: ""
 };
 
