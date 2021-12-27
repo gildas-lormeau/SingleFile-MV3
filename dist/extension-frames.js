@@ -32,7 +32,7 @@
 	const addEventListener = (type, listener, options) => window.addEventListener(type, listener, options);
 	const dispatchEvent = event => window.dispatchEvent(event);
 	const removeEventListener = (type, listener, options) => window.removeEventListener(type, listener, options);
-	const fetch = window.fetch;
+	const fetch = (url, options) => window.fetch(url, options);
 
 	browser.runtime.onMessage.addListener(message => {
 		if (message.method == "singlefile.fetchFrame" && window.frameId && window.frameId == message.frameId) {
@@ -42,7 +42,7 @@
 
 	async function onMessage(message) {
 		try {
-			let response = await fetch(message.url, { cache: "force-cache" });
+			let response = await fetch(message.url, { cache: "force-cache", headers: message.headers });
 			if (response.status == 401 || response.status == 403 || response.status == 404) {
 				response = await Promise.race(
 					[

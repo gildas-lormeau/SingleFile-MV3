@@ -2596,7 +2596,8 @@
 	 */
 
 	// const REGEXP_EMPTY_RULES = /[^};{/]+\{\}/g;
-	const REGEXP_PRESERVE_STRING = /("([^\\"]|\\.|\\)*")|('([^\\']|\\.|\\)*')/g;
+	const REGEXP_PRESERVE_STRING = /"([^\\"]|\\.|\\)*"/g;
+	const REGEXP_PRESERVE_STRING2 = /'([^\\']|\\.|\\)*'/g;
 	const REGEXP_MINIFY_ALPHA = /progid:DXImageTransform.Microsoft.Alpha\(Opacity=/gi;
 	const REGEXP_PRESERVE_TOKEN1 = /\r\n/g;
 	const REGEXP_PRESERVE_TOKEN2 = /[\r\n]/g;
@@ -2672,21 +2673,25 @@
 		content = collectComments(content, comments);
 
 		// preserve strings so their content doesn't get accidentally minified
-		pattern = REGEXP_PRESERVE_STRING;
-		content = content.replace(pattern, token => {
-			const quote = token.substring(0, 1);
-			token = token.slice(1, -1);
-			// maybe the string contains a comment-like substring or more? put'em back then
-			if (token.indexOf("___PRESERVE_CANDIDATE_COMMENT_") >= 0) {
-				for (let i = 0, len = comments.length; i < len; i += 1) {
-					token = token.replace("___PRESERVE_CANDIDATE_COMMENT_" + i + "___", comments[i]);
+		preserveString(REGEXP_PRESERVE_STRING);
+		preserveString(REGEXP_PRESERVE_STRING2);
+
+		function preserveString(pattern) {
+			content = content.replace(pattern, token => {
+				const quote = token.substring(0, 1);
+				token = token.slice(1, -1);
+				// maybe the string contains a comment-like substring or more? put'em back then
+				if (token.indexOf("___PRESERVE_CANDIDATE_COMMENT_") >= 0) {
+					for (let i = 0, len = comments.length; i < len; i += 1) {
+						token = token.replace("___PRESERVE_CANDIDATE_COMMENT_" + i + "___", comments[i]);
+					}
 				}
-			}
-			// minify alpha opacity in filter strings
-			token = token.replace(REGEXP_MINIFY_ALPHA, "alpha(opacity=");
-			preservedTokens.push(token);
-			return quote + ___PRESERVED_TOKEN_ + (preservedTokens.length - 1) + "___" + quote;
-		});
+				// minify alpha opacity in filter strings
+				token = token.replace(REGEXP_MINIFY_ALPHA, "alpha(opacity=");
+				preservedTokens.push(token);
+				return quote + ___PRESERVED_TOKEN_ + (preservedTokens.length - 1) + "___" + quote;
+			});
+		}
 
 		// strings are safe, now wrestle the comments
 		for (let i = 0, len = comments.length; i < len; i += 1) {
@@ -16501,7 +16506,7 @@
 	const REGEXP_URL_SIMPLE_QUOTES_FN$1 = /url\s*\(\s*'(.*?)'\s*\)/i;
 	const REGEXP_URL_DOUBLE_QUOTES_FN$1 = /url\s*\(\s*"(.*?)"\s*\)/i;
 	const REGEXP_URL_NO_QUOTES_FN$1 = /url\s*\(\s*(.*?)\s*\)/i;
-	const REGEXP_URL_FUNCTION = /(url|local)\(.*?\)\s*(,|$)/g;
+	const REGEXP_URL_FUNCTION = /(url|local|-sf-url-original)\(.*?\)\s*(,|$)/g;
 	const REGEXP_SIMPLE_QUOTES_STRING = /^'(.*?)'$/;
 	const REGEXP_DOUBLE_QUOTES_STRING = /^"(.*?)"$/;
 	const REGEXP_URL_FUNCTION_WOFF = /^url\(\s*["']?data:font\/(woff2?)/;
@@ -16684,7 +16689,7 @@
 							await Promise.race([
 								fontFace.load().then(() => fontFace.loaded).then(() => { source.valid = true; globalThis.clearTimeout(timeout); }),
 								new Promise(resolve => timeout = globalThis.setTimeout(() => { source.valid = true; resolve(); }, FONT_MAX_LOAD_DELAY))
-							]);						
+							]);
 						} catch (error) {
 							const declarationFontURLs = fontURLs.get(srcDeclaration.data);
 							if (declarationFontURLs) {
@@ -18614,7 +18619,8 @@
 						frameId: options.windowId,
 						resourceReferrer: options.resourceReferrer,
 						baseURI,
-						blockMixedContent
+						blockMixedContent,
+						acceptHeaders: options.acceptHeaders
 					});
 					onloadListener({ url: resourceURL });
 					if (!this.cancelled) {
@@ -18674,7 +18680,7 @@
 			this.options.saveDate = new Date();
 			this.options.saveUrl = this.options.url;
 			if (this.options.enableMaff) {
-				this.maffMetaDataPromise = this.batchRequest.addURL(util.resolveURL("index.rdf", this.options.baseURI || this.options.url));
+				this.maffMetaDataPromise = this.batchRequest.addURL(util.resolveURL("index.rdf", this.options.baseURI || this.options.url), { expectedType: "document" });
 			}
 			this.maxResources = this.batchRequest.getMaxResources();
 			if (!this.options.saveRawPage && !this.options.removeFrames && this.options.frames) {
@@ -18694,7 +18700,9 @@
 					maxResourceSizeEnabled: this.options.maxResourceSizeEnabled,
 					charset,
 					frameId: this.options.windowId,
-					resourceReferrer: this.options.resourceReferrer
+					resourceReferrer: this.options.resourceReferrer,
+					expectedType: "document",
+					acceptHeaders: this.options.acceptHeaders
 				});
 				pageContent = content.data;
 			}
@@ -18707,7 +18715,7 @@
 						charset = charsetDeclaration.split("=")[1].trim().toLowerCase();
 					}
 				});
-				if (charset && charset.toLowerCase() != content.charset.toLowerCase()) {
+				if (charset && content.charset && charset.toLowerCase() != content.charset.toLowerCase()) {
 					return this.loadPage(pageContent, charset);
 				}
 			}
@@ -19143,6 +19151,11 @@
 		resolveHrefs() {
 			this.doc.querySelectorAll("a[href], area[href], link[href]").forEach(element => {
 				const href = element.getAttribute("href").trim();
+				if (element.tagName == "LINK" && element.rel.includes("stylesheet")) {
+					if (this.options.saveOriginalURLs && !isDataURL(href)) {
+						element.setAttribute("data-sf-original-href", href);
+					}
+				}
 				if (!testIgnoredPath(href)) {
 					let resolvedURL;
 					try {
@@ -19171,7 +19184,7 @@
 				if (this.options.compressCSS) {
 					styleContent = util.compressCSS(styleContent);
 				}
-				styleContent = ProcessorHelper.resolveStylesheetURLs(styleContent, this.baseURI, this.workStyleElement);
+				styleContent = ProcessorHelper.resolveStylesheetURLs(styleContent, this.baseURI, this.workStyleElement, this.options.saveOriginalURLs);
 				const declarationList = cssTree.parse(styleContent, { context: "declarationList" });
 				this.styles.set(element, declarationList);
 			});
@@ -19189,7 +19202,9 @@
 					rootDocument: this.options.rootDocument,
 					frameId: this.options.windowId,
 					resourceReferrer: this.options.resourceReferrer,
-					blockMixedContent: this.options.blockMixedContent
+					blockMixedContent: this.options.blockMixedContent,
+					saveOriginalURLs: this.options.saveOriginalURLs,
+					acceptHeaders: this.options.acceptHeaders
 				};
 				let mediaText;
 				if (element.media) {
@@ -19257,6 +19272,10 @@
 					if (frameElement.tagName == "OBJECT") {
 						frameElement.setAttribute("data", "data:text/html,");
 					} else {
+						const src = frameElement.getAttribute("src");
+						if (this.options.saveOriginalURLs && !isDataURL(src)) {
+							frameElement.setAttribute("data-sf-original-src", src);
+						}
 						frameElement.removeAttribute("src");
 						frameElement.removeAttribute("srcdoc");
 					}
@@ -19357,6 +19376,9 @@
 			const linkElements = Array.from(this.doc.querySelectorAll("link[rel=import][href]"));
 			await Promise.all(linkElements.map(async linkElement => {
 				const resourceURL = linkElement.href;
+				if (this.options.saveOriginalURLs && !isDataURL(resourceURL)) {
+					linkElement.setAttribute("data-sf-original-href", resourceURL);
+				}
 				linkElement.removeAttribute("href");
 				const options = Object.create(this.options);
 				options.insertSingleFileComment = false;
@@ -19461,8 +19483,14 @@
 				let scriptSrc;
 				if (element.tagName == "SCRIPT") {
 					scriptSrc = element.getAttribute("src");
+					if (this.options.saveOriginalURLs && !isDataURL(scriptSrc)) {
+						element.setAttribute("data-sf-original-src", scriptSrc);
+					}
 				} else {
 					scriptSrc = element.getAttribute("href");
+					if (this.options.saveOriginalURLs && !isDataURL(scriptSrc)) {
+						element.setAttribute("data-sf-original-href", scriptSrc);
+					}
 				}
 				element.removeAttribute("integrity");
 				element.textContent = "";
@@ -19486,7 +19514,9 @@
 						frameId: this.options.windowId,
 						resourceReferrer: this.options.resourceReferrer,
 						baseURI: this.options.baseURI,
-						blockMixedContent: this.options.blockMixedContent
+						blockMixedContent: this.options.blockMixedContent,
+						expectedType: "script",
+						acceptHeaders: this.options.acceptHeaders
 					});
 					content.data = getUpdatedResourceContent(resourceURL, content, this.options);
 					if (element.tagName == "SCRIPT") {
@@ -19578,6 +19608,9 @@
 				if (stylesheetInfo) {
 					this.stylesheets.delete(styleElement);
 					let stylesheetContent = cssTree.generate(stylesheetInfo.stylesheet);
+					if (this.options.saveOriginalURLs) {
+						stylesheetContent = replaceOriginalURLs(stylesheetContent);
+					}
 					styleElement.textContent = stylesheetContent;
 					if (stylesheetInfo.mediaText) {
 						styleElement.media = stylesheetInfo.mediaText;
@@ -19595,6 +19628,10 @@
 						styleElement.media = stylesheetInfo.mediaText;
 					}
 					let stylesheetContent = cssTree.generate(stylesheetInfo.stylesheet);
+					if (this.options.saveOriginalURLs) {
+						stylesheetContent = replaceOriginalURLs(stylesheetContent);
+						styleElement.setAttribute("data-sf-original-href", linkElement.getAttribute("data-sf-original-href"));
+					}
 					styleElement.textContent = stylesheetContent;
 					linkElement.parentElement.replaceChild(styleElement, linkElement);
 				} else {
@@ -19609,6 +19646,9 @@
 				if (declarations) {
 					this.styles.delete(element);
 					let styleContent = cssTree.generate(declarations);
+					if (this.options.saveOriginalURLs) {
+						styleContent = replaceOriginalURLs(styleContent);
+					}
 					element.setAttribute("style", styleContent);
 				} else {
 					element.setAttribute("style", "");
@@ -19626,12 +19666,16 @@
 					this.doc.head.appendChild(styleElement);
 				}
 				let stylesheetContent = "";
-				this.cssVariables.forEach((content, indexResource) => {
+				this.cssVariables.forEach(({ content, url }, indexResource) => {
 					this.cssVariables.delete(indexResource);
 					if (stylesheetContent) {
 						stylesheetContent += ";";
 					}
-					stylesheetContent += `${SINGLE_FILE_VARIABLE_NAME_PREFIX + indexResource}:url("${content}")`;
+					stylesheetContent += `${SINGLE_FILE_VARIABLE_NAME_PREFIX + indexResource}: `;
+					if (this.options.saveOriginalURLs) {
+						stylesheetContent += `/* original URL: ${url} */ `;
+					}
+					stylesheetContent += `url("${content}")`;
 				});
 				styleElement.textContent = ":root{" + stylesheetContent + "}";
 			}
@@ -19741,7 +19785,9 @@
 			template = await evalTemplateVariable(template, "url-hash", () => url.hash.substring(1) || "No hash", dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "url-host", () => url.host.replace(/\/$/, "") || "No host", dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "url-hostname", () => url.hostname.replace(/\/$/, "") || "No hostname", dontReplaceSlash, options.filenameReplacementCharacter);
-			template = await evalTemplateVariable(template, "url-href", () => decode(url.href) || "No href", dontReplaceSlash === undefined ? true : dontReplaceSlash, options.filenameReplacementCharacter);
+			const urlHref = decode(url.href);
+			template = await evalTemplateVariable(template, "url-href", () => urlHref || "No href", dontReplaceSlash === undefined ? true : dontReplaceSlash, options.filenameReplacementCharacter);
+			template = await evalTemplateVariable(template, "url-href-digest-sha-1", urlHref ? async () => util.digest("SHA-1", urlHref) : "No href", dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "url-href-flat", () => decode(url.href) || "No href", false, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "url-referrer", () => decode(options.referrer) || "No referrer", dontReplaceSlash === undefined ? true : dontReplaceSlash, options.filenameReplacementCharacter);
 			template = await evalTemplateVariable(template, "url-referrer-flat", () => decode(options.referrer) || "No referrer", false, options.filenameReplacementCharacter);
@@ -19845,7 +19891,7 @@
 		}
 
 		static async resolveImportURLs(stylesheetContent, baseURI, options, workStylesheet, importedStyleSheets = new Set$1()) {
-			stylesheetContent = ProcessorHelper.resolveStylesheetURLs(stylesheetContent, baseURI, workStylesheet);
+			stylesheetContent = ProcessorHelper.resolveStylesheetURLs(stylesheetContent, baseURI, workStylesheet, options.saveOriginalURLs);
 			const imports = getImportFunctions(stylesheetContent);
 			await Promise.all(imports.map(async cssImport => {
 				const match = matchImport(cssImport);
@@ -19900,7 +19946,9 @@
 					charset: options.charset,
 					resourceReferrer: options.resourceReferrer,
 					baseURI: options.baseURI,
-					blockMixedContent: options.blockMixedContent
+					blockMixedContent: options.blockMixedContent,
+					expectedType: "stylesheet",
+					acceptHeaders: options.acceptHeaders
 				});
 				if (!matchCharsetEquals(content.data, content.charset || options.charset)) {
 					options = Object.assign({}, options, { charset: getCharset(content.data) });
@@ -19912,7 +19960,9 @@
 						charset: options.charset,
 						resourceReferrer: options.resourceReferrer,
 						baseURI: options.baseURI,
-						blockMixedContent: options.blockMixedContent
+						blockMixedContent: options.blockMixedContent,
+						expectedType: "stylesheet",
+						acceptHeaders: options.acceptHeaders
 					});
 				} else {
 					return content;
@@ -19920,8 +19970,11 @@
 			}
 		}
 
-		static resolveStylesheetURLs(stylesheetContent, baseURI, workStylesheet) {
+		static resolveStylesheetURLs(stylesheetContent, baseURI, workStylesheet, saveOriginalURLs) {
 			const urlFunctions = getUrlFunctions(stylesheetContent, true);
+			if (saveOriginalURLs) {
+				stylesheetContent = addOriginalURLs(stylesheetContent);
+			}
 			urlFunctions.map(urlFunction => {
 				const originalResourceURL = matchURL(urlFunction);
 				let resourceURL = normalizeURL(originalResourceURL);
@@ -19971,7 +20024,9 @@
 					resourceReferrer: options.resourceReferrer,
 					validateTextContentType: true,
 					baseURI: baseURI,
-					blockMixedContent: options.blockMixedContent
+					blockMixedContent: options.blockMixedContent,
+					expectedType: "stylesheet",
+					acceptHeaders: options.acceptHeaders
 				});
 				if (!matchCharsetEquals(content.data, content.charset || options.charset)) {
 					options = Object.assign({}, options, { charset: getCharset(content.data) });
@@ -20077,7 +20132,7 @@
 									}
 								});
 								if (variableDefined) {
-									cssVariables.set(indexResource, content);
+									cssVariables.set(indexResource, { content, url: originalResourceURL });
 									tokens.forEach(({ parent, token, value }) => parent.replace(token, value));
 								}
 							}
@@ -20104,6 +20159,9 @@
 				if (resourceURL != null) {
 					resourceURL = normalizeURL(resourceURL);
 					let originURL = resourceElement.dataset.singleFileOriginURL;
+					if (options.saveOriginalURLs && !isDataURL(resourceURL)) {
+						resourceElement.setAttribute("data-sf-original-" + attributeName, resourceURL);
+					}
 					delete resourceElement.dataset.singleFileOriginURL;
 					if (!testIgnoredPath(resourceURL)) {
 						resourceElement.setAttribute(attributeName, EMPTY_IMAGE);
@@ -20131,7 +20189,8 @@
 												maxResourceSize: options.maxResourceSize,
 												maxResourceSizeEnabled: options.maxResourceSizeEnabled,
 												frameId: options.windowId,
-												resourceReferrer: options.resourceReferrer
+												resourceReferrer: options.resourceReferrer,
+												acceptHeaders: options.acceptHeaders
 											})).data;
 										} catch (error) {
 											// ignored
@@ -20146,7 +20205,7 @@
 										const isSVG = content.startsWith(PREFIX_DATA_URI_IMAGE_SVG);
 										if (processDuplicates && duplicate && options.groupDuplicateImages && !isSVG && util.getContentSize(content) < SINGLE_FILE_VARIABLE_MAX_SIZE) {
 											if (ProcessorHelper.replaceImageSource(resourceElement, SINGLE_FILE_VARIABLE_NAME_PREFIX + indexResource, options)) {
-												cssVariables.set(indexResource, content);
+												cssVariables.set(indexResource, { content, url: originURL });
 												const declarationList = cssTree.parse(resourceElement.getAttribute("style"), { context: "declarationList" });
 												styles.set(resourceElement, declarationList);
 											} else {
@@ -20172,6 +20231,9 @@
 					attributeName = "href";
 					originalResourceURL = resourceElement.getAttribute(attributeName);
 				}
+				if (options.saveOriginalURLs && !isDataURL(originalResourceURL)) {
+					resourceElement.setAttribute("data-sf-original-href", originalResourceURL);
+				}
 				let resourceURL = normalizeURL(originalResourceURL);
 				if (testValidPath(resourceURL) && !testIgnoredPath(resourceURL)) {
 					resourceElement.setAttribute(attributeName, EMPTY_IMAGE);
@@ -20185,7 +20247,7 @@
 						if (originalResourceURL.startsWith(baseURI + "#")) {
 							resourceElement.setAttribute(attributeName, hashMatch[0]);
 						} else {
-							const response = await batchRequest.addURL(resourceURL);
+							const response = await batchRequest.addURL(resourceURL, { expectedType: "image" });
 							const svgDoc = util.parseSVGContent(response.content);
 							if (hashMatch && hashMatch[0]) {
 								let symbolElement;
@@ -20199,7 +20261,7 @@
 									resourceElement.parentElement.insertBefore(symbolElement, resourceElement.parentElement.firstChild);
 								}
 							} else {
-								const content = await batchRequest.addURL(resourceURL);
+								const content = await batchRequest.addURL(resourceURL, { expectedType: "image" });
 								resourceElement.setAttribute(attributeName, PREFIX_DATA_URI_IMAGE_SVG + "," + content);
 							}
 						}
@@ -20212,7 +20274,9 @@
 
 		static async processSrcset(resourceElements, attributeName, baseURI, batchRequest) {
 			await Promise.all(Array.from(resourceElements).map(async resourceElement => {
-				const srcset = util.parseSrcset(resourceElement.getAttribute(attributeName));
+				const originSrcset = resourceElement.getAttribute(attributeName);
+				const srcset = util.parseSrcset(originSrcset);
+				resourceElement.setAttribute("data-sf-original-srcset", originSrcset);
 				const srcsetValues = await Promise.all(srcset.map(async srcsetValue => {
 					let resourceURL = normalizeURL(srcsetValue.url);
 					if (!testIgnoredPath(resourceURL)) {
@@ -20423,6 +20487,25 @@
 		return match && match[1];
 	}
 
+	function addOriginalURLs(stylesheetContent) {
+		return stylesheetContent.replace(REGEXP_URL_FN, function (match, _0, url, _1, url2, _2, url3) {
+			url = url || url2 || url3;
+			if (isDataURL(url)) {
+				return match;
+			} else {
+				return "-sf-url-original(" + JSON.stringify(url) + ") " + match;
+			}
+		});
+	}
+
+	function isDataURL(url) {
+		return url && (url.startsWith(DATA_URI_PREFIX) || url.startsWith(BLOB_URI_PREFIX));
+	}
+
+	function replaceOriginalURLs(stylesheetContent) {
+		return stylesheetContent.replace(/-sf-url-original\("(.*?)"\)/g, "/* original URL: $1 */");
+	}
+
 	function testIgnoredPath(resourceURL) {
 		return resourceURL && (resourceURL.startsWith(DATA_URI_PREFIX) || resourceURL == ABOUT_BLANK_URI);
 	}
@@ -20566,7 +20649,7 @@
 	const DOMParser = globalThis.DOMParser;
 	const Blob = globalThis.Blob;
 	const FileReader = globalThis.FileReader;
-	const fetch = url => globalThis.fetch(url);
+	const fetch = (url, options) => globalThis.fetch(url, options);
 	const crypto = globalThis.crypto;
 	const TextDecoder = globalThis.TextDecoder;
 	const TextEncoder = globalThis.TextEncoder;
@@ -20721,12 +20804,12 @@
 			try {
 				if (options.frameId) {
 					try {
-						response = await fetchFrameResource(resourceURL, { frameId: options.frameId });
+						response = await fetchFrameResource(resourceURL, { frameId: options.frameId, headers: { accept: options.acceptHeaders[options.expectedType] } });
 					} catch (error) {
-						response = await fetchResource(resourceURL);
+						response = await fetchResource(resourceURL, { headers: { accept: options.acceptHeaders[options.expectedType] } });
 					}
 				} else {
-					response = await fetchResource(resourceURL);
+					response = await fetchResource(resourceURL, { headers: { accept: options.acceptHeaders[options.expectedType] } });
 				}
 			} catch (error) {
 				return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
