@@ -242,6 +242,7 @@
 	const POSTER_ATTRIBUTE_NAME = "data-single-file-poster";
 	const CANVAS_ATTRIBUTE_NAME = "data-single-file-canvas";
 	const HTML_IMPORT_ATTRIBUTE_NAME = "data-single-file-import";
+	const STYLE_ATTRIBUTE_NAME = "data-single-file-movable-style";
 	const INPUT_VALUE_ATTRIBUTE_NAME = "data-single-file-input-value";
 	const LAZY_SRC_ATTRIBUTE_NAME = "data-single-file-lazy-loaded-src";
 	const STYLESHEET_ATTRIBUTE_NAME = "data-single-file-stylesheet";
@@ -302,6 +303,15 @@
 		let elementsInfo;
 		if (win && doc.documentElement) {
 			elementsInfo = getElementsInfo(win, doc, doc.documentElement, options);
+			if (options.moveStylesInHead) {
+				doc.querySelectorAll("body style, body ~ style").forEach(element => {
+					const computedStyle = win.getComputedStyle(element);
+					if (computedStyle && testHiddenElement(element, computedStyle)) {
+						element.setAttribute(STYLE_ATTRIBUTE_NAME, "");
+						elementsInfo.markedElements.push(element);
+					}
+				});
+			}
 		} else {
 			elementsInfo = {
 				canvases: [],
@@ -567,6 +577,7 @@
 			element.removeAttribute(HTML_IMPORT_ATTRIBUTE_NAME);
 			element.removeAttribute(STYLESHEET_ATTRIBUTE_NAME);
 			element.removeAttribute(ASYNC_SCRIPT_ATTRIBUTE_NAME);
+			element.removeAttribute(STYLE_ATTRIBUTE_NAME);
 		});
 	}
 
@@ -596,6 +607,7 @@
 		let pxWidth = imageElement.naturalWidth;
 		let pxHeight = imageElement.naturalHeight;
 		if (!pxWidth && !pxHeight) {
+			const noStyleAttribute = imageElement.getAttribute("style") == null;
 			computedStyle = computedStyle || win.getComputedStyle(imageElement);
 			let removeBorderWidth = false;
 			if (computedStyle.getPropertyValue("box-sizing") == "content-box") {
@@ -625,6 +637,9 @@
 			}
 			pxWidth = Math.max(0, imageElement.clientWidth - paddingLeft - paddingRight - borderLeft - borderRight);
 			pxHeight = Math.max(0, imageElement.clientHeight - paddingTop - paddingBottom - borderTop - borderBottom);
+			if (noStyleAttribute) {
+				imageElement.removeAttribute("style");
+			}
 		}
 		return { pxWidth, pxHeight };
 	}
@@ -701,6 +716,7 @@
 		INPUT_VALUE_ATTRIBUTE_NAME: INPUT_VALUE_ATTRIBUTE_NAME,
 		SHADOW_ROOT_ATTRIBUTE_NAME: SHADOW_ROOT_ATTRIBUTE_NAME,
 		HTML_IMPORT_ATTRIBUTE_NAME: HTML_IMPORT_ATTRIBUTE_NAME,
+		STYLE_ATTRIBUTE_NAME: STYLE_ATTRIBUTE_NAME,
 		LAZY_SRC_ATTRIBUTE_NAME: LAZY_SRC_ATTRIBUTE_NAME,
 		STYLESHEET_ATTRIBUTE_NAME: STYLESHEET_ATTRIBUTE_NAME,
 		SELECTED_CONTENT_ATTRIBUTE_NAME: SELECTED_CONTENT_ATTRIBUTE_NAME,
@@ -18384,6 +18400,7 @@
 			{ action: "insertFonts" },
 			{ action: "insertShadowRootContents" },
 			{ action: "setInputValues" },
+			{ option: "moveStylesInHead", action: "moveStylesInHead" },
 			{ option: "removeScripts", action: "removeScripts" },
 			{ option: "selected", action: "removeUnselectedElements" },
 			{ option: "removeVideoSrc", action: "insertVideoPosters" },
@@ -19065,6 +19082,14 @@
 						option.setAttribute("selected", "");
 					}
 				});
+			});
+		}
+
+		moveStylesInHead() {
+			this.doc.querySelectorAll("style").forEach(stylesheet => {
+				if (stylesheet.getAttribute(util.STYLE_ATTRIBUTE_NAME) == "") {
+					this.doc.head.appendChild(stylesheet);
+				}
 			});
 		}
 
@@ -20784,6 +20809,7 @@
 			POSTER_ATTRIBUTE_NAME: POSTER_ATTRIBUTE_NAME,
 			CANVAS_ATTRIBUTE_NAME: CANVAS_ATTRIBUTE_NAME,
 			HTML_IMPORT_ATTRIBUTE_NAME: HTML_IMPORT_ATTRIBUTE_NAME,
+			STYLE_ATTRIBUTE_NAME: STYLE_ATTRIBUTE_NAME,
 			INPUT_VALUE_ATTRIBUTE_NAME: INPUT_VALUE_ATTRIBUTE_NAME,
 			SHADOW_ROOT_ATTRIBUTE_NAME: SHADOW_ROOT_ATTRIBUTE_NAME,
 			PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME: PRESERVED_SPACE_ELEMENT_ATTRIBUTE_NAME,
