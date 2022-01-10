@@ -23,8 +23,6 @@
 
 /* global browser */
 
-import "./../../../dist/chrome-browser-polyfill.js";
-
 import * as config from "./config.js";
 import * as bootstrap from "./bootstrap.js";
 import * as bookmarks from "./bookmarks.js";
