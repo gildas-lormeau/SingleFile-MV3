@@ -23,6 +23,7 @@
 
 /* global browser */
 
+import "./../../lib/single-file/background.js";
 import * as config from "./config.js";
 import * as bootstrap from "./bootstrap.js";
 import * as bookmarks from "./bookmarks.js";
@@ -32,7 +33,6 @@ import * as editor from "./editor.js";
 import * as tabsData from "./tabs-data.js";
 import * as tabs from "./tabs.js";
 import * as ui from "./../../ui/bg/index.js";
-import "./../../lib/single-file/background.js";
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	if (message.method.startsWith("tabs.")) {
