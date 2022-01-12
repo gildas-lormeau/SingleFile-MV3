@@ -20828,14 +20828,15 @@
 				return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
 			}
 			try {
+				const accept = options.acceptHeaders ? options.acceptHeaders[options.expectedType] : "*/*";
 				if (options.frameId) {
 					try {
-						response = await fetchFrameResource(resourceURL, { frameId: options.frameId, headers: { accept: options.acceptHeaders[options.expectedType] } });
+						response = await fetchFrameResource(resourceURL, { frameId: options.frameId, headers: { accept } });
 					} catch (error) {
-						response = await fetchResource(resourceURL, { headers: { accept: options.acceptHeaders[options.expectedType] } });
+						response = await fetchResource(resourceURL, { headers: { accept } });
 					}
 				} else {
-					response = await fetchResource(resourceURL, { headers: { accept: options.acceptHeaders[options.expectedType] } });
+					response = await fetchResource(resourceURL, { headers: { accept } });
 				}
 			} catch (error) {
 				return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
