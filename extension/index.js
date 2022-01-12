@@ -23,7 +23,6 @@
 
 /* global globalThis */
 
-import "./../dist/chrome-browser-polyfill.js";
 import { fetch, frameFetch } from "./lib/single-file/fetch/content/content-fetch.js";
 
 export {
