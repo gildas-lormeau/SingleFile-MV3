@@ -46,7 +46,8 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
 
   > With the Manifest V2, it was possible to save a page on
   > https://www.theverge.com/ and keep the original fonts. With the Manifest V3,
-  > it's no more possible (cf. https://crbug.com/1054624).
+  > it's no more possible (cf. https://crbug.com/1054624 and 
+  > https://crbug.com/1054624).
 
 - **limited support of localization** 
 
