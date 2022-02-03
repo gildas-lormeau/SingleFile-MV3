@@ -49,11 +49,6 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
   > it's no more possible (cf. https://crbug.com/1054624 and 
   > https://crbug.com/1207006).
 
-- **limited support of localization** 
-
-  > With the Manifest V2, it was possible to get localized strings. With
-  > the Manifest V3, it's no more possible (cf. https://crbug.com/1268098).
-
 - and more to come!
 
 ## Benefits of the Manifest V3
