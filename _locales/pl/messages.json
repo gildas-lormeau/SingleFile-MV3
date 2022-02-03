@@ -168,7 +168,7 @@
 		"description": "Options page label: 'bytes'"
 	},
 	"optionFilenameMaxLengthCharsUnit": {
-		"message": "characters",
+		"message": "znaki",
 		"description": "Options page label: 'characters'"
 	},
 	"optionConfirmFilename": {
