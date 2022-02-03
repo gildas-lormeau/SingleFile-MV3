@@ -64,7 +64,13 @@
 			</div>
 			<div class="option">
 				<label for="filenameMaxLengthInput" id="filenameMaxLengthLabel"></label>
-				<input type="number" id="filenameMaxLengthInput" min="1">
+				<div class="option-input">
+					<input type="number" id="filenameMaxLengthInput" min="1">
+					<select id="filenameMaxLengthUnitInput">
+						<option id="filenameMaxLengthBytesUnitLabel" value="bytes"></option>
+						<option id="filenameMaxLengthCharsUnitLabel" value="chars"></option>
+					</select>
+				</div>
 			</div>
 			<div class="option">
 				<label for="confirmFilenameInput" id="confirmFilenameLabel"></label>
@@ -273,7 +279,7 @@
 				<label for="allowedBookmarkFoldersInput" id="allowedBookmarkFoldersLabel"></label>
 				<input type="text" id="allowedBookmarkFoldersInput">
 			</div>
-		</details>		
+		</details>
 		<details>
 			<summary id="miscLabel"></summary>
 			<div class="option">
@@ -283,7 +289,7 @@
 			<div class="option second-level">
 				<label for="maxResourceSizeInput" id="maxResourceSizeLabel"></label>
 				<input type="number" id="maxResourceSizeInput" min="1">
-			</div>			
+			</div>
 			<div class="option">
 				<label for="addProofInput" id="addProofLabel"></label>
 				<input type="checkbox" id="addProofInput">
@@ -340,7 +346,7 @@
 			<div class="option">
 				<label for="showAllProfilesInput" id="showAllProfilesLabel"></label>
 				<input type="checkbox" id="showAllProfilesInput">
-			</div>			
+			</div>
 		</details>
 		<div class="option bottom">
 			<a href="help.html" target="SingleFileHelpPage" id="helpLabel"></a>

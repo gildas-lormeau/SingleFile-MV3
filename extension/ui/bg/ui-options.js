@@ -57,6 +57,8 @@ const loadDeferredImagesKeepZoomLevelLabel = document.getElementById("loadDeferr
 const addMenuEntryLabel = document.getElementById("addMenuEntryLabel");
 const filenameTemplateLabel = document.getElementById("filenameTemplateLabel");
 const filenameMaxLengthLabel = document.getElementById("filenameMaxLengthLabel");
+const filenameMaxLengthBytesUnitLabel = document.getElementById("filenameMaxLengthBytesUnitLabel");
+const filenameMaxLengthCharsUnitLabel = document.getElementById("filenameMaxLengthCharsUnitLabel");
 const shadowEnabledLabel = document.getElementById("shadowEnabledLabel");
 const setMaxResourceSizeLabel = document.getElementById("setMaxResourceSizeLabel");
 const maxResourceSizeLabel = document.getElementById("maxResourceSizeLabel");
@@ -145,6 +147,7 @@ const loadDeferredImagesKeepZoomLevelInput = document.getElementById("loadDeferr
 const contextMenuEnabledInput = document.getElementById("contextMenuEnabledInput");
 const filenameTemplateInput = document.getElementById("filenameTemplateInput");
 const filenameMaxLengthInput = document.getElementById("filenameMaxLengthInput");
+const filenameMaxLengthUnitInput = document.getElementById("filenameMaxLengthUnitInput");
 const shadowEnabledInput = document.getElementById("shadowEnabledInput");
 const maxResourceSizeInput = document.getElementById("maxResourceSizeInput");
 const maxResourceSizeEnabledInput = document.getElementById("maxResourceSizeEnabledInput");
@@ -458,6 +461,8 @@ async function init() {
 	addMenuEntryLabel.textContent = messages.optionAddMenuEntry.message;
 	filenameTemplateLabel.textContent = messages.optionFilenameTemplate.message;
 	filenameMaxLengthLabel.textContent = messages.optionFilenameMaxLength.message;
+	filenameMaxLengthBytesUnitLabel.textContent = messages.optionFilenameMaxLengthBytesUnit.message;
+	filenameMaxLengthCharsUnitLabel.textContent = messages.optionFilenameMaxLengthCharsUnit.message;
 	shadowEnabledLabel.textContent = messages.optionDisplayShadow.message;
 	setMaxResourceSizeLabel.textContent = messages.optionSetMaxResourceSize.message;
 	maxResourceSizeLabel.textContent = messages.optionMaxResourceSize.message;
@@ -658,6 +663,7 @@ async function refresh(profileName) {
 	contextMenuEnabledInput.checked = profileOptions.contextMenuEnabled;
 	filenameTemplateInput.value = profileOptions.filenameTemplate;
 	filenameMaxLengthInput.value = profileOptions.filenameMaxLength;
+	filenameMaxLengthUnitInput.value = profileOptions.filenameMaxLengthUnit;
 	shadowEnabledInput.checked = profileOptions.shadowEnabled;
 	maxResourceSizeEnabledInput.checked = profileOptions.maxResourceSizeEnabled;
 	maxResourceSizeInput.value = profileOptions.maxResourceSize;
@@ -735,6 +741,7 @@ async function update() {
 			contextMenuEnabled: contextMenuEnabledInput.checked,
 			filenameTemplate: filenameTemplateInput.value,
 			filenameMaxLength: filenameMaxLengthInput.value,
+			filenameMaxLengthUnit: filenameMaxLengthUnitInput.value,
 			shadowEnabled: shadowEnabledInput.checked,
 			maxResourceSizeEnabled: maxResourceSizeEnabledInput.checked,
 			maxResourceSize: Math.max(maxResourceSizeInput.value, 0),
