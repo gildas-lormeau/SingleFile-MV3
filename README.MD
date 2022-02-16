@@ -26,9 +26,9 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
   > `Blob` objects. With the Manifest V3, it's no more possible (cf.
   > https://crbug.com/1224027).
 
-- **saved pages limited to 42MB max.**
+- **saved pages limited to 256MB max.**
   > With the Manifest V2, it was possible to download pages weigthing hundreds
-  > of MB. With the Manifest V3, it's limited to 42 MB (cf. 
+  > of MB. With the Manifest V3, it's limited to 256MB (cf. 
   > https://crbug.com/1224027).
 
 - **no auto-save**
