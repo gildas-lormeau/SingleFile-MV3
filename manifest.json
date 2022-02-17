@@ -3,10 +3,10 @@
 	"author": "Gildas Lormeau",
 	"homepage_url": "https://github.com/gildas-lormeau/SingleFile-Lite",
 	"icons": {
-		"16": "extension/ui/resources/icon_16.png",
-		"48": "extension/ui/resources/icon_48.png",
-		"64": "extension/ui/resources/icon_64.png",
-		"128": "extension/ui/resources/icon_128.png"
+		"16": "src/extension/ui/resources/icon_16.png",
+		"48": "src/extension/ui/resources/icon_48.png",
+		"64": "src/extension/ui/resources/icon_64.png",
+		"128": "src/extension/ui/resources/icon_128.png"
 	},
 	"version": "1.0.0",
 	"description": "__MSG_extensionDescription__",
@@ -17,9 +17,9 @@
 			],
 			"run_at": "document_start",
 			"js": [
-				"dist/chrome-browser-polyfill.js",
-				"dist/single-file-frames.js",
-				"dist/extension-frames.js"
+				"lib/chrome-browser-polyfill.js",
+				"lib/single-file-frames.js",
+				"lib/extension-frames.js"
 			],
 			"all_frames": true,
 			"match_about_blank": true
@@ -30,27 +30,27 @@
 			],
 			"run_at": "document_start",
 			"js": [
-				"dist/chrome-browser-polyfill.js",
-				"dist/single-file-bootstrap.js",
-				"dist/extension-bootstrap.js",
-				"dist/web/infobar-web.js"
+				"lib/chrome-browser-polyfill.js",
+				"lib/single-file-bootstrap.js",
+				"lib/extension-bootstrap.js",
+				"lib/web/infobar-web.js"
 			]
 		}
 	],
 	"background": {
-		"service_worker": "dist/extension-background.js"
+		"service_worker": "lib/extension-background.js"
 	},
 	"options_ui": {
 		"browser_style": true,
-		"page": "extension/ui/pages/options.html",
+		"page": "src/extension/ui/pages/options.html",
 		"open_in_tab": false
 	},
 	"action": {
 		"default_icon": {
-			"16": "extension/ui/resources/icon_16.png",
-			"48": "extension/ui/resources/icon_48.png",
-			"64": "extension/ui/resources/icon_64.png",
-			"128": "extension/ui/resources/icon_128.png"
+			"16": "src/extension/ui/resources/icon_16.png",
+			"48": "src/extension/ui/resources/icon_48.png",
+			"64": "src/extension/ui/resources/icon_64.png",
+			"128": "src/extension/ui/resources/icon_128.png"
 		},
 		"default_title": "__MSG_buttonDefaultTooltip__"
 	},
@@ -74,9 +74,9 @@
 				"<all_urls>"
 			],
 			"resources": [
-				"dist/web/hooks/hooks-web.js",
-				"dist/web/hooks/hooks-frames-web.js",
-				"dist/web/infobar-web.js"
+				"lib/web/hooks/hooks-web.js",
+				"lib/web/hooks/hooks-frames-web.js",
+				"lib/web/infobar-web.js"
 			]
 		}
 	],
@@ -102,7 +102,7 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"devtools_page": "extension/core/devtools/devtools.html",
+	"devtools_page": "src/extension/core/devtools/devtools.html",
 	"incognito": "spanning",
 	"manifest_version": 3,
 	"default_locale": "en"
