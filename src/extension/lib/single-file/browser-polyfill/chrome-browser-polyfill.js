@@ -180,18 +180,7 @@ if (typeof globalThis == "undefined") {
 						}
 					})
 				},
-				sendMessage: message => new Promise((resolve, reject) => {
-					nativeAPI.runtime.sendMessage(message, response => {
-						if (nativeAPI.runtime.lastError) {
-							reject(new Error(nativeAPI.runtime.lastError.message));
-						} else {
-							resolve(response);
-						}
-					});
-					if (nativeAPI.runtime.lastError) {
-						reject(new Error(nativeAPI.runtime.lastError.message));
-					}
-				}),
+				sendMessage: message => nativeAPI.runtime.sendMessage(message),
 				getURL: (path) => nativeAPI.runtime.getURL(path),
 				get lastError() {
 					return nativeAPI.runtime.lastError;
@@ -297,18 +286,7 @@ if (typeof globalThis == "undefined") {
 					addListener: listener => nativeAPI.tabs.onReplaced.addListener(listener),
 					removeListener: listener => nativeAPI.tabs.onReplaced.removeListener(listener)
 				},
-				sendMessage: (tabId, message, options = {}) => new Promise((resolve, reject) => {
-					nativeAPI.tabs.sendMessage(tabId, message, options, response => {
-						if (nativeAPI.runtime.lastError) {
-							reject(nativeAPI.runtime.lastError);
-						} else {
-							resolve(response);
-						}
-					});
-					if (nativeAPI.runtime.lastError) {
-						reject(nativeAPI.runtime.lastError);
-					}
-				}),
+				sendMessage: (tabId, message, options = {}) => nativeAPI.tabs.sendMessage(tabId, message, options),
 				query: options => nativeAPI.tabs.query(options),
 				create: createProperties => nativeAPI.tabs.create(createProperties),
 				get: options => nativeAPI.tabs.get(options),
