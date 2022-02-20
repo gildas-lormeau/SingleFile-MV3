@@ -31,6 +31,12 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
   > With the Manifest V2, it was possible to process a page in background. With
   > the Manifest V3, it's no more possible (cf. https://crbug.com/1056354).
 
+- **save time limited to 5 minutes max.**
+
+  > With the Manifest V2, it was possible to process a page for a very long 
+  > time. With the Manifest V3, it's no more possible (cf. 
+  > https://crbug.com/1152255).
+
 - **no "Referrer" header injection**
 
   > With the Manifest V2, it was possible to inject a "Referrer" HTTP header if
