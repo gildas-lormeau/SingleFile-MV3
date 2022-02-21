@@ -20,21 +20,28 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
 
 ## Notable features of SingleFile Lite
 
+- **unreliable auto-updates**
+
+  > With the Manifest V2, it was possible to auto-update the extension without
+  > breaking the extension. With the Manifest V3, it's no more possible (cf.
+  > https://crbug.com/1271154).
+
 - **more RAM & CPU intensive**
 
   > With the Manifest V2, it was possible to download efficiently pages as
   > `Blob` objects. With the Manifest V3, it's no more possible (cf.
   > https://crbug.com/1224027).
 
-- **saved pages limited to 256MB max.**
-  > With the Manifest V2, it was possible to download pages weigthing hundreds
-  > of MB. With the Manifest V3, it's limited to 256MB (cf. 
-  > https://crbug.com/1224027).
-
 - **no auto-save**
 
   > With the Manifest V2, it was possible to process a page in background. With
   > the Manifest V3, it's no more possible (cf. https://crbug.com/1056354).
+
+- **save time limited to 5 minutes max.**
+
+  > With the Manifest V2, it was possible to process a page for a very long 
+  > time. With the Manifest V3, it's no more possible (cf. 
+  > https://crbug.com/1152255).
 
 - **no "Referrer" header injection**
 
