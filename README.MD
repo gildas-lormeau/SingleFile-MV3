@@ -22,38 +22,38 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
 
 - **unreliable auto-updates**
 
-  > With the Manifest V2, it was possible to auto-update the extension without
-  > breaking the extension. With the Manifest V3, it's no more possible (cf.
+  > With Manifest V2, it was possible to auto-update the extension without
+  > breaking the extension. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1271154).
 
 - **more RAM & CPU intensive**
 
-  > With the Manifest V2, it was possible to download efficiently pages as
-  > `Blob` objects. With the Manifest V3, it's no more possible (cf.
+  > With Manifest V2, it was possible to efficiently download pages as
+  > `Blob` objects. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1224027).
 
 - **no auto-save**
 
-  > With the Manifest V2, it was possible to process a page in background. With
-  > the Manifest V3, it's no more possible (cf. https://crbug.com/1056354).
+  > With Manifest V2, it was possible to process a page in the background. With
+  > Manifest V3, it's no longer possible (cf. https://crbug.com/1056354).
 
 - **save time limited to 5 minutes max.**
 
-  > With the Manifest V2, it was possible to process a page for a very long 
-  > time. With the Manifest V3, it's no more possible (cf. 
+  > With Manifest V2, it was possible to process a page for a very long 
+  > time. With Manifest V3, it's no longer possible (cf. 
   > https://crbug.com/1152255).
 
 - **no "Referrer" header injection**
 
-  > With the Manifest V2, it was possible to inject a "Referrer" HTTP header if
-  > necessary. With the Manifest V3, it's no more possible (cf.
+  > With Manifest V2, it was possible to inject a "Referrer" HTTP header if
+  > necessary. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1149619).
 
 - **limited support for fonts dynamically loaded with the `FontFace` API**
 
-  > With the Manifest V2, it was possible to save a page on
-  > https://www.theverge.com/ and keep the original fonts. With the Manifest V3,
-  > it's no more possible (cf. https://crbug.com/1054624 and 
+  > With Manifest V2, it was possible to save a page on
+  > https://www.theverge.com/ and keep the original fonts. With Manifest V3,
+  > it's no longer possible (cf. https://crbug.com/1054624 and 
   > https://crbug.com/1207006).
 
 - and more to come!
