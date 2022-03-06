@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, globalThis, document, location, prompt, Node */
+/* global browser, globalThis, document, location, Node */
 
 const singlefile = globalThis.singlefileBootstrap;
 
@@ -47,8 +47,7 @@ browser.runtime.onMessage.addListener(message => {
 	if (message.method == "content.maybeInit" ||
 		message.method == "content.init" ||
 		message.method == "content.openEditor" ||
-		message.method == "devtools.resourceCommitted" ||
-		message.method == "common.promptValueRequest") {
+		message.method == "devtools.resourceCommitted") {
 		return onMessage(message);
 	}
 });
@@ -71,10 +70,6 @@ async function onMessage(message) {
 	}
 	if (message.method == "devtools.resourceCommitted") {
 		singlefile.pageInfo.updatedResources[message.url] = { content: message.content, type: message.type, encoding: message.encoding };
-		return {};
-	}
-	if (message.method == "common.promptValueRequest") {
-		browser.runtime.sendMessage({ method: "tabs.promptValueResponse", value: prompt("SingleFile Lite: " + message.promptMessage) });
 		return {};
 	}
 }
