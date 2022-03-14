@@ -20,6 +20,8 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
 
 ## Notable features of SingleFile Lite
 
+![features](https://user-images.githubusercontent.com/396787/158097498-0f12f05b-c345-4753-b7f4-487f0324200f.png)
+
 - **unreliable auto-updates**
 
   > With Manifest V2, it was possible to auto-update the extension without
