@@ -28,11 +28,16 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
   > breaking the extension. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1271154).
 
-- **more RAM & CPU intensive**
+- **more RAM intensive**
 
   > With Manifest V2, it was possible to efficiently download pages as
   > `Blob` objects. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1224027).
+
+- **more CPU intensive**
+
+  > With Manifest V2, to reliably use only the power necessary to save a page. 
+  > With Manifest V3, it's no longer possible (cf. https://crbug.com/1231683).
 
 - **no auto-save**
 
