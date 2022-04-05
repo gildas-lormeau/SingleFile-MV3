@@ -300,7 +300,7 @@
 		"description": "Options sub-title: 'Bookmarks'"
 	},
 	"optionsAutoSettingsSubTitle": {
-		"message": "Regras da configuração aromática",
+		"message": "Regras da configuração automática",
 		"description": "Options sub-title: 'Auto-settings rules'"
 	},
 	"optionsDeleteDisplayedRulesConfirm": {
