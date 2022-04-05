@@ -12,7 +12,7 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "Salvar site com SingleFile Lite",
+		"message": "Salvar site via SingleFile Lite",
 		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
 	"menuEditPage": {
@@ -24,7 +24,7 @@
 		"description": "Menu entry: 'Annotate and save the page...'"
 	},
 	"menuSaveWithProfile": {
-		"message": "Salvar site com o perfil",
+		"message": "Salvar site com perfil",
 		"description": "Menu entry: 'Save with profile'"
 	},
 	"menuSaveSelectedLinks": {
@@ -44,7 +44,7 @@
 		"description": "Menu entry: 'Select the profile of the current rule'"
 	},
 	"menuCreateDomainRule": {
-		"message": "Selecione o perfil do domínio atual",
+		"message": "Selecione perfil do domínio atual",
 		"description": "Menu entry: 'Select the profile of the current domain'"
 	},
 	"menuSaveSelection": {
@@ -76,7 +76,7 @@
 		"description": "Menu entry: 'Batch save URLs...'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Salvar site com SingleFile Lite",
+		"message": "Salvar site via SingleFile Lite",
 		"description": "Button title: 'Save page with SingleFile Lite'"
 	},
 	"buttonBlockedBadge": {
@@ -84,7 +84,7 @@
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "Este site não pode ser salvo com SingleFile Lite",
+		"message": "Este site não pode ser salvo via SingleFile Lite",
 		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
 	},
 	"buttonInitializingTooltip": {
@@ -108,7 +108,7 @@
 		"description": "Badge label: 'OK'"
 	},
 	"buttonErrorBadge": {
-		"message": "ERR",
+		"message": "ERRO",
 		"description": "Badge label for unexpected errors"
 	},
 	"optionsTitle": {
@@ -120,7 +120,7 @@
 		"description": "Options sub-title: 'User interface'"
 	},
 	"optionAddMenuEntry": {
-		"message": "adicionar uma entrada no menu de contexto do site",
+		"message": "adicionar uma entrada em menu do contexto do site",
 		"description": "Options page label: 'add entry in the context menu of the webpage'"
 	},
 	"optionDisplayShadow": {
@@ -148,11 +148,11 @@
 		"description": "Options page label: 'include the infobar in the saved page'"
 	},
 	"optionConfirmInfobar": {
-		"message": "abrir um diálogo rápido para editar o conteúdo do infobar",
+		"message": "abrir um diálogo com aviso para editar conteúdo do infobar",
 		"description": "Options page label: 'open a prompt dialog to edit the infobar content'"
 	},
 	"optionAutoClose": {
-		"message": "fechar autom. a aba após o site for salvo",
+		"message": "fechar autom. a aba após site for salvo",
 		"description": "Options page label: 'auto-close the tab after the page is saved'"
 	},
 	"optionsFileNameSubTitle": {
@@ -176,7 +176,7 @@
 		"description": "Options page label: 'characters'"
 	},
 	"optionConfirmFilename": {
-		"message": "abrir o diálogo \"Salvar como\" para confirmar o nome de arquivo",
+		"message": "abrir o diálogo \"Salvar como\" para confirmar nome de arquivo",
 		"description": "Options page label: 'open the \"Save as\" dialog to confirm the file name'"
 	},
 	"optionFilenameConflictAction": {
@@ -240,7 +240,7 @@
 		"description": "Options page label: 'zoom out the page'"
 	},
 	"optionRemoveAlternativeImages": {
-		"message": "remover imagens para resoluções alternativas da tela",
+		"message": "remover imagens para resoluções alternativas de tela",
 		"description": "Options page label: 'remove images for alternative screen resolutions'"
 	},
 	"optionsFontsSubTitle": {
@@ -256,7 +256,7 @@
 		"description": "Options page label: 'remove alternative fonts'"
 	},
 	"optionsStylesheetsSubTitle": {
-		"message": "Stylesheets",
+		"message": "Folhas de estilo",
 		"description": "Options sub-title: 'Stylesheets'"
 	},
 	"optionCompressCSS": {
@@ -264,7 +264,7 @@
 		"description": "Options page label: 'compress CSS content'"
 	},
 	"optionMoveStylesInHead": {
-		"message": "mover para elemento principal os estilos encontrados fora dele",
+		"message": "mover para elemento head os estilos encontrados fora dele",
 		"description": "Options page label: 'move in the head element the styles found outside of it'"
 	},
 	"optionRemoveUnusedStyles": {
@@ -272,7 +272,7 @@
 		"description": "Options page label: 'remove unused styles'"
 	},
 	"optionRemoveAlternativeMedias": {
-		"message": "remover stylesheets de dispositivos alternativos para telas",
+		"message": "remover folhas de estilo para dispositivos além de telas",
 		"description": "Options page label: 'remove stylesheets for alternative devices to screens'"
 	},
 	"optionsOtherResourcesSubTitle": {
@@ -300,15 +300,15 @@
 		"description": "Options sub-title: 'Bookmarks'"
 	},
 	"optionsAutoSettingsSubTitle": {
-		"message": "Regras de auto-configuração",
+		"message": "Regras da configuração aromática",
 		"description": "Options sub-title: 'Auto-settings rules'"
 	},
 	"optionsDeleteDisplayedRulesConfirm": {
-		"message": "Confirmar eliminação de todas regras exibidas",
+		"message": "Confirmar eliminação de todas as regras exibidas",
 		"description": "Popup text 'Confirm the deletion of all displayed rules'"
 	},
 	"optionsDeleteRulesTooltip": {
-		"message": "Eliminar todas regras exibidas",
+		"message": "Eliminar todas as regras exibidas",
 		"description": "Popup text 'Delete all displayed rules'"
 	},
 	"optionsAutoSettingsUrl": {
@@ -356,11 +356,11 @@
 		"description": "Options page label: 'annotate the page before saving'"
 	},
 	"optionOpenSavedPage": {
-		"message": "abrir sites salvos numa nova aba",
+		"message": "abrir sites salvos numa aba nova",
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "abrir sites salvos com SingleFile Lite em editor de anotações",
+		"message": "abrir sites salvos via SingleFile Lite em editor de anotações",
 		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
@@ -392,7 +392,7 @@
 		"description": "Title of the button 'apply the system theme when formatting a page'"
 	},
 	"optionWarnUnsavedPage": {
-		"message": "avisar ao sair do site sem salvar as mudanças previamente",
+		"message": "dar aviso ao sair do site sem previamente salvar as mudanças ",
 		"description": "Title of the button 'warn if leaving page with unsaved changes'"
 	},
 	"optionsMiscSubTitle": {
@@ -440,7 +440,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "Confirme que você quer permitir que o SingleFile Lite envie um hash SHA256 de cada site que você vai salvar para API do Woleet. Você pode encontrar mais informações sobre este recurso no site de ajuda ou clicando no ponto de interrogação ao lado da opção.",
+		"message": "Concorde que você quer permitir o envio do hash SHA256 de cada site que você vai salvar para API do Woleet via SingleFile Lite. Você pode encontrar mais informações sobre este recurso no site de ajuda ou clicando no ponto de interrogação ao lado da opção.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {
@@ -472,7 +472,7 @@
 		"description": "Options page label: 'branch name'"
 	},
 	"optionSaveWithCompanion": {
-		"message": "salvar com SingleFile Lite Companion",
+		"message": "salvar via SingleFile Lite Companion",
 		"description": "Options page label: 'save with SingleFile Lite Companion'"
 	},
 	"optionSaveCreatedBookmarks": {
@@ -504,7 +504,7 @@
 		"description": "Options button: 'Reset'"
 	},
 	"optionsResetTooltip": {
-		"message": "Resetar todas opções para valores padrão",
+		"message": "Resetar todas as opções para valores padrão",
 		"description": "Options 'Reset' button tooltip"
 	},
 	"optionsResetConfirm": {
@@ -628,7 +628,7 @@
 		"description": "Title of the button 'Remove the selected highlighted text' in the editor"
 	},
 	"editorEditPage": {
-		"message": "Ativar/desativar somente leitura",
+		"message": "Ativar/desativar modo somente leitura",
 		"description": "Title of the button 'Enable/disable read-only' in the editor"
 	},
 	"editorFormatPage": {
@@ -640,7 +640,7 @@
 		"description": "Title of the button 'Enable/disable removing of internal elements' in the editor"
 	},
 	"editorCutOuterPage": {
-		"message": "Ativar/desativar a remoção de elementos internos",
+		"message": "Ativar/desativar a remoção de elementos externos",
 		"description": "Title of the button 'Enable/disable removing of external elements' in the editor"
 	},
 	"editorUndoCutPage": {
@@ -704,7 +704,7 @@
 		"description": "button 'Add URLs'"
 	},
 	"pendingsAddUrls": {
-		"message": "Digite uma lista de URLs separadas por uma nova linha",
+		"message": "Digite uma lista de URLs, separadas por uma nova linha",
 		"description": "Label of the add URLs input"
 	},
 	"pendingsAddUrlsOKButton": {
