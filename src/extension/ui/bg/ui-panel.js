@@ -25,6 +25,7 @@
 
 const optionsTab = document.getElementById("tab-options");
 const pendingsTab = document.getElementById("tab-pendings");
+const batchSaveUrlsTab = document.getElementById("tab-batch-save-urls");
 const viewPanel = document.getElementById("view-panel");
 import { getMessages } from "./../../core/bg/i18n.js";
 
@@ -32,16 +33,25 @@ init();
 optionsTab.onclick = () => {
 	optionsTab.classList.add("tab-selected");
 	pendingsTab.classList.remove("tab-selected");
+	batchSaveUrlsTab.classList.remove("tab-selected");
 	viewPanel.src = "options.html#side-panel";
 };
 pendingsTab.onclick = () => {
 	optionsTab.classList.remove("tab-selected");
 	pendingsTab.classList.add("tab-selected");
+	batchSaveUrlsTab.classList.remove("tab-selected");
 	viewPanel.src = "pendings.html#side-panel";
+};
+batchSaveUrlsTab.onclick = () => {
+	optionsTab.classList.remove("tab-selected");
+	pendingsTab.classList.remove("tab-selected");
+	batchSaveUrlsTab.classList.add("tab-selected");
+	viewPanel.src = "batch-save-urls.html#side-panel";
 };
 
 async function init() {
 	const messages = await getMessages();
 	optionsTab.textContent = messages.optionsTitle.message;
 	pendingsTab.textContent = messages.pendingsTitle.message;
+	batchSaveUrlsTab.textContent = messages.batchSaveUrlsTitle.message;
 }

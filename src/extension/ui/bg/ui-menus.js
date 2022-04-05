@@ -48,6 +48,7 @@ const MENU_ID_SAVE_TABS = "save-tabs";
 const MENU_ID_SAVE_SELECTED_TABS = "save-selected-tabs";
 const MENU_ID_SAVE_UNPINNED_TABS = "save-unpinned-tabs";
 const MENU_ID_SAVE_ALL_TABS = "save-all-tabs";
+const MENU_ID_BATCH_SAVE_URLS = "batch-save-urls";
 const MENU_ID_BUTTON_SAVE_SELECTED_TABS = "button-" + MENU_ID_SAVE_SELECTED_TABS;
 const MENU_ID_BUTTON_SAVE_UNPINNED_TABS = "button-" + MENU_ID_SAVE_UNPINNED_TABS;
 const MENU_ID_BUTTON_SAVE_ALL_TABS = "button-" + MENU_ID_SAVE_ALL_TABS;
@@ -65,6 +66,7 @@ let MENU_SAVE_TABS_MESSAGE;
 let MENU_SAVE_SELECTED_TABS_MESSAGE;
 let MENU_SAVE_UNPINNED_TABS_MESSAGE;
 let MENU_SAVE_ALL_TABS_MESSAGE;
+let MENU_BATCH_SAVE_URLS_MESSAGE;
 let MENU_SELECT_PROFILE_MESSAGE;
 let PROFILE_DEFAULT_SETTINGS_MESSAGE;
 const MENU_TOP_VISIBLE_ENTRIES = [
@@ -108,6 +110,7 @@ async function init(businessApi) {
 	MENU_SAVE_SELECTED_TABS_MESSAGE = messages.menuSaveSelectedTabs.message;
 	MENU_SAVE_UNPINNED_TABS_MESSAGE = messages.menuSaveUnpinnedTabs.message;
 	MENU_SAVE_ALL_TABS_MESSAGE = messages.menuSaveAllTabs.message;
+	MENU_BATCH_SAVE_URLS_MESSAGE = messages.menuBatchSaveUrls.message;
 	MENU_SELECT_PROFILE_MESSAGE = messages.menuSelectProfile.message;
 	PROFILE_DEFAULT_SETTINGS_MESSAGE = messages.profileDefaultSettings.message;
 }
@@ -334,6 +337,11 @@ async function createMenus(tab) {
 			type: "separator"
 		});
 		menus.create({
+			id: MENU_ID_BATCH_SAVE_URLS,
+			contexts: defaultContexts,
+			title: MENU_BATCH_SAVE_URLS_MESSAGE
+		});
+		menus.create({
 			id: MENU_ID_VIEW_PENDINGS,
 			contexts: defaultContexts,
 			title: MENU_VIEW_PENDINGS_MESSAGE
@@ -392,6 +400,9 @@ async function initialize() {
 			if (event.menuItemId == MENU_ID_SAVE_ALL_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_ALL_TABS) {
 				const tabs = await queryTabs({ currentWindow: true });
 				business.saveTabs(tabs);
+			}
+			if (event.menuItemId == MENU_ID_BATCH_SAVE_URLS) {
+				business.batchSaveUrls();
 			}
 			if (event.menuItemId.startsWith(MENU_ID_SAVE_WITH_PROFILE_PREFIX)) {
 				const profiles = await config.getProfiles();

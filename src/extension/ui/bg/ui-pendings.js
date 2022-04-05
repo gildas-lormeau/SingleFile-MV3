@@ -30,16 +30,13 @@ const titleLabel = document.getElementById("titleLabel");
 const resultsTable = document.getElementById("resultsTable");
 const cancelAllButton = document.getElementById("cancelAllButton");
 const addUrlsButton = document.getElementById("addUrlsButton");
-const addUrlsInput = document.getElementById("addUrlsInput");
-const addUrlsCancelButton = document.getElementById("addUrlsCancelButton");
-const addUrlsOKButton = document.getElementById("addUrlsOKButton");
 const statusText = {};
 
 cancelAllButton.onclick = async () => {
 	await browser.runtime.sendMessage({ method: "downloads.cancelAll" });
 	await refresh();
 };
-addUrlsButton.onclick = displayAddUrlsPopup;
+addUrlsButton.onclick = () => window.open("batch-save-urls.html", "sf-add-urls");
 if (location.href.endsWith("#side-panel")) {
 	document.documentElement.classList.add("side-panel");
 }
@@ -57,8 +54,6 @@ async function init() {
 	document.title = messages.pendingsTitle.message;
 	cancelAllButton.textContent = messages.pendingsCancelAllButton.message;
 	addUrlsButton.textContent = messages.pendingsAddUrlsButton.message;
-	addUrlsCancelButton.textContent = messages.pendingsAddUrlsCancelButton.message;
-	addUrlsOKButton.textContent = messages.pendingsAddUrlsOKButton.message;
 	document.getElementById("addUrlsLabel").textContent = messages.pendingsAddUrls.message;
 	URLLabel.textContent = messages.pendingsURLTitle.message;
 	titleLabel.textContent = messages.pendingsTitleTitle.message;
@@ -117,33 +112,6 @@ async function cancel(taskId) {
 async function selectTab(tabId) {
 	await browser.runtime.sendMessage({ method: "tabs.activate", tabId });
 	await refresh();
-}
-
-async function displayAddUrlsPopup() {
-	document.getElementById("formAddUrls").style.setProperty("display", "flex");
-	document.querySelector("#formAddUrls .popup-content").style.setProperty("align-self", "center");
-	addUrlsInput.value = "";
-	addUrlsInput.focus();
-	document.body.style.setProperty("overflow-y", "hidden");
-	const urls = await new Promise(resolve => {
-		addUrlsOKButton.onclick = event => hideAndResolve(event, addUrlsInput.value);
-		addUrlsCancelButton.onclick = event => hideAndResolve(event);
-		window.onkeyup = event => {
-			if (event.key == "Escape") {
-				hideAndResolve(event);
-			}
-		};
-
-		function hideAndResolve(event, value = "") {
-			event.preventDefault();
-			document.getElementById("formAddUrls").style.setProperty("display", "none");
-			document.body.style.setProperty("overflow-y", "");
-			resolve(value.split("\n").map(url => url.trim()).filter(url => url));
-		}
-	});
-	if (urls.length) {
-		await browser.runtime.sendMessage({ method: "downloads.saveUrls", urls });
-	}
 }
 
 async function refresh(force) {
