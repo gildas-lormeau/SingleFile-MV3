@@ -86,6 +86,7 @@ async function onMessage(message, sender) {
 			};
 			await browser.tabs.sendMessage(tab.id, message);
 		}
+		return {};
 	}
 	if (message.method.endsWith(".open")) {
 		let contents;
@@ -108,5 +109,6 @@ async function onMessage(message, sender) {
 			await browser.tabs.update(tab.id, updateTabProperties);
 			tabsData.set(tab.id, { url: tab.url, content: contents.join(""), filename: message.filename });
 		}
+		return {};
 	}
 }
