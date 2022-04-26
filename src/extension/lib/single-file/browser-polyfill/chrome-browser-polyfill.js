@@ -51,6 +51,10 @@ if (typeof globalThis == "undefined") {
 					addListener: listener => nativeAPI.bookmarks.onChanged.addListener(listener),
 					removeListener: listener => nativeAPI.bookmarks.onChanged.removeListener(listener)
 				},
+				onMoved: {
+					addListener: listener => nativeAPI.bookmarks.onMoved.addListener(listener),
+					removeListener: listener => nativeAPI.bookmarks.onMoved.removeListener(listener)
+				},
 				update: (id, changes) => nativeAPI.bookmarks.update(id, changes)
 			},
 			commands: {
