@@ -185,7 +185,8 @@ function getInstance(utilOptions) {
 		SELECTED_CONTENT_ATTRIBUTE_NAME: helper.SELECTED_CONTENT_ATTRIBUTE_NAME,
 		COMMENT_HEADER: helper.COMMENT_HEADER,
 		COMMENT_HEADER_LEGACY: helper.COMMENT_HEADER_LEGACY,
-		SINGLE_FILE_UI_ELEMENT_CLASS: helper.SINGLE_FILE_UI_ELEMENT_CLASS
+		SINGLE_FILE_UI_ELEMENT_CLASS: helper.SINGLE_FILE_UI_ELEMENT_CLASS,
+		EMPTY_RESOURCE: helper.EMPTY_RESOURCE
 	};
 
 	async function getContent(resourceURL, options) {
@@ -197,7 +198,7 @@ function getInstance(utilOptions) {
 			log("  // STARTED download url =", resourceURL, "asBinary =", options.asBinary);
 		}
 		if (options.blockMixedContent && /^https:/i.test(options.baseURI) && !/^https:/i.test(resourceURL)) {
-			return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
+			return { data: options.asBinary ? helper.EMPTY_RESOURCE : "", resourceURL };
 		}
 		if (options.networkTimeout) {
 			networkTimeoutPromise = new Promise((resolve, reject) => {
@@ -230,7 +231,7 @@ function getInstance(utilOptions) {
 				]);
 			}
 		} catch (error) {
-			return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
+			return { data: options.asBinary ? helper.EMPTY_RESOURCE : "", resourceURL };
 		} finally {
 			resolveNetworkTimeoutPromise();
 			if (options.networkTimeout) {
@@ -241,7 +242,7 @@ function getInstance(utilOptions) {
 		try {
 			buffer = await response.arrayBuffer();
 		} catch (error) {
-			return { data: options.asBinary ? "data:null;base64," : "", resourceURL };
+			return { data: options.asBinary ? helper.EMPTY_RESOURCE : "", resourceURL };
 		}
 		resourceURL = response.url || resourceURL;
 		let contentType = "", charset;
@@ -260,14 +261,14 @@ function getInstance(utilOptions) {
 		}
 		if (options.asBinary) {
 			if (response.status >= 400) {
-				return { data: "data:null;base64,", resourceURL };
+				return { data: helper.EMPTY_RESOURCE, resourceURL };
 			}
 			try {
 				if (DEBUG) {
 					log("  // ENDED   download url =", resourceURL, "delay =", Date.now() - startTime);
 				}
 				if (options.maxResourceSizeEnabled && buffer.byteLength > options.maxResourceSize * ONE_MB) {
-					return { data: "data:null;base64,", resourceURL };
+					return { data: helper.EMPTY_RESOURCE, resourceURL };
 				} else {
 					const reader = new FileReader();
 					reader.readAsDataURL(new Blob([buffer], { type: contentType + (options.charset ? ";charset=" + options.charset : "") }));
@@ -278,7 +279,7 @@ function getInstance(utilOptions) {
 					return { data: dataUri, resourceURL };
 				}
 			} catch (error) {
-				return { data: "data:null;base64,", resourceURL };
+				return { data: helper.EMPTY_RESOURCE, resourceURL };
 			}
 		} else {
 			if (response.status >= 400 || (options.validateTextContentType && contentType && !contentType.startsWith(PREFIX_CONTENT_TYPE_TEXT))) {

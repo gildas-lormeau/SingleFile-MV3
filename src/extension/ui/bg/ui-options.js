@@ -34,7 +34,19 @@ const removeUnusedStylesLabel = document.getElementById("removeUnusedStylesLabel
 const removeUnusedFontsLabel = document.getElementById("removeUnusedFontsLabel");
 const removeFramesLabel = document.getElementById("removeFramesLabel");
 const removeImportsLabel = document.getElementById("removeImportsLabel");
-const removeScriptsLabel = document.getElementById("removeScriptsLabel");
+const blockScriptsLabel = document.getElementById("blockScriptsLabel");
+const blockAudiosLabel = document.getElementById("blockAudiosLabel");
+const blockVideosLabel = document.getElementById("blockVideosLabel");
+const blockFontsLabel = document.getElementById("blockFontsLabel");
+const blockStylesheetsLabel = document.getElementById("blockStylesheetsLabel");
+const blockImagesLabel = document.getElementById("blockImagesLabel");
+const acceptHeaderDocumentLabel = document.getElementById("acceptHeaderDocumentLabel");
+const acceptHeaderScriptLabel = document.getElementById("acceptHeaderScriptLabel");
+const acceptHeaderAudioLabel = document.getElementById("acceptHeaderAudioLabel");
+const acceptHeaderVideoLabel = document.getElementById("acceptHeaderVideoLabel");
+const acceptHeaderFontLabel = document.getElementById("acceptHeaderFontLabel");
+const acceptHeaderStylesheetLabel = document.getElementById("acceptHeaderStylesheetLabel");
+const acceptHeaderImageLabel = document.getElementById("acceptHeaderImageLabel");
 const saveRawPageLabel = document.getElementById("saveRawPageLabel");
 const insertMetaCSPLabel = document.getElementById("insertMetaCSPLabel");
 const saveToClipboardLabel = document.getElementById("saveToClipboardLabel");
@@ -62,14 +74,14 @@ const filenameMaxLengthCharsUnitLabel = document.getElementById("filenameMaxLeng
 const shadowEnabledLabel = document.getElementById("shadowEnabledLabel");
 const setMaxResourceSizeLabel = document.getElementById("setMaxResourceSizeLabel");
 const maxResourceSizeLabel = document.getElementById("maxResourceSizeLabel");
+const setMaxResourceDelayLabel = document.getElementById("setMaxResourceDelayLabel");
+const maxResourceDelayLabel = document.getElementById("maxResourceDelayLabel");
 const confirmFilenameLabel = document.getElementById("confirmFilenameLabel");
 const filenameConflictActionLabel = document.getElementById("filenameConflictActionLabel");
 const filenameConflictActionUniquifyLabel = document.getElementById("filenameConflictActionUniquifyLabel");
 const filenameConflictActionOverwriteLabel = document.getElementById("filenameConflictActionOverwriteLabel");
 const filenameConflictActionPromptLabel = document.getElementById("filenameConflictActionPromptLabel");
 const filenameConflictActionSkipLabel = document.getElementById("filenameConflictActionSkipLabel");
-const removeAudioLabel = document.getElementById("removeAudioLabel");
-const removeVideoLabel = document.getElementById("removeVideoLabel");
 const displayInfobarLabel = document.getElementById("displayInfobarLabel");
 const displayStatsLabel = document.getElementById("displayStatsLabel");
 const backgroundSaveLabel = document.getElementById("backgroundSaveLabel");
@@ -87,7 +99,9 @@ const htmlContentLabel = document.getElementById("htmlContentLabel");
 const imagesLabel = document.getElementById("imagesLabel");
 const stylesheetsLabel = document.getElementById("stylesheetsLabel");
 const fontsLabel = document.getElementById("fontsLabel");
-const otherResourcesLabel = document.getElementById("otherResourcesLabel");
+const networkLabel = document.getElementById("networkLabel");
+const blockResourcesLabel = document.getElementById("blockResourcesLabel");
+const acceptHeadersLabel = document.getElementById("acceptHeadersLabel");
 const destinationLabel = document.getElementById("destinationLabel");
 const bookmarksLabel = document.getElementById("bookmarksLabel");
 const autoSettingsLabel = document.getElementById("autoSettingsLabel");
@@ -124,7 +138,19 @@ const removeUnusedStylesInput = document.getElementById("removeUnusedStylesInput
 const removeUnusedFontsInput = document.getElementById("removeUnusedFontsInput");
 const removeFramesInput = document.getElementById("removeFramesInput");
 const removeImportsInput = document.getElementById("removeImportsInput");
-const removeScriptsInput = document.getElementById("removeScriptsInput");
+const blockScriptsInput = document.getElementById("blockScriptsInput");
+const blockVideosInput = document.getElementById("blockVideosInput");
+const blockAudiosInput = document.getElementById("blockAudiosInput");
+const blockFontsInput = document.getElementById("blockFontsInput");
+const blockStylesheetsInput = document.getElementById("blockStylesheetsInput");
+const blockImagesInput = document.getElementById("blockImagesInput");
+const acceptHeaderDocumentInput = document.getElementById("acceptHeaderDocumentInput");
+const acceptHeaderScriptInput = document.getElementById("acceptHeaderScriptInput");
+const acceptHeaderAudioInput = document.getElementById("acceptHeaderAudioInput");
+const acceptHeaderVideoInput = document.getElementById("acceptHeaderVideoInput");
+const acceptHeaderFontInput = document.getElementById("acceptHeaderFontInput");
+const acceptHeaderStylesheetInput = document.getElementById("acceptHeaderStylesheetInput");
+const acceptHeaderImageInput = document.getElementById("acceptHeaderImageInput");
 const saveRawPageInput = document.getElementById("saveRawPageInput");
 const insertMetaCSPInput = document.getElementById("insertMetaCSPInput");
 const saveToClipboardInput = document.getElementById("saveToClipboardInput");
@@ -151,10 +177,10 @@ const filenameMaxLengthUnitInput = document.getElementById("filenameMaxLengthUni
 const shadowEnabledInput = document.getElementById("shadowEnabledInput");
 const maxResourceSizeInput = document.getElementById("maxResourceSizeInput");
 const maxResourceSizeEnabledInput = document.getElementById("maxResourceSizeEnabledInput");
+const maxResourceDelayInput = document.getElementById("maxResourceDelayInput");
+const maxResourceDelayEnabledInput = document.getElementById("maxResourceDelayEnabledInput");
 const confirmFilenameInput = document.getElementById("confirmFilenameInput");
 const filenameConflictActionInput = document.getElementById("filenameConflictActionInput");
-const removeAudioSrcInput = document.getElementById("removeAudioSrcInput");
-const removeVideoSrcInput = document.getElementById("removeVideoSrcInput");
 const displayInfobarInput = document.getElementById("displayInfobarInput");
 const displayStatsInput = document.getElementById("displayStatsInput");
 const backgroundSaveInput = document.getElementById("backgroundSaveInput");
@@ -356,12 +382,6 @@ expandAllButton.addEventListener("click", () => {
 	}
 	document.querySelectorAll("details").forEach(detailElement => detailElement.open = Boolean(expandAllButton.className));
 }, false);
-removeScriptsInput.addEventListener("click", () => {
-	if (!removeScriptsInput.checked) {
-		removeHiddenElementsInput.checked = false;
-		removeUnusedStylesInput.checked = false;
-	}
-}, false);
 saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
 saveToClipboardInput.addEventListener("click", () => enableClipboardSave(saveToClipboardInput), false);
 saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
@@ -438,7 +458,19 @@ async function init() {
 	removeUnusedFontsLabel.textContent = messages.optionRemoveUnusedFonts.message;
 	removeFramesLabel.textContent = messages.optionRemoveFrames.message;
 	removeImportsLabel.textContent = messages.optionRemoveImports.message;
-	removeScriptsLabel.textContent = messages.optionRemoveScripts.message;
+	blockScriptsLabel.textContent = messages.optionResourceScript.message;
+	blockAudiosLabel.textContent = messages.optionResourceAudio.message;
+	blockVideosLabel.textContent = messages.optionResourceVideo.message;
+	blockFontsLabel.textContent = messages.optionResourceFont.message;
+	blockStylesheetsLabel.textContent = messages.optionResourceStylesheet.message;
+	blockImagesLabel.textContent = messages.optionResourceImage.message;
+	acceptHeaderDocumentLabel.textContent = messages.optionResourceDocument.message;
+	acceptHeaderScriptLabel.textContent = messages.optionResourceScript.message;
+	acceptHeaderAudioLabel.textContent = messages.optionResourceAudio.message;
+	acceptHeaderVideoLabel.textContent = messages.optionResourceVideo.message;
+	acceptHeaderFontLabel.textContent = messages.optionResourceFont.message;
+	acceptHeaderStylesheetLabel.textContent = messages.optionResourceStylesheet.message;
+	acceptHeaderImageLabel.textContent = messages.optionResourceImage.message;
 	saveRawPageLabel.textContent = messages.optionSaveRawPage.message;
 	insertMetaCSPLabel.textContent = messages.optionInsertMetaCSP.message;
 	saveToClipboardLabel.textContent = messages.optionSaveToClipboard.message;
@@ -466,14 +498,14 @@ async function init() {
 	shadowEnabledLabel.textContent = messages.optionDisplayShadow.message;
 	setMaxResourceSizeLabel.textContent = messages.optionSetMaxResourceSize.message;
 	maxResourceSizeLabel.textContent = messages.optionMaxResourceSize.message;
+	setMaxResourceDelayLabel.textContent = messages.optionSetMaxResourceDelay.message;
+	maxResourceDelayLabel.textContent = messages.optionMaxResourceDelay.message;
 	confirmFilenameLabel.textContent = messages.optionConfirmFilename.message;
 	filenameConflictActionLabel.textContent = messages.optionFilenameConflictAction.message;
 	filenameConflictActionUniquifyLabel.textContent = messages.optionFilenameConflictActionUniquify.message;
 	filenameConflictActionOverwriteLabel.textContent = messages.optionFilenameConflictActionOverwrite.message;
 	filenameConflictActionPromptLabel.textContent = messages.optionFilenameConflictActionPrompt.message;
 	filenameConflictActionSkipLabel.textContent = messages.optionFilenameConflictActionSkip.message;
-	removeAudioLabel.textContent = messages.optionRemoveAudio.message;
-	removeVideoLabel.textContent = messages.optionRemoveVideo.message;
 	displayInfobarLabel.textContent = messages.optionDisplayInfobar.message;
 	displayStatsLabel.textContent = messages.optionDisplayStats.message;
 	backgroundSaveLabel.textContent = messages.optionBackgroundSave.message;
@@ -492,8 +524,11 @@ async function init() {
 	imagesLabel.textContent = messages.optionsImagesSubTitle.message;
 	stylesheetsLabel.textContent = messages.optionsStylesheetsSubTitle.message;
 	fontsLabel.textContent = messages.optionsFontsSubTitle.message;
-	otherResourcesLabel.textContent = messages.optionsOtherResourcesSubTitle.message;
-	destinationLabel.textContent = messages.optionsDestionationSubTitle.message;
+	networkLabel.textContent = messages.optionsNetworkSubTitle;
+	blockResourcesLabel.textContent = messages.optionsBlockedResources;
+	acceptHeadersLabel.textContent = messages.optionsAcceptHeaders;
+	destinationLabel.textContent = messages.optionsDestinationSubTitle;
+	destinationLabel.textContent = messages.optionsDestinationSubTitle.message;
 	bookmarksLabel.textContent = messages.optionsBookmarkSubTitle.message;
 	miscLabel.textContent = messages.optionsMiscSubTitle.message;
 	helpLabel.textContent = messages.optionsHelpLink.message;
@@ -633,7 +668,19 @@ async function refresh(profileName) {
 	removeUnusedFontsInput.checked = profileOptions.removeUnusedFonts;
 	removeFramesInput.checked = profileOptions.removeFrames;
 	removeImportsInput.checked = profileOptions.removeImports;
-	removeScriptsInput.checked = profileOptions.removeScripts;
+	blockScriptsInput.checked = profileOptions.blockScripts;
+	blockVideosInput.checked = profileOptions.blockVideos;
+	blockAudiosInput.checked = profileOptions.blockAudios;
+	blockFontsInput.checked = profileOptions.blockFonts;
+	blockStylesheetsInput.checked = profileOptions.blockStylesheets;
+	blockImagesInput.checked = profileOptions.blockImages;
+	acceptHeaderDocumentInput.value = profileOptions.acceptHeaders.document;
+	acceptHeaderScriptInput.value = profileOptions.acceptHeaders.script;
+	acceptHeaderAudioInput.value = profileOptions.acceptHeaders.audio;
+	acceptHeaderVideoInput.value = profileOptions.acceptHeaders.video;
+	acceptHeaderFontInput.value = profileOptions.acceptHeaders.font;
+	acceptHeaderStylesheetInput.value = profileOptions.acceptHeaders.stylesheet;
+	acceptHeaderImageInput.value = profileOptions.acceptHeaders.image;
 	saveRawPageInput.checked = profileOptions.saveRawPage;
 	insertMetaCSPInput.checked = profileOptions.insertMetaCSP;
 	saveToClipboardInput.checked = profileOptions.saveToClipboard;
@@ -666,12 +713,13 @@ async function refresh(profileName) {
 	filenameMaxLengthUnitInput.value = profileOptions.filenameMaxLengthUnit;
 	shadowEnabledInput.checked = profileOptions.shadowEnabled;
 	maxResourceSizeEnabledInput.checked = profileOptions.maxResourceSizeEnabled;
-	maxResourceSizeInput.value = profileOptions.maxResourceSize;
+	maxResourceSizeInput.value = profileOptions.maxResourceSizeEnabled ? profileOptions.maxResourceSize : 10;
 	maxResourceSizeInput.disabled = !profileOptions.maxResourceSizeEnabled;
+	maxResourceDelayEnabledInput.checked = Boolean(profileOptions.networkTimeout);
+	maxResourceDelayInput.value = profileOptions.networkTimeout ? profileOptions.networkTimeout / 1000 : 60;
+	maxResourceDelayInput.disabled = !profileOptions.networkTimeout;
 	confirmFilenameInput.checked = profileOptions.confirmFilename;
 	filenameConflictActionInput.value = profileOptions.filenameConflictAction;
-	removeAudioSrcInput.checked = profileOptions.removeAudioSrc;
-	removeVideoSrcInput.checked = profileOptions.removeVideoSrc;
 	displayInfobarInput.checked = profileOptions.displayInfobar;
 	displayStatsInput.checked = profileOptions.displayStats;
 	backgroundSaveInput.checked = profileOptions.backgroundSave;
@@ -719,7 +767,21 @@ async function update() {
 			removeUnusedFonts: removeUnusedFontsInput.checked,
 			removeFrames: removeFramesInput.checked,
 			removeImports: removeImportsInput.checked,
-			removeScripts: removeScriptsInput.checked,
+			blockScripts: blockScriptsInput.checked,
+			blockVideos: blockVideosInput.checked,
+			blockAudios: blockAudiosInput.checked,
+			blockFonts: blockFontsInput.checked,
+			blockStylesheets: blockStylesheetsInput.checked,
+			blockImages: blockImagesInput.checked,
+			acceptHeaders: {
+				document: acceptHeaderDocumentInput.value,
+				script: acceptHeaderScriptInput.value,
+				audio: acceptHeaderAudioInput.value,
+				video: acceptHeaderVideoInput.value,
+				font: acceptHeaderFontInput.value,
+				stylesheet: acceptHeaderStylesheetInput.value,
+				image: acceptHeaderImageInput.value
+			},
 			saveRawPage: saveRawPageInput.checked,
 			insertMetaCSP: insertMetaCSPInput.checked,
 			saveToClipboard: saveToClipboardInput.checked,
@@ -744,11 +806,10 @@ async function update() {
 			filenameMaxLengthUnit: filenameMaxLengthUnitInput.value,
 			shadowEnabled: shadowEnabledInput.checked,
 			maxResourceSizeEnabled: maxResourceSizeEnabledInput.checked,
-			maxResourceSize: Math.max(maxResourceSizeInput.value, 0),
+			maxResourceSize: maxResourceSizeEnabledInput.checked ? Math.max(maxResourceSizeInput.value, 0) : 10,
+			networkTimeout: maxResourceDelayEnabledInput.checked ? Math.max(maxResourceDelayInput.value * 1000, 60) : 0,
 			confirmFilename: confirmFilenameInput.checked,
 			filenameConflictAction: filenameConflictActionInput.value,
-			removeAudioSrc: removeAudioSrcInput.checked,
-			removeVideoSrc: removeVideoSrcInput.checked,
 			displayInfobar: displayInfobarInput.checked,
 			displayStats: displayStatsInput.checked,
 			backgroundSave: backgroundSaveInput.checked,
@@ -961,47 +1022,49 @@ async function getHelpContents() {
 	const items = doc.querySelectorAll("[data-options-label]");
 	items.forEach(itemElement => {
 		const optionLabel = document.getElementById(itemElement.dataset.optionsLabel);
-		const helpIconWrapper = document.createElement("span");
-		const helpIconContainer = document.createElement("span");
-		const helpIcon = document.createElement("img");
-		helpIcon.src = HELP_ICON_URL;
-		helpIconWrapper.className = "help-icon-wrapper";
-		const labelWords = optionLabel.textContent.split(/\s+/);
-		if (labelWords.length > 1) {
-			helpIconWrapper.textContent = labelWords.pop();
-			optionLabel.textContent = labelWords.join(" ") + " ";
-		}
-		helpIconContainer.className = "help-icon";
-		helpIconContainer.onclick = () => {
-			helpContent.hidden = !helpContent.hidden;
-			return false;
-		};
-		helpIcon.tabIndex = 0;
-		helpIconContainer.onkeyup = event => {
-			if (event.code == "Enter") {
+		if (optionLabel) {
+			const helpIconWrapper = document.createElement("span");
+			const helpIconContainer = document.createElement("span");
+			const helpIcon = document.createElement("img");
+			helpIcon.src = HELP_ICON_URL;
+			helpIconWrapper.className = "help-icon-wrapper";
+			const labelWords = optionLabel.textContent.split(/\s+/);
+			if (labelWords.length > 1) {
+				helpIconWrapper.textContent = labelWords.pop();
+				optionLabel.textContent = labelWords.join(" ") + " ";
+			}
+			helpIconContainer.className = "help-icon";
+			helpIconContainer.onclick = () => {
 				helpContent.hidden = !helpContent.hidden;
 				return false;
-			}
-		};
-		helpIconContainer.appendChild(helpIcon);
-		helpIconWrapper.appendChild(helpIconContainer);
-		optionLabel.appendChild(helpIconWrapper);
-		const helpContent = document.createElement("div");
-		helpContent.hidden = true;
-		helpContent.className = "help-content";
-		itemElement.childNodes.forEach(node => {
-			if (node instanceof HTMLElement && node.className != "option") {
-				helpContent.appendChild(document.importNode(node, true));
-			}
-		});
-		helpContent.querySelectorAll("a[href]").forEach(linkElement => {
-			const hrefValue = linkElement.getAttribute("href");
-			if (hrefValue.startsWith("#")) {
-				linkElement.href = browser.runtime.getURL(HELP_PAGE_PATH + linkElement.getAttribute("href"));
-				linkElement.target = "_blank";
-			}
-		});
-		optionLabel.parentElement.insertAdjacentElement("afterEnd", helpContent);
+			};
+			helpIcon.tabIndex = 0;
+			helpIconContainer.onkeyup = event => {
+				if (event.code == "Enter") {
+					helpContent.hidden = !helpContent.hidden;
+					return false;
+				}
+			};
+			helpIconContainer.appendChild(helpIcon);
+			helpIconWrapper.appendChild(helpIconContainer);
+			optionLabel.appendChild(helpIconWrapper);
+			const helpContent = document.createElement("div");
+			helpContent.hidden = true;
+			helpContent.className = "help-content";
+			itemElement.childNodes.forEach(node => {
+				if (node instanceof HTMLElement && node.className != "option") {
+					helpContent.appendChild(document.importNode(node, true));
+				}
+			});
+			helpContent.querySelectorAll("a[href]").forEach(linkElement => {
+				const hrefValue = linkElement.getAttribute("href");
+				if (hrefValue.startsWith("#")) {
+					linkElement.href = browser.runtime.getURL(HELP_PAGE_PATH + linkElement.getAttribute("href"));
+					linkElement.target = "_blank";
+				}
+			});
+			optionLabel.parentElement.insertAdjacentElement("afterEnd", helpContent);
+		}
 	});
 }
 
