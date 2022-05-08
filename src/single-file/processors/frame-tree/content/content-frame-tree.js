@@ -64,7 +64,10 @@ const top = globalThis.top;
 const MessageChannel = globalThis.MessageChannel;
 const document = globalThis.document;
 
-const sessions = new Map();
+let sessions = globalThis.sessions;
+if (!sessions) {
+	sessions = globalThis.sessions = new Map();
+}
 let windowId;
 if (TOP_WINDOW) {
 	windowId = TOP_WINDOW_ID;
@@ -395,7 +398,7 @@ function getFrameData(document, globalThis, windowId, options) {
 		stylesheets: docData.stylesheets,
 		images: docData.images,
 		posters: docData.posters,
-		videos: docData.videos,		
+		videos: docData.videos,
 		usedFonts: docData.usedFonts,
 		shadowRoots: docData.shadowRoots,
 		imports: docData.imports,
