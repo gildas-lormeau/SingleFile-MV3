@@ -59,6 +59,7 @@ export {
 	setCancelCallback,
 	onSaveEnd,
 	onInit,
+	onTabReplaced,
 	cancelTab as onTabRemoved
 };
 
@@ -109,13 +110,19 @@ async function saveTabs(tabs, options = {}) {
 		Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 		tabOptions.tabId = tabId;
 		tabOptions.tabIndex = tab.index;
+		const tabData = {
+			id: tab.id,
+			index: tab.index,
+			url: tab.url,
+			title: tab.title
+		};
 		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
 		const scriptsInjected = await injectScripts(tab.id, options);
 		if (scriptsInjected || editor.isEditor(tab)) {
 			ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
 			addTask({
 				status: TASK_PENDING_STATE,
-				tab,
+				tab: tabData,
 				options: tabOptions,
 				method: "content.save"
 			});
@@ -209,6 +216,14 @@ function isSavingTab(tab) {
 
 function onInit(tab) {
 	cancelTab(tab.id);
+}
+
+function onTabReplaced(addedTabId, removedTabId) {
+	tasks.forEach(taskInfo => {
+		if (taskInfo.tab.id == removedTabId) {
+			taskInfo.tab.id = addedTabId;
+		}
+	});
 }
 
 function onSaveEnd(taskId) {

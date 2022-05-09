@@ -35,6 +35,7 @@ browser.tabs.onCreated.addListener(tab => onTabCreated(tab));
 browser.tabs.onActivated.addListener(activeInfo => onTabActivated(activeInfo));
 browser.tabs.onRemoved.addListener(tabId => onTabRemoved(tabId));
 browser.tabs.onUpdated.addListener((tabId, changeInfo) => onTabUpdated(tabId, changeInfo));
+browser.tabs.onReplaced.addListener((addedTabId, removedTabId) => onTabReplaced(addedTabId, removedTabId));
 export {
 	onMessage
 };
@@ -78,6 +79,11 @@ async function onTabUpdated(tabId, changeInfo) {
 			ui.onTabActivated(tab);
 		}
 	}
+}
+
+function onTabReplaced(addedTabId, removedTabId) {
+	tabsData.onTabReplaced(addedTabId, removedTabId);
+	business.onTabReplaced(addedTabId, removedTabId);
 }
 
 function onTabCreated(tab) {
