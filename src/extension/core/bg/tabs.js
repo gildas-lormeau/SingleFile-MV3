@@ -43,7 +43,7 @@ async function onMessage(message, sender) {
 	if (message.method.endsWith(".init")) {
 		await onInit(sender.tab, message);
 		ui.onInit(sender.tab);
-		business.onInit(sender.tab);		
+		business.onInit(sender.tab);
 	}
 	if (message.method.endsWith(".getOptions")) {
 		return config.getOptions(message.url);
