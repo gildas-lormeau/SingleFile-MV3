@@ -66,6 +66,7 @@ const moveStylesInHeadLabel = document.getElementById("moveStylesInHeadLabel");
 const loadDeferredImagesLabel = document.getElementById("loadDeferredImagesLabel");
 const loadDeferredImagesMaxIdleTimeLabel = document.getElementById("loadDeferredImagesMaxIdleTimeLabel");
 const loadDeferredImagesKeepZoomLevelLabel = document.getElementById("loadDeferredImagesKeepZoomLevelLabel");
+const loadDeferredImagesDispatchScrollEventLabel = document.getElementById("loadDeferredImagesDispatchScrollEventLabel");
 const addMenuEntryLabel = document.getElementById("addMenuEntryLabel");
 const filenameTemplateLabel = document.getElementById("filenameTemplateLabel");
 const filenameMaxLengthLabel = document.getElementById("filenameMaxLengthLabel");
@@ -170,6 +171,7 @@ const moveStylesInHeadInput = document.getElementById("moveStylesInHeadInput");
 const loadDeferredImagesInput = document.getElementById("loadDeferredImagesInput");
 const loadDeferredImagesMaxIdleTimeInput = document.getElementById("loadDeferredImagesMaxIdleTimeInput");
 const loadDeferredImagesKeepZoomLevelInput = document.getElementById("loadDeferredImagesKeepZoomLevelInput");
+const loadDeferredImagesDispatchScrollEventInput = document.getElementById("loadDeferredImagesDispatchScrollEventInput");
 const contextMenuEnabledInput = document.getElementById("contextMenuEnabledInput");
 const filenameTemplateInput = document.getElementById("filenameTemplateInput");
 const filenameMaxLengthInput = document.getElementById("filenameMaxLengthInput");
@@ -490,6 +492,7 @@ async function init() {
 	loadDeferredImagesLabel.textContent = messages.optionLoadDeferredImages.message;
 	loadDeferredImagesMaxIdleTimeLabel.textContent = messages.optionLoadDeferredImagesMaxIdleTime.message;
 	loadDeferredImagesKeepZoomLevelLabel.textContent = messages.optionLoadDeferredImagesKeepZoomLevel.message;
+	loadDeferredImagesDispatchScrollEventLabel.textContent = messages.optionLoadDeferredImagesDispatchScrollEvent.message;
 	addMenuEntryLabel.textContent = messages.optionAddMenuEntry.message;
 	filenameTemplateLabel.textContent = messages.optionFilenameTemplate.message;
 	filenameMaxLengthLabel.textContent = messages.optionFilenameMaxLength.message;
@@ -707,6 +710,8 @@ async function refresh(profileName) {
 	loadDeferredImagesKeepZoomLevelInput.checked = profileOptions.loadDeferredImagesKeepZoomLevel;
 	loadDeferredImagesKeepZoomLevelInput.disabled = !profileOptions.loadDeferredImages;
 	loadDeferredImagesMaxIdleTimeInput.disabled = !profileOptions.loadDeferredImages;
+	loadDeferredImagesDispatchScrollEventInput.checked = profileOptions.loadDeferredImagesDispatchScrollEvent;
+	loadDeferredImagesDispatchScrollEventInput.disabled = !profileOptions.loadDeferredImages;
 	contextMenuEnabledInput.checked = profileOptions.contextMenuEnabled;
 	filenameTemplateInput.value = profileOptions.filenameTemplate;
 	filenameMaxLengthInput.value = profileOptions.filenameMaxLength;
@@ -800,6 +805,7 @@ async function update() {
 			loadDeferredImages: loadDeferredImagesInput.checked,
 			loadDeferredImagesMaxIdleTime: Math.max(loadDeferredImagesMaxIdleTimeInput.value, 0),
 			loadDeferredImagesKeepZoomLevel: loadDeferredImagesKeepZoomLevelInput.checked,
+			loadDeferredImagesDispatchScrollEvent: loadDeferredImagesDispatchScrollEventInput.checked,
 			contextMenuEnabled: contextMenuEnabledInput.checked,
 			filenameTemplate: filenameTemplateInput.value,
 			filenameMaxLength: filenameMaxLengthInput.value,
