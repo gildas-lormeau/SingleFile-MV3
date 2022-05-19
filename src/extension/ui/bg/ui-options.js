@@ -384,13 +384,13 @@ expandAllButton.addEventListener("click", () => {
 	}
 	document.querySelectorAll("details").forEach(detailElement => detailElement.open = Boolean(expandAllButton.className));
 }, false);
-saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
-saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
-saveToClipboardInput.addEventListener("click", onClickSaveToClipboard, false);
 saveToFilesystemInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveToClipboardInput.addEventListener("click", () => disableDestinationPermissions(["nativeMessaging"]), false);
 saveWithCompanionInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite"]), false);
 saveToGDriveInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"], false), false);
+saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
+saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
+saveToClipboardInput.addEventListener("click", onClickSaveToClipboard, false);
 addProofInput.addEventListener("click", async event => {
 	if (addProofInput.checked) {
 		addProofInput.checked = false;
@@ -933,7 +933,6 @@ async function enableExternalSave(input) {
 				await refreshOption();
 				if (window.chrome) {
 					window.chrome.runtime.reload();
-					location.reload();
 				}
 			} else {
 				await refreshOption();
