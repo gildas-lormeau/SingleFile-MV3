@@ -78,8 +78,8 @@ async function process(doc, stylesheets, fontURLs, fontTests) {
 	stylesheets.forEach(stylesheetInfo => {
 		const cssRules = stylesheetInfo.stylesheet.children;
 		if (cssRules) {
-			stats.rules.processed += cssRules.getSize();
-			stats.rules.discarded += cssRules.getSize();
+			stats.rules.processed += cssRules.size;
+			stats.rules.discarded += cssRules.size;
 			if (stylesheetInfo.mediaText && stylesheetInfo.mediaText != MEDIA_ALL) {
 				const mediaFontsDetails = createFontsDetailsInfo();
 				fontsDetails.medias.set("media-" + sheetIndex + "-" + stylesheetInfo.mediaText, mediaFontsDetails);
@@ -100,7 +100,7 @@ async function process(doc, stylesheets, fontURLs, fontTests) {
 			} else {
 				await processFontFaceRules(cssRules, sheetIndex, fontsDetails, fontURLs, fontTests, stats);
 			}
-			stats.rules.discarded -= cssRules.getSize();
+			stats.rules.discarded -= cssRules.size;
 		}
 	}));
 	return stats;
