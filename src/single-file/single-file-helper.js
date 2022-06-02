@@ -24,7 +24,7 @@
 /* global globalThis, CustomEvent */
 
 import * as cssUnescape from "./vendor/css-unescape.js";
-import * as hooksFrames from "./processors/hooks/content/content-hooks-frames";
+import * as hooksFrames from "./processors/hooks/content/content-hooks-frames.js";
 
 const ON_BEFORE_CAPTURE_EVENT_NAME = "single-file-on-before-capture";
 const ON_AFTER_CAPTURE_EVENT_NAME = "single-file-on-after-capture";
@@ -46,7 +46,7 @@ const LAZY_SRC_ATTRIBUTE_NAME = "data-single-file-lazy-loaded-src";
 const STYLESHEET_ATTRIBUTE_NAME = "data-single-file-stylesheet";
 const DISABLED_NOSCRIPT_ATTRIBUTE_NAME = "data-single-file-disabled-noscript";
 const SELECTED_CONTENT_ATTRIBUTE_NAME = "data-single-file-selected-content";
-const INVALID_ELEMENT_ATTRIBUTE_NAME = "data-single-filez-invalid-element";
+const INVALID_ELEMENT_ATTRIBUTE_NAME = "data-single-file-invalid-element";
 const ASYNC_SCRIPT_ATTRIBUTE_NAME = "data-single-file-async-script";
 const FLOW_ELEMENTS_SELECTOR = "*:not(base):not(link):not(meta):not(noscript):not(script):not(style):not(template):not(title)";
 const KEPT_TAG_NAMES = ["NOSCRIPT", "DISABLED-NOSCRIPT", "META", "LINK", "STYLE", "TITLE", "TEMPLATE", "SOURCE", "OBJECT", "SCRIPT", "HEAD"];

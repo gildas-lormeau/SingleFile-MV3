@@ -31,10 +31,10 @@ const LOAD_DEFERRED_IMAGES_RESET_ZOOM_LEVEL_EVENT = "single-file-load-deferred-i
 const LOAD_DEFERRED_IMAGES_RESET_EVENT = "single-file-load-deferred-images-reset";
 const BLOCK_COOKIES_START_EVENT = "single-file-block-cookies-start";
 const BLOCK_COOKIES_END_EVENT = "single-file-block-cookies-end";
-const BLOCK_STORAGE_START_EVENT = "single-file-block-storage-start";
-const BLOCK_STORAGE_END_EVENT = "single-file-block-storage-end";
 const DISPATCH_SCROLL_START_EVENT = "single-file-dispatch-scroll-event-start";
 const DISPATCH_SCROLL_END_EVENT = "single-file-dispatch-scroll-event-end";
+const BLOCK_STORAGE_START_EVENT = "single-file-block-storage-start";
+const BLOCK_STORAGE_END_EVENT = "single-file-block-storage-end";
 const LOAD_IMAGE_EVENT = "single-file-load-image";
 const IMAGE_LOADED_EVENT = "single-file-image-loaded";
 const NEW_FONT_FACE_EVENT = "single-file-new-font-face";
@@ -56,20 +56,20 @@ if (window._singleFile_fontFaces) {
 }
 
 if (document instanceof Document) {
+	addEventListener(NEW_FONT_FACE_EVENT, event => {
+		const detail = event.detail;
+		const key = Object.assign({}, detail);
+		delete key.src;
+		fontFaces.set(JSON.stringify(key), detail);
+	});
+	addEventListener(DELETE_FONT_EVENT, event => {
+		const detail = event.detail;
+		const key = Object.assign({}, detail);
+		delete key.src;
+		fontFaces.delete(JSON.stringify(key));
+	});
+	addEventListener(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
 	if (browser && browser.runtime && browser.runtime.getURL) {
-		addEventListener(NEW_FONT_FACE_EVENT, event => {
-			const detail = event.detail;
-			const key = Object.assign({}, detail);
-			delete key.src;
-			fontFaces.set(JSON.stringify(key), detail);
-		});
-		addEventListener(DELETE_FONT_EVENT, event => {
-			const detail = event.detail;
-			const key = Object.assign({}, detail);
-			delete key.src;
-			fontFaces.delete(JSON.stringify(key));
-		});
-		addEventListener(CLEAR_FONTS_EVENT, () => fontFaces = new Map());
 		const scriptElement = document.createElement("script");
 		scriptElement.src = browser.runtime.getURL("/lib/web/hooks/hooks-frames-web.js");
 		scriptElement.async = false;

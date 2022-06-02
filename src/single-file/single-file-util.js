@@ -139,8 +139,8 @@ function getInstance(utilOptions) {
 		removeUnusedFonts(doc, stylesheets, styles, options) {
 			return modules.fontsMinifier.process(doc, stylesheets, styles, options);
 		},
-		removeAlternativeFonts(doc, stylesheets, fontURLs, fontTests) {
-			return modules.fontsAltMinifier.process(doc, stylesheets, fontURLs, fontTests);
+		removeAlternativeFonts(doc, stylesheets, fontDeclarations, fontTests) {
+			return modules.fontsAltMinifier.process(doc, stylesheets, fontDeclarations, fontTests);
 		},
 		getMediaAllInfo(doc, stylesheets, styles) {
 			return modules.matchedRules.getMediaAllInfo(doc, stylesheets, styles);
@@ -202,7 +202,7 @@ function getInstance(utilOptions) {
 			log("  // STARTED download url =", resourceURL, "asBinary =", options.asBinary);
 		}
 		if (options.blockMixedContent && /^https:/i.test(options.baseURI) && !/^https:/i.test(resourceURL)) {
-			return { data: options.asBinary ? helper.EMPTY_RESOURCE : "", resourceURL };
+			return getFetchResponse(resourceURL, options);
 		}
 		if (options.networkTimeout) {
 			networkTimeoutPromise = new Promise((resolve, reject) => {
@@ -235,7 +235,7 @@ function getInstance(utilOptions) {
 				]);
 			}
 		} catch (error) {
-			return { data: options.asBinary ? helper.EMPTY_RESOURCE : "", resourceURL };
+			return getFetchResponse(resourceURL, options);
 		} finally {
 			resolveNetworkTimeoutPromise();
 			if (options.networkTimeout) {
@@ -265,29 +265,23 @@ function getInstance(utilOptions) {
 		}
 		if (options.asBinary) {
 			if (response.status >= 400) {
-				return { data: helper.EMPTY_RESOURCE, resourceURL };
+				return getFetchResponse(resourceURL, options);
 			}
 			try {
 				if (DEBUG) {
 					log("  // ENDED   download url =", resourceURL, "delay =", Date.now() - startTime);
 				}
 				if (options.maxResourceSizeEnabled && buffer.byteLength > options.maxResourceSize * ONE_MB) {
-					return { data: helper.EMPTY_RESOURCE, resourceURL };
+					return getFetchResponse(resourceURL, options);
 				} else {
-					const reader = new FileReader();
-					reader.readAsDataURL(new Blob([buffer], { type: contentType + (options.charset ? ";charset=" + options.charset : "") }));
-					const dataUri = await new Promise((resolve, reject) => {
-						reader.addEventListener("load", () => resolve(reader.result), false);
-						reader.addEventListener("error", reject, false);
-					});
-					return { data: dataUri, resourceURL };
+					return getFetchResponse(resourceURL, options, buffer, null, contentType);
 				}
 			} catch (error) {
-				return { data: helper.EMPTY_RESOURCE, resourceURL };
+				return getFetchResponse(resourceURL, options);
 			}
 		} else {
 			if (response.status >= 400 || (options.validateTextContentType && contentType && !contentType.startsWith(PREFIX_CONTENT_TYPE_TEXT))) {
-				return { data: "", resourceURL };
+				return getFetchResponse(resourceURL, options);
 			}
 			if (!charset) {
 				charset = "utf-8";
@@ -296,29 +290,47 @@ function getInstance(utilOptions) {
 				log("  // ENDED   download url =", resourceURL, "delay =", Date.now() - startTime);
 			}
 			if (options.maxResourceSizeEnabled && buffer.byteLength > options.maxResourceSize * ONE_MB) {
-				return { data: "", resourceURL, charset };
+				return getFetchResponse(resourceURL, options, null, charset);
 			} else {
 				try {
-					const firstBytes = new Uint8Array(buffer.slice(0, 4));
-					if (firstBytes[0] == 132 && firstBytes[1] == 49 && firstBytes[2] == 149 && firstBytes[3] == 51) {
-						charset = "gb18030";
-					} else if (firstBytes[0] == 255 && firstBytes[1] == 254) {
-						charset = "utf-16le";
-					} else if (firstBytes[0] == 254 && firstBytes[1] == 255) {
-						charset = "utf-16be";
-					}
-					return { data: new TextDecoder(charset).decode(buffer), resourceURL, charset };
+					return getFetchResponse(resourceURL, options, buffer, charset, contentType);
 				} catch (error) {
-					try {
-						charset = "utf-8";
-						return { data: new TextDecoder(charset).decode(buffer), resourceURL, charset };
-					} catch (error) {
-						return { data: "", resourceURL, charset };
-					}
+					return getFetchResponse(resourceURL, options, null, charset);
 				}
 			}
 		}
 	}
+}
+
+async function getFetchResponse(resourceURL, options, data, charset, contentType) {
+	if (data) {
+		if (options.asBinary) {
+			const reader = new FileReader();
+			reader.readAsDataURL(new Blob([data], { type: contentType + (options.charset ? ";charset=" + options.charset : "") }));
+			data = await new Promise((resolve, reject) => {
+				reader.addEventListener("load", () => resolve(reader.result), false);
+				reader.addEventListener("error", reject, false);
+			});
+		} else {
+			const firstBytes = new Uint8Array(data.slice(0, 4));
+			if (firstBytes[0] == 132 && firstBytes[1] == 49 && firstBytes[2] == 149 && firstBytes[3] == 51) {
+				charset = "gb18030";
+			} else if (firstBytes[0] == 255 && firstBytes[1] == 254) {
+				charset = "utf-16le";
+			} else if (firstBytes[0] == 254 && firstBytes[1] == 255) {
+				charset = "utf-16be";
+			}
+			try {
+				data = new TextDecoder(charset).decode(data);
+			} catch (error) {
+				charset = "utf-8";
+				data = new TextDecoder(charset).decode(data);
+			}
+		}
+	} else {
+		data = options.asBinary ? helper.EMPTY_RESOURCE : "";
+	}
+	return { data, resourceURL, charset };
 }
 
 function guessMIMEType(expectedType, buffer) {
