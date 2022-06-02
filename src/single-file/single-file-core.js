@@ -95,6 +95,7 @@ const STAGES = [{
 		{ action: "preProcessPage" },
 		{ option: "loadDeferredImagesKeepZoomLevel", action: "resetZoomLevel" },
 		{ action: "replaceStyleContents" },
+		{ action: "replaceInvalidElements" },
 		{ action: "resetCharsetMeta" },
 		{ option: "saveFavicon", action: "saveFavicon" },
 		{ action: "replaceCanvasElements" },
@@ -793,6 +794,20 @@ class Processor {
 			this.doc.querySelectorAll("link[rel*=\"icon\"]").forEach(element => element.remove());
 		}
 		this.doc.querySelectorAll("a[ping]").forEach(element => element.removeAttribute("ping"));
+	}
+
+	replaceInvalidElements() {
+		this.doc.querySelectorAll("template[" + util.INVALID_ELEMENT_ATTRIBUTE_NAME + "]").forEach(templateElement => {
+			const placeHolderElement = this.doc.createElement("span");
+			const originalElement = templateElement.content.firstChild;
+			if (originalElement) {
+				if (originalElement.hasAttributes()) {
+					Array.from(originalElement.attributes).forEach(attribute => placeHolderElement.setAttribute(attribute.name, attribute.value));
+				}
+				originalElement.childNodes.forEach(childNode => placeHolderElement.appendChild(childNode.cloneNode(true)));
+			}
+			templateElement.replaceWith(placeHolderElement);
+		});
 	}
 
 	resetCharsetMeta() {
