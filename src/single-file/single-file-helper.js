@@ -273,7 +273,11 @@ function getResourcesInfo(win, doc, element, options, data, elementHidden, compu
 		element.setAttribute(IMAGE_ATTRIBUTE_NAME, data.images.length - 1);
 		data.markedElements.push(element);
 		element.removeAttribute(LAZY_SRC_ATTRIBUTE_NAME);
-		computedStyle = computedStyle || win.getComputedStyle(element);
+		try {
+			computedStyle = computedStyle || win.getComputedStyle(element);
+		} catch (error) {
+			// ignored
+		}
 		if (computedStyle) {
 			imageData.size = getSize(win, element, computedStyle);
 			const boxShadow = computedStyle.getPropertyValue("box-shadow");
