@@ -3,10 +3,10 @@
 	"author": "Gildas Lormeau",
 	"homepage_url": "https://github.com/gildas-lormeau/SingleFile-Lite",
 	"icons": {
-		"16": "src/extension/ui/resources/icon_16.png",
-		"48": "src/extension/ui/resources/icon_48.png",
-		"64": "src/extension/ui/resources/icon_64.png",
-		"128": "src/extension/ui/resources/icon_128.png"
+		"16": "src/ui/resources/icon_16.png",
+		"48": "src/ui/resources/icon_48.png",
+		"64": "src/ui/resources/icon_64.png",
+		"128": "src/ui/resources/icon_128.png"
 	},
 	"version": "1.0.0",
 	"description": "__MSG_extensionDescription__",
@@ -42,15 +42,15 @@
 	},
 	"options_ui": {
 		"browser_style": true,
-		"page": "src/extension/ui/pages/options.html",
+		"page": "src/ui/pages/options.html",
 		"open_in_tab": false
 	},
 	"action": {
 		"default_icon": {
-			"16": "src/extension/ui/resources/icon_16.png",
-			"48": "src/extension/ui/resources/icon_48.png",
-			"64": "src/extension/ui/resources/icon_64.png",
-			"128": "src/extension/ui/resources/icon_128.png"
+			"16": "src/ui/resources/icon_16.png",
+			"48": "src/ui/resources/icon_48.png",
+			"64": "src/ui/resources/icon_64.png",
+			"128": "src/ui/resources/icon_128.png"
 		},
 		"default_title": "__MSG_buttonDefaultTooltip__"
 	},
@@ -102,7 +102,7 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"devtools_page": "src/extension/core/devtools/devtools.html",
+	"devtools_page": "src/core/devtools/devtools.html",
 	"incognito": "spanning",
 	"manifest_version": 3,
 	"default_locale": "en"
