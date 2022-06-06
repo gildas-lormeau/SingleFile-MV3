@@ -29,7 +29,6 @@ export {
 	launchWebAuthFlow
 };
 
-
 async function queryTabs(options) {
 	const tabs = await browser.tabs.query(options);
 	return tabs.sort((tab1, tab2) => tab1.index - tab2.index);

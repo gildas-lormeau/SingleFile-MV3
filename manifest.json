@@ -19,7 +19,7 @@
 			"js": [
 				"lib/chrome-browser-polyfill.js",
 				"lib/single-file-frames.js",
-				"lib/extension-frames.js"
+				"lib/single-file-extension-frames.js"
 			],
 			"all_frames": true,
 			"match_about_blank": true
@@ -32,13 +32,13 @@
 			"js": [
 				"lib/chrome-browser-polyfill.js",
 				"lib/single-file-bootstrap.js",
-				"lib/extension-bootstrap.js",
-				"lib/web/infobar-web.js"
+				"lib/single-file-extension-bootstrap.js",
+				"lib/single-file-infobar.js"
 			]
 		}
 	],
 	"background": {
-		"service_worker": "lib/extension-background.js"
+		"service_worker": "lib/single-file-extension-background.js"
 	},
 	"options_ui": {
 		"browser_style": true,
@@ -74,9 +74,9 @@
 				"<all_urls>"
 			],
 			"resources": [
-				"lib/web/hooks/hooks-web.js",
-				"lib/web/hooks/hooks-frames-web.js",
-				"lib/web/infobar-web.js"
+				"lib/single-file-hooks.js",
+				"lib/single-file-hooks-frames.js",
+				"lib/single-file-infobar.js"
 			]
 		}
 	],

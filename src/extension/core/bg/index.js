@@ -41,9 +41,6 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	if (message.method.startsWith("downloads.")) {
 		return downloads.onMessage(message, sender);
 	}
-	if (message.method.startsWith("bootstrap.")) {
-		return bootstrap.onMessage(message, sender);
-	}
 	if (message.method.startsWith("ui.")) {
 		return ui.onMessage(message, sender);
 	}
@@ -61,5 +58,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	}
 	if (message.method.startsWith("bookmarks.")) {
 		return bookmarks.onMessage(message, sender);
+	}
+	if (message.method.startsWith("bootstrap.")) {
+		return bootstrap.onMessage(message, sender);
 	}
 });

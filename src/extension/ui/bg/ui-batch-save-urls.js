@@ -78,7 +78,6 @@ saveUrlsButton.onclick = async () => {
 let previousState;
 let urls = [];
 
-
 filterButton.onclick = () => {
 	filterPanel.hidden = !filterPanel.hidden;
 	if (!filterPanel.hidden) {

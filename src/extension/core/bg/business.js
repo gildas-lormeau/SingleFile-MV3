@@ -38,11 +38,11 @@ const TASK_PROCESSING_STATE = "processing";
 const CONTENT_SCRIPTS = [
 	"lib/chrome-browser-polyfill.js",
 	"lib/single-file-bootstrap.js",
-	"lib/extension-bootstrap.js",
-	"lib/web/infobar-web.js",
+	"lib/single-file-extension-bootstrap.js",
+	"lib/single-file-infobar.js",
 	"lib/single-file.js",
-	"lib/infobar.js",
-	"lib/extension.js"
+	"lib/single-file-extension-infobar.js",
+	"lib/single-file-extension.js"
 ];
 
 const tasks = [];
@@ -117,7 +117,7 @@ async function saveTabs(tabs, options = {}) {
 			title: tab.title
 		};
 		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
-		const scriptsInjected = await injectScripts(tab.id, options);
+		const scriptsInjected = await injectScripts(tab.id, tabOptions);
 		if (scriptsInjected || editor.isEditor(tab)) {
 			ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
 			addTask({
