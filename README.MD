@@ -34,6 +34,10 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
   > `Blob` objects. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1224027).
 
+  > With Manifest V2, it was possible to inject the scripts needed to capture a
+  > tab only when you actually saved it. With Manifest V3, it's no longer
+  > possible.
+
 - **more CPU intensive**
 
   > With Manifest V2, to reliably use only the power necessary to save a page. 

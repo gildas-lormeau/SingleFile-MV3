@@ -57,6 +57,17 @@
 				"lib/single-file-hooks.js"
 			],
 			"world": "MAIN"
+		},
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"run_at": "document_start",
+			"js": [
+				"lib/single-file.js",
+				"lib/single-file-extension-infobar.js",
+				"lib/single-file-extension.js"
+			]
 		}
 	],
 	"background": {
