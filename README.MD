@@ -56,13 +56,6 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
   > necessary. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1149619).
 
-- **limited support for fonts dynamically loaded with the `FontFace` API**
-
-  > With Manifest V2, it was possible to save a page on
-  > https://www.theverge.com/ and keep the original fonts. With Manifest V3,
-  > it's no longer possible (cf. https://crbug.com/1054624 and 
-  > https://crbug.com/1207006).
-
 - and more to come!
 
 ## Benefits of the Manifest V3
