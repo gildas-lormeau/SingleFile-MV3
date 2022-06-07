@@ -23,8 +23,7 @@ download the
 [zip file](https://github.com/gildas-lormeau/SingleFile-Lite/archive/refs/heads/main.zip)
 of the project and install it manually by unzipping it somewhere on your disk
 and following these instructions:
-https://developer.chrome.com/extensions/getstarted#manifest (omit the manifest
-creation).
+https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 
 ## Notable features of SingleFile Lite
 
