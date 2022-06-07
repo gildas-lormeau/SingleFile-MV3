@@ -41,10 +41,6 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
   > objects. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1224027).
 
-  > With Manifest V2, it was possible to inject the scripts needed to capture a
-  > tab only when you actually saved it. With Manifest V3, it's no longer
-  > possible (cf. https://crbug.com/1325114 maybe?).
-
 - **more CPU intensive**
 
   > With Manifest V2, to reliably use only the power necessary to save a page.

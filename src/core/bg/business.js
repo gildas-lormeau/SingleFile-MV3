@@ -243,7 +243,7 @@ async function injectScripts(tabId, options = {}) {
 		func: () => Boolean(globalThis.singlefile)
 	}))[0];
 	scriptsInjected = resultData && resultData.result;
-	if (!scriptsInjected) {
+	if (scriptsInjected) {
 		try {
 			await browser.scripting.executeScript({
 				target: { tabId },
