@@ -36,7 +36,7 @@ SingleFile Lite cannot be downloaded from the Chrome store yet. You can however 
 
   > With Manifest V2, it was possible to inject the scripts needed to capture a
   > tab only when you actually saved it. With Manifest V3, it's no longer
-  > possible.
+  > possible (cf. https://crbug.com/1325114 maybe?).
 
 - **more CPU intensive**
 
