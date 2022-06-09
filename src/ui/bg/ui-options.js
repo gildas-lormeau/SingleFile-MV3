@@ -33,7 +33,6 @@ const removeHiddenElementsLabel = document.getElementById("removeHiddenElementsL
 const removeUnusedStylesLabel = document.getElementById("removeUnusedStylesLabel");
 const removeUnusedFontsLabel = document.getElementById("removeUnusedFontsLabel");
 const removeFramesLabel = document.getElementById("removeFramesLabel");
-const removeImportsLabel = document.getElementById("removeImportsLabel");
 const blockScriptsLabel = document.getElementById("blockScriptsLabel");
 const blockAudiosLabel = document.getElementById("blockAudiosLabel");
 const blockVideosLabel = document.getElementById("blockVideosLabel");
@@ -138,7 +137,6 @@ const removeHiddenElementsInput = document.getElementById("removeHiddenElementsI
 const removeUnusedStylesInput = document.getElementById("removeUnusedStylesInput");
 const removeUnusedFontsInput = document.getElementById("removeUnusedFontsInput");
 const removeFramesInput = document.getElementById("removeFramesInput");
-const removeImportsInput = document.getElementById("removeImportsInput");
 const blockScriptsInput = document.getElementById("blockScriptsInput");
 const blockVideosInput = document.getElementById("blockVideosInput");
 const blockAudiosInput = document.getElementById("blockAudiosInput");
@@ -460,7 +458,6 @@ async function init() {
 	removeUnusedStylesLabel.textContent = messages.optionRemoveUnusedStyles.message;
 	removeUnusedFontsLabel.textContent = messages.optionRemoveUnusedFonts.message;
 	removeFramesLabel.textContent = messages.optionRemoveFrames.message;
-	removeImportsLabel.textContent = messages.optionRemoveImports.message;
 	blockScriptsLabel.textContent = messages.optionResourceScript.message;
 	blockAudiosLabel.textContent = messages.optionResourceAudio.message;
 	blockVideosLabel.textContent = messages.optionResourceVideo.message;
@@ -671,7 +668,6 @@ async function refresh(profileName) {
 	removeUnusedStylesInput.checked = profileOptions.removeUnusedStyles;
 	removeUnusedFontsInput.checked = profileOptions.removeUnusedFonts;
 	removeFramesInput.checked = profileOptions.removeFrames;
-	removeImportsInput.checked = profileOptions.removeImports;
 	blockScriptsInput.checked = profileOptions.blockScripts;
 	blockVideosInput.checked = profileOptions.blockVideos;
 	blockAudiosInput.checked = profileOptions.blockAudios;
@@ -772,7 +768,6 @@ async function update() {
 			removeUnusedStyles: removeUnusedStylesInput.checked,
 			removeUnusedFonts: removeUnusedFontsInput.checked,
 			removeFrames: removeFramesInput.checked,
-			removeImports: removeImportsInput.checked,
 			blockScripts: blockScriptsInput.checked,
 			blockVideos: blockVideosInput.checked,
 			blockAudios: blockAudiosInput.checked,
