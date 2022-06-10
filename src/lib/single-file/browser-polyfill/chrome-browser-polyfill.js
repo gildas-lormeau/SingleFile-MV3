@@ -71,15 +71,7 @@ if (typeof globalThis == "undefined") {
 				search: query => nativeAPI.downloads.search(query)
 			},
 			i18n: {
-				getAcceptLanguages: () => new Promise((resolve, reject) => {
-					nativeAPI.i18n.getAcceptLanguages(languages => {
-						if (nativeAPI.runtime.lastError) {
-							reject(nativeAPI.runtime.lastError);
-						} else {
-							resolve(languages);
-						}
-					});
-				})
+				getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions)
 			},
 			identity: {
 				getRedirectURL() {

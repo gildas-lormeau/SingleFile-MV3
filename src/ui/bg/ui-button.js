@@ -25,27 +25,70 @@
 
 import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
-import { getMessages } from "./../../core/bg/i18n.js";
 
 const DEFAULT_ICON_PATH = "/src/ui/resources/icon_128.png";
 const WAIT_ICON_PATH_PREFIX = "/src/ui/resources/icon_128_wait";
+const BUTTON_DEFAULT_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonDefaultTooltip");
+const BUTTON_BLOCKED_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonBlockedTooltip");
 const BUTTON_DEFAULT_BADGE_MESSAGE = "";
-let BUTTON_DEFAULT_TOOLTIP_MESSAGE;
-let BUTTON_BLOCKED_TOOLTIP_MESSAGE;
-let BUTTON_INITIALIZING_BADGE_MESSAGE;
-let BUTTON_INITIALIZING_TOOLTIP_MESSAGE;
-let BUTTON_ERROR_BADGE_MESSAGE;
-let BUTTON_BLOCKED_BADGE_MESSAGE;
-let BUTTON_OK_BADGE_MESSAGE;
-let BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE;
-let BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE;
+const BUTTON_INITIALIZING_BADGE_MESSAGE = browser.i18n.getMessage("buttonInitializingBadge");
+const BUTTON_INITIALIZING_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonInitializingTooltip");
+const BUTTON_ERROR_BADGE_MESSAGE = browser.i18n.getMessage("buttonErrorBadge");
+const BUTTON_BLOCKED_BADGE_MESSAGE = browser.i18n.getMessage("buttonBlockedBadge");
+const BUTTON_OK_BADGE_MESSAGE = browser.i18n.getMessage("buttonOKBadge");
+const BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonSaveProgressTooltip");
+const BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonUploadProgressTooltip");
 const DEFAULT_COLOR = [2, 147, 20, 192];
 const ACTIVE_COLOR = [4, 229, 36, 192];
 const FORBIDDEN_COLOR = [255, 255, 255, 1];
 const ERROR_COLOR = [229, 4, 12, 192];
 const INJECT_SCRIPTS_STEP = 1;
 
-let BUTTON_STATES;
+let BUTTON_STATES = BUTTON_STATES = {
+	default: {
+		setBadgeBackgroundColor: { color: DEFAULT_COLOR },
+		setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
+		setIcon: { path: DEFAULT_ICON_PATH }
+	},
+	inject: {
+		setBadgeBackgroundColor: { color: DEFAULT_COLOR },
+		setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE },
+	},
+	execute: {
+		setBadgeBackgroundColor: { color: ACTIVE_COLOR },
+		setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
+	},
+	progress: {
+		setBadgeBackgroundColor: { color: ACTIVE_COLOR },
+		setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE }
+	},
+	edit: {
+		setBadgeBackgroundColor: { color: DEFAULT_COLOR },
+		setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
+		setIcon: { path: DEFAULT_ICON_PATH }
+	},
+	end: {
+		setBadgeBackgroundColor: { color: ACTIVE_COLOR },
+		setBadgeText: { text: BUTTON_OK_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
+		setIcon: { path: DEFAULT_ICON_PATH }
+	},
+	error: {
+		setBadgeBackgroundColor: { color: ERROR_COLOR },
+		setBadgeText: { text: BUTTON_ERROR_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_DEFAULT_BADGE_MESSAGE },
+		setIcon: { path: DEFAULT_ICON_PATH }
+	},
+	forbidden: {
+		setBadgeBackgroundColor: { color: FORBIDDEN_COLOR },
+		setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
+		setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
+		setIcon: { path: DEFAULT_ICON_PATH }
+	}
+};
 
 let business;
 
@@ -81,61 +124,6 @@ export {
 
 async function init(businessApi) {
 	business = businessApi;
-	const messages = await getMessages();
-	BUTTON_DEFAULT_TOOLTIP_MESSAGE = messages.buttonDefaultTooltip.message;
-	BUTTON_BLOCKED_TOOLTIP_MESSAGE = messages.buttonBlockedTooltip.message;
-	BUTTON_INITIALIZING_BADGE_MESSAGE = messages.buttonInitializingBadge.message;
-	BUTTON_INITIALIZING_TOOLTIP_MESSAGE = messages.buttonInitializingTooltip.message;
-	BUTTON_ERROR_BADGE_MESSAGE = messages.buttonErrorBadge.message;
-	BUTTON_BLOCKED_BADGE_MESSAGE = messages.buttonBlockedBadge.message;
-	BUTTON_OK_BADGE_MESSAGE = messages.buttonOKBadge.message;
-	BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = messages.buttonSaveProgressTooltip.message;
-	BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = messages.buttonUploadProgressTooltip.message;
-	BUTTON_STATES = {
-		default: {
-			setBadgeBackgroundColor: { color: DEFAULT_COLOR },
-			setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		inject: {
-			setBadgeBackgroundColor: { color: DEFAULT_COLOR },
-			setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE },
-		},
-		execute: {
-			setBadgeBackgroundColor: { color: ACTIVE_COLOR },
-			setBadgeText: { text: BUTTON_INITIALIZING_BADGE_MESSAGE },
-		},
-		progress: {
-			setBadgeBackgroundColor: { color: ACTIVE_COLOR },
-			setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE }
-		},
-		edit: {
-			setBadgeBackgroundColor: { color: DEFAULT_COLOR },
-			setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		end: {
-			setBadgeBackgroundColor: { color: ACTIVE_COLOR },
-			setBadgeText: { text: BUTTON_OK_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		error: {
-			setBadgeBackgroundColor: { color: ERROR_COLOR },
-			setBadgeText: { text: BUTTON_ERROR_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_DEFAULT_BADGE_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		},
-		forbidden: {
-			setBadgeBackgroundColor: { color: FORBIDDEN_COLOR },
-			setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
-			setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
-			setIcon: { path: DEFAULT_ICON_PATH }
-		}
-	};
 }
 
 function onMessage(message, sender) {

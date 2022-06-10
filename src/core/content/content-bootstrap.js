@@ -34,7 +34,6 @@ singlefile.pageInfo = {
 };
 browser.runtime.sendMessage({ method: "bootstrap.init" }).then(message => {
 	options = message.options;
-	singlefile.messages = message.messages;
 	if (options && options.autoOpenEditor && detectSavedPage(document)) {
 		if (document.readyState == "loading") {
 			document.addEventListener("DOMContentLoaded", () => openEditor(document));

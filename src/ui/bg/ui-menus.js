@@ -26,7 +26,6 @@
 import * as config from "./../../core/bg/config.js";
 import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
-import { getMessages } from "./../../core/bg/i18n.js";
 
 import * as button from "./ui-button.js";
 
@@ -52,23 +51,23 @@ const MENU_ID_BATCH_SAVE_URLS = "batch-save-urls";
 const MENU_ID_BUTTON_SAVE_SELECTED_TABS = "button-" + MENU_ID_SAVE_SELECTED_TABS;
 const MENU_ID_BUTTON_SAVE_UNPINNED_TABS = "button-" + MENU_ID_SAVE_UNPINNED_TABS;
 const MENU_ID_BUTTON_SAVE_ALL_TABS = "button-" + MENU_ID_SAVE_ALL_TABS;
-let MENU_CREATE_DOMAIN_RULE_MESSAGE;
-let MENU_UPDATE_RULE_MESSAGE;
-let MENU_SAVE_PAGE_MESSAGE;
-let MENU_SAVE_WITH_PROFILE;
-let MENU_SAVE_SELECTED_LINKS;
-let MENU_EDIT_PAGE_MESSAGE;
-let MENU_EDIT_AND_SAVE_PAGE_MESSAGE;
-let MENU_VIEW_PENDINGS_MESSAGE;
-let MENU_SAVE_SELECTION_MESSAGE;
-let MENU_SAVE_FRAME_MESSAGE;
-let MENU_SAVE_TABS_MESSAGE;
-let MENU_SAVE_SELECTED_TABS_MESSAGE;
-let MENU_SAVE_UNPINNED_TABS_MESSAGE;
-let MENU_SAVE_ALL_TABS_MESSAGE;
-let MENU_BATCH_SAVE_URLS_MESSAGE;
-let MENU_SELECT_PROFILE_MESSAGE;
-let PROFILE_DEFAULT_SETTINGS_MESSAGE;
+const MENU_CREATE_DOMAIN_RULE_MESSAGE = browser.i18n.getMessage("menuCreateDomainRule");
+const MENU_UPDATE_RULE_MESSAGE = browser.i18n.getMessage("menuUpdateRule");
+const MENU_SAVE_PAGE_MESSAGE = browser.i18n.getMessage("menuSavePage");
+const MENU_SAVE_WITH_PROFILE = browser.i18n.getMessage("menuSaveWithProfile");
+const MENU_SAVE_SELECTED_LINKS = browser.i18n.getMessage("menuSaveSelectedLinks");
+const MENU_EDIT_PAGE_MESSAGE = browser.i18n.getMessage("menuEditPage");
+const MENU_EDIT_AND_SAVE_PAGE_MESSAGE = browser.i18n.getMessage("menuEditAndSavePage");
+const MENU_VIEW_PENDINGS_MESSAGE = browser.i18n.getMessage("menuViewPendingSaves");
+const MENU_SAVE_SELECTION_MESSAGE = browser.i18n.getMessage("menuSaveSelection");
+const MENU_SAVE_FRAME_MESSAGE = browser.i18n.getMessage("menuSaveFrame");
+const MENU_SAVE_TABS_MESSAGE = browser.i18n.getMessage("menuSaveTabs");
+const MENU_SAVE_SELECTED_TABS_MESSAGE = browser.i18n.getMessage("menuSaveSelectedTabs");
+const MENU_SAVE_UNPINNED_TABS_MESSAGE = browser.i18n.getMessage("menuSaveUnpinnedTabs");
+const MENU_SAVE_ALL_TABS_MESSAGE = browser.i18n.getMessage("menuSaveAllTabs");
+const MENU_BATCH_SAVE_URLS_MESSAGE = browser.i18n.getMessage("menuBatchSaveUrls");
+const MENU_SELECT_PROFILE_MESSAGE = browser.i18n.getMessage("menuSelectProfile");
+const PROFILE_DEFAULT_SETTINGS_MESSAGE = browser.i18n.getMessage("profileDefaultSettings");
 const MENU_TOP_VISIBLE_ENTRIES = [
 	MENU_ID_EDIT_AND_SAVE_PAGE,
 	MENU_ID_SAVE_SELECTED_LINKS,
@@ -95,24 +94,6 @@ export {
 
 async function init(businessApi) {
 	business = businessApi;
-	const messages = await getMessages();
-	MENU_CREATE_DOMAIN_RULE_MESSAGE = messages.menuCreateDomainRule.message;
-	MENU_UPDATE_RULE_MESSAGE = messages.menuUpdateRule.message;
-	MENU_SAVE_PAGE_MESSAGE = messages.menuSavePage.message;
-	MENU_SAVE_WITH_PROFILE = messages.menuSaveWithProfile.message;
-	MENU_SAVE_SELECTED_LINKS = messages.menuSaveSelectedLinks.message;
-	MENU_EDIT_PAGE_MESSAGE = messages.menuEditPage.message;
-	MENU_EDIT_AND_SAVE_PAGE_MESSAGE = messages.menuEditAndSavePage.message;
-	MENU_VIEW_PENDINGS_MESSAGE = messages.menuViewPendingSaves.message;
-	MENU_SAVE_SELECTION_MESSAGE = messages.menuSaveSelection.message;
-	MENU_SAVE_FRAME_MESSAGE = messages.menuSaveFrame.message;
-	MENU_SAVE_TABS_MESSAGE = messages.menuSaveTabs.message;
-	MENU_SAVE_SELECTED_TABS_MESSAGE = messages.menuSaveSelectedTabs.message;
-	MENU_SAVE_UNPINNED_TABS_MESSAGE = messages.menuSaveUnpinnedTabs.message;
-	MENU_SAVE_ALL_TABS_MESSAGE = messages.menuSaveAllTabs.message;
-	MENU_BATCH_SAVE_URLS_MESSAGE = messages.menuBatchSaveUrls.message;
-	MENU_SELECT_PROFILE_MESSAGE = messages.menuSelectProfile.message;
-	PROFILE_DEFAULT_SETTINGS_MESSAGE = messages.profileDefaultSettings.message;
 }
 
 function onMessage(message) {

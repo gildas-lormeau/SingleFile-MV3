@@ -23,15 +23,23 @@
 
 /* global browser, window, document, setInterval, location */
 
-import { getMessages } from "./../../core/bg/i18n.js";
-
 const URLLabel = document.getElementById("URLLabel");
 const titleLabel = document.getElementById("titleLabel");
 const resultsTable = document.getElementById("resultsTable");
 const cancelAllButton = document.getElementById("cancelAllButton");
 const addUrlsButton = document.getElementById("addUrlsButton");
-const statusText = {};
-
+document.title = browser.i18n.getMessage("pendingsTitle");
+cancelAllButton.textContent = browser.i18n.getMessage("pendingsCancelAllButton");
+addUrlsButton.textContent = browser.i18n.getMessage("pendingsAddUrlsButton");
+URLLabel.textContent = browser.i18n.getMessage("pendingsURLTitle");
+titleLabel.textContent = browser.i18n.getMessage("pendingsTitleTitle");
+document.getElementById("statusLabel").textContent = browser.i18n.getMessage("pendingsStatusTitle");
+const statusText = {
+	pending: browser.i18n.getMessage("pendingsPendingStatus"),
+	processing: browser.i18n.getMessage("pendingsProcessingStatus"),
+	cancelling: browser.i18n.getMessage("pendingsCancellingStatus")
+};
+const noPendingsText = browser.i18n.getMessage("pendingsNoPendings");
 cancelAllButton.onclick = async () => {
 	await browser.runtime.sendMessage({ method: "downloads.cancelAll" });
 	await refresh();
@@ -45,25 +53,8 @@ document.getElementById("URLTitleLabel").onclick = () => {
 	URLDisplayed = !URLDisplayed;
 	refresh(true);
 };
-let previousState, noPendingsText;
+let previousState;
 setInterval(refresh, 1000);
-init();
-
-async function init() {
-	const messages = await getMessages();
-	document.title = messages.pendingsTitle.message;
-	cancelAllButton.textContent = messages.pendingsCancelAllButton.message;
-	addUrlsButton.textContent = messages.pendingsAddUrlsButton.message;
-	document.getElementById("addUrlsLabel").textContent = messages.pendingsAddUrls.message;
-	URLLabel.textContent = messages.pendingsURLTitle.message;
-	titleLabel.textContent = messages.pendingsTitleTitle.message;
-	document.getElementById("statusLabel").textContent = messages.pendingsStatusTitle.message;
-	statusText.pending = messages.pendingsPendingStatus.message;
-	statusText.processing = messages.pendingsProcessingStatus.message;
-	statusText.cancelling = messages.pendingsCancellingStatus.message;
-	noPendingsText = messages.pendingsNoPendings.message;
-	refresh();
-}
 
 function resetTable() {
 	resultsTable.innerHTML = "";
