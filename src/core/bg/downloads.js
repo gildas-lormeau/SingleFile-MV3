@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, Blob */
+/* global browser, fetch */
 
 import * as config from "./config.js";
 import * as bookmarks from "./bookmarks.js";
@@ -35,8 +35,6 @@ import { GDrive } from "./../../lib/gdrive/gdrive.js";
 import { pushGitHub } from "./../../lib/github/github.js";
 import { download } from "./download-util.js";
 
-const partialContents = new Map();
-const MIMETYPE_HTML = "text/html";
 const GDRIVE_CLIENT_ID = "207618107333-3pj2pmelhnl4sf3rpctghs9cean3q8nj.apps.googleusercontent.com";
 const GDRIVE_CLIENT_KEY = "000000000000000000000000";
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
@@ -93,45 +91,31 @@ async function onMessage(message, sender) {
 }
 
 async function downloadTabPage(message, tab) {
-	let contents;
-	if (message.truncated) {
-		contents = partialContents.get(tab.id);
-		if (!contents) {
-			contents = [];
-			partialContents.set(tab.id, contents);
-		}
-		contents.push(message.content);
-		if (message.finished) {
-			partialContents.delete(tab.id);
-		}
-	} else if (message.content) {
-		contents = [message.content];
-	}
-	if (!message.truncated || message.finished) {
-		if (message.openEditor) {
-			ui.onEdit(tab.id);
-			await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: contents.join("") });
+	if (message.openEditor) {
+		ui.onEdit(tab.id);
+		await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: await (await fetch(message.content)).text() });
+	} else {
+		if (message.saveToClipboard) {
+			ui.onEnd(tab.id);
 		} else {
-			if (message.saveToClipboard) {
-				ui.onEnd(tab.id);
-			} else {
-				await downloadContent(contents, tab, tab.incognito, message);
-			}
+			await downloadContent(tab, tab.incognito, message);
 		}
 	}
 	return {};
 }
 
-async function downloadContent(contents, tab, incognito, message) {
+async function downloadContent(tab, incognito, message) {
 	try {
 		if (message.saveToGDrive) {
-			await (await saveToGDrive(message.taskId, message.filename, new Blob(contents, { type: MIMETYPE_HTML }), {
+			const pageBlob = await (await fetch(message.content)).blob();
+			await (await saveToGDrive(message.taskId, message.filename, pageBlob, {
 				forceWebAuthFlow: message.forceWebAuthFlow
 			}, {
 				onProgress: (offset, size) => ui.onUploadProgress(tab.id, offset, size)
 			})).uploadPromise;
 		} else if (message.saveToGitHub) {
-			await (await saveToGitHub(message.taskId, message.filename, contents.join(""), message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
+			const pageContent = await (await fetch(message.content)).text();
+			await (await saveToGitHub(message.taskId, message.filename, [pageContent], message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
 		} else if (message.saveWithCompanion) {
 			await companion.save({
 				filename: message.filename,
@@ -139,7 +123,7 @@ async function downloadContent(contents, tab, incognito, message) {
 				filenameConflictAction: message.filenameConflictAction
 			});
 		} else {
-			message.url = "data:text/html," + encodeURIComponent(contents.join(""));
+			message.url = message.content;
 			await downloadPage(message, {
 				confirmFilename: message.confirmFilename,
 				incognito,
@@ -150,7 +134,7 @@ async function downloadContent(contents, tab, incognito, message) {
 		}
 		ui.onEnd(tab.id);
 		if (message.openSavedPage) {
-			const createTabProperties = { active: true, url: "data:text/html," + encodeURIComponent(contents.join("")) };
+			const createTabProperties = { active: true, url: message.content };
 			if (tab.index != null) {
 				createTabProperties.index = tab.index + 1;
 			}
