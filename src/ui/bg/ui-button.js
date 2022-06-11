@@ -44,7 +44,7 @@ const FORBIDDEN_COLOR = [255, 255, 255, 1];
 const ERROR_COLOR = [229, 4, 12, 192];
 const INJECT_SCRIPTS_STEP = 1;
 
-let BUTTON_STATES = BUTTON_STATES = {
+const BUTTON_STATES = {
 	default: {
 		setBadgeBackgroundColor: { color: DEFAULT_COLOR },
 		setBadgeText: { text: BUTTON_DEFAULT_BADGE_MESSAGE },
