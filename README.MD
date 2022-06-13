@@ -49,6 +49,12 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
   > necessary. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1149619).
 
+- **limited support for fonts dynamically loaded with the `FontFace` API**
+
+  > With Manifest V2, it was possible to save a page on
+  > https://www.theverge.com/ and keep the original fonts. With Manifest V3,
+  > it's no longer possible.
+
 - and more to come!
 
 ## Benefits of the Manifest V3
