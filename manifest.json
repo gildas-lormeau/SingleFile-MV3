@@ -47,16 +47,6 @@
 				"lib/single-file-extension-bootstrap.js",
 				"lib/single-file-infobar.js"
 			]
-		},
-		{
-			"matches": [
-				"<all_urls>"
-			],
-			"run_at": "document_start",
-			"js": [
-				"lib/single-file-hooks.js"
-			],
-			"world": "MAIN"
 		}
 	],
 	"background": {
@@ -96,7 +86,6 @@
 				"<all_urls>"
 			],
 			"resources": [
-				"lib/single-file-hooks.js",
 				"lib/single-file-hooks-frames.js",
 				"lib/single-file-infobar.js"
 			]
