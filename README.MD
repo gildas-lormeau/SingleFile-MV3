@@ -53,7 +53,7 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 
   > With Manifest V2, it was possible to save a page on
   > https://www.theverge.com/ and keep the original fonts. With Manifest V3,
-  > it's no longer possible.
+  > it's no longer possible (cf. https://crbug.com/1054624).
 
 - and more to come!
 
