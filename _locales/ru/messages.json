@@ -500,7 +500,7 @@
 		"description": "Options page label: 'save with SingleFile Companion'"
 	},
 	"optionSaveWithWebDAV": {
-		"message": "upload to a WebDAV server",
+		"message": "загрузить на WebDAV-сервер",
 		"description": "Options page label: 'upload to a WebDAV server'"
 	},
 	"optionWebDAVURL": {
@@ -508,11 +508,11 @@
 		"description": "Options page label: 'URL'"
 	},
 	"optionWebDAVUser": {
-		"message": "user identifier",
+		"message": "имя пользователя",
 		"description": "Options page label: 'user identifier'"
 	},
 	"optionWebDAVPassword": {
-		"message": "password",
+		"message": "пароль",
 		"description": "Options page label: 'password'"
 	},
 	"optionSaveCreatedBookmarks": {
