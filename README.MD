@@ -36,8 +36,7 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 - **no auto-save**
 
   > With Manifest V2, it was possible to process a page in the background. With
-  > Manifest V3, it's no longer possible (cf. https://crbug.com/1056354 and
-  > https://github.com/w3c/webextensions/issues/170).
+  > Manifest V3, it's no longer possible (cf. https://crbug.com/1339382).
 
 - **save time limited to 5 minutes max.**
 
