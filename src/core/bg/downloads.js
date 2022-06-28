@@ -112,11 +112,11 @@ async function downloadContent(tab, incognito, message) {
 			await saveWithWebDAV(message.taskId, message.filename, pageBlob, message.webDAVURL, message.webDAVUser, message.webDAVPassword);
 		} else if (message.saveToGDrive) {
 			const pageBlob = await (await fetch(message.content)).blob();
-			await (await saveToGDrive(message.taskId, message.filename, pageBlob, {
+			await saveToGDrive(message.taskId, message.filename, pageBlob, {
 				forceWebAuthFlow: message.forceWebAuthFlow
 			}, {
 				onProgress: (offset, size) => ui.onUploadProgress(tab.id, offset, size)
-			})).uploadPromise;
+			});
 		} else if (message.saveToGitHub) {
 			const pageContent = await (await fetch(message.content)).text();
 			await (await saveToGitHub(message.taskId, message.filename, [pageContent], message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
@@ -249,9 +249,7 @@ async function saveToGDrive(taskId, filename, blob, authOptions, uploadOptions) 
 		await getAuthInfo(authOptions);
 		const taskInfo = business.getTaskInfo(taskId);
 		if (!taskInfo || !taskInfo.cancelled) {
-			const uploadInfo = await gDrive.upload(filename, blob, uploadOptions);
-			business.setCancelCallback(taskId, uploadInfo.cancelUpload);
-			return uploadInfo;
+			return gDrive.upload(filename, blob, uploadOptions, callback => business.setCancelCallback(taskId, callback));
 		}
 	}
 	catch (error) {

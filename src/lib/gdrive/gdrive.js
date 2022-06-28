@@ -138,7 +138,7 @@ class GDrive {
 			}
 		}
 	}
-	async upload(fullFilename, blob, options, retry = true) {
+	async upload(fullFilename, blob, options, setCancelCallback, retry = true) {
 		const parentFolderId = await getParentFolderId(this, fullFilename);
 		const fileParts = fullFilename.split("/");
 		const filename = fileParts.pop();
@@ -158,7 +158,7 @@ class GDrive {
 		catch (error) {
 			if (error.message == "path_not_found" && retry) {
 				this.folderIds.clear();
-				return this.upload(fullFilename, blob, options, false);
+				return this.upload(fullFilename, blob, options, setCancelCallback);
 			} else {
 				throw error;
 			}
