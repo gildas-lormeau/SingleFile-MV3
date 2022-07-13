@@ -8,7 +8,7 @@
 		"dev": "npx rollup -c rollup.config.dev.js"
 	},
 	"dependencies": {
-		"single-file-core": "1.0.16"
+		"single-file-core": "1.0.17"
 	},
 	"devDependencies": {
 		"@rollup/plugin-node-resolve": "13.3.0",
