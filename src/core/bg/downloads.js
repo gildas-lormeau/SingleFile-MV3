@@ -107,17 +107,17 @@ async function downloadContent(tab, incognito, message) {
 	try {
 		if (message.saveWithWebDAV) {
 			const pageBlob = await (await fetch(message.content)).blob();
-			await saveWithWebDAV(message.taskId, message.filename, pageBlob, message.webDAVURL, message.webDAVUser, message.webDAVPassword);
+			await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), pageBlob, message.webDAVURL, message.webDAVUser, message.webDAVPassword);
 		} else if (message.saveToGDrive) {
 			const pageBlob = await (await fetch(message.content)).blob();
-			await saveToGDrive(message.taskId, message.filename, pageBlob, {
+			await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), pageBlob, {
 				forceWebAuthFlow: message.forceWebAuthFlow
 			}, {
 				onProgress: (offset, size) => ui.onUploadProgress(tab.id, offset, size)
 			});
 		} else if (message.saveToGitHub) {
 			const pageContent = await (await fetch(message.content)).text();
-			await (await saveToGitHub(message.taskId, message.filename, [pageContent], message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
+			await (await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), [pageContent], message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
 		} else if (message.saveWithCompanion) {
 			await companion.save({
 				filename: message.filename,
@@ -148,6 +148,10 @@ async function downloadContent(tab, incognito, message) {
 			ui.onError(tab.id, error.message, error.link);
 		}
 	}
+}
+
+function encodeSharpCharacter(path) {
+	return path.replace(/#/g, "%23");
 }
 
 function getRegExp(string) {
@@ -303,7 +307,7 @@ async function downloadPage(pageData, options) {
 				if (downloadData.filename.startsWith("/")) {
 					downloadData.filename = downloadData.filename.substring(1);
 				}
-				downloadData.filename = "file:///" + downloadData.filename.replace(/#/g, "%23");
+				downloadData.filename = "file:///" + encodeSharpCharacter(downloadData.filename);
 			}
 			await bookmarks.update(pageData.bookmarkId, { url: downloadData.filename });
 		}
