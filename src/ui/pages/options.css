@@ -220,6 +220,10 @@ h3 a {
     grid-template-columns: 1fr 1fr 64px;
 }
 
+.rules-table-container.compact .tr .rule-autosave-profile {
+    display: none;
+}
+
 .rules-table-container .tr[hidden] {
     display: none;
 }
@@ -557,7 +561,8 @@ html.maximized {
         flex-direction: column;
     }
 
-    .profiles, .maximized .profiles {
+    .profiles,
+    .maximized .profiles {
         position: static;
         margin-top: 8px;
         margin-left: 16px;

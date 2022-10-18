@@ -75,6 +75,26 @@
 		"message": "Zapisz wsadowo adresy URL...",
 		"description": "Menu entry: 'Batch save URLs...'"
 	},
+	"menuAutoSave": {
+		"message": "Automatyczny zapis",
+		"description": "Menu entry: 'Auto-save'"
+	},
+	"menuAutoSaveDisabled": {
+		"message": "Wyłączony",
+		"description": "Menu entry: 'Auto-save' > Disabled'"
+	},
+	"menuAutoSaveTab": {
+		"message": "Automatycznie zapisz tę kartę",
+		"description": "Menu entry: 'Auto-save' > Auto-save this tab'"
+	},
+	"menuAutoSaveUnpinnedTabs": {
+		"message": "Automatycznie zapisz odpięte karty",
+		"description": "Menu entry: 'Auto-save' > Auto-save unpinned tabs'"
+	},
+	"menuAutoSaveAllTabs": {
+		"message": "Automatycznie zapisz wszystkie karty",
+		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
+	},
 	"buttonDefaultTooltip": {
 		"message": "Zapisz stronę z SingleFile Lite",
 		"description": "Button title: 'Save page with SingleFile Lite'"
@@ -110,6 +130,14 @@
 	"buttonErrorBadge": {
 		"message": "ERR",
 		"description": "Badge label for unexpected errors"
+	},
+	"buttonAutoSaveActiveTooltip": {
+		"message": "Automatyczny zapis aktywny",
+		"description": "Button title: 'Auto-save active'"
+	},
+	"buttonAutoSaveActiveBadge": {
+		"message": "[A]",
+		"description": "Badge label when auto-save is active"
 	},
 	"optionsTitle": {
 		"message": "Opcje",
@@ -323,6 +351,10 @@
 		"message": "Zakładki",
 		"description": "Options sub-title: 'Bookmarks'"
 	},
+	"optionsAutoSaveSubTitle": {
+		"message": "Automatyczny zapis",
+		"description": "Options sub-title: 'Auto-save'"
+	},
 	"optionsAutoSettingsSubTitle": {
 		"message": "Reguły automatycznej konfiguracji",
 		"description": "Options sub-title: 'Auto-settings rules'"
@@ -347,9 +379,17 @@
 		"message": "Profil",
 		"description": "Options label in the Auto-settings rules: 'Profile'"
 	},
+	"optionsAutoSettingsAutoSaveProfile": {
+		"message": "Automatyczny zapis profilu",
+		"description": "Options label in the Auto-settings rules: 'Auto-save profile'"
+	},
 	"optionsAutoSettingsShowAllProfiles": {
 		"message": "wyświetlaj wszystkie profile",
 		"description": "Options label in the Auto-settings rules: 'display all profiles'"
+	},
+	"optionsAutoSettingsShowAutoSaveProfile": {
+		"message": "wyświetlaj kolumnę 'Automatyczny zapis profilu'",
+		"description": "Options label in the Auto-settings rules: 'display 'Auto-save profile' column'"
 	},
 	"optionsUpdateRuleTooltip": {
 		"message": "Uaktualnij regułę",
@@ -369,7 +409,43 @@
 	},
 	"optionsDeleteRuleConfirm": {
 		"message": "Potwierdź usunięcie wybranej reguły",
-		"description": "Popup text 'Confirm the deletion of the selected rule' in the options page"
+		"description": "Popup text 'Confirm deletion of the selected rule' in the options page"
+	},
+	"optionAutoSaveLoadOrUnload": {
+		"message": "automatycznie zapisuj po załadowaniu lub przy wyładowaniu strony",
+		"description": "auto-save after page load or on page unload"
+	},
+	"optionAutoSaveLoad": {
+		"message": "automatycznie zapisuj po załadowaniu strony",
+		"description": "Options page label: 'auto-save after page load'"
+	},
+	"optionAutoSaveUnload": {
+		"message": "automatycznie zapisuj przy wyładowaniu strony",
+		"description": "Options page label: 'auto-save on page unload'"
+	},
+	"optionAutoSaveDiscard": {
+		"message": "automatycznie zapisuj przy odrzucaniu karty",
+		"description": "Options page label: 'auto-save on tab discard'"
+	},
+	"optionAutoSaveRemove": {
+		"message": "automatycznie zapisuj przy usuwaniu karty",
+		"description": "Options page label: 'auto-save on tab removal'"
+	},
+	"optionAutoSaveDelay": {
+		"message": "opóźnienie oczekiwania automatycznego zapisywania po załadowaniu strony (s)",
+		"description": "Options page label: 'auto-save waiting delay after page load (s)'"
+	},
+	"optionAutoSaveRepeat": {
+		"message": "automatycznie zapisuj okresowo",
+		"description": "Options page label: 'auto-save periodically'"
+	},
+	"optionAutoSaveRepeatDelay": {
+		"message": "okres (s)",
+		"description": "Options page label: 'period (s)'"
+	},
+	"optionAutoSaveExternalSave": {
+		"message": "zapisuj stronę z SingleFile Companion",
+		"description": "Options page label: 'save the page with SingleFile Companion'"
 	},
 	"optionsEditorSubTitle": {
 		"message": "Edytor adnotacji",
@@ -715,13 +791,13 @@
 		"message": "Anuluj wszystkie",
 		"description": "Pending saves button 'Cancel all'"
 	},
-	"pendingsTitleTitle": {
-		"message": "Tytuł",
-		"description": "Title of the first column in the table of the pending saves 'Title'"
-	},
 	"pendingsURLTitle": {
 		"message": "Adres URL",
 		"description": "Title of the first column in the table of the pending saves 'URL'"
+	},
+	"pendingsTitleTitle": {
+		"message": "Tytuł",
+		"description": "Title of the first column in the table of the pending saves 'Title'"
 	},
 	"pendingsStatusTitle": {
 		"message": "status",

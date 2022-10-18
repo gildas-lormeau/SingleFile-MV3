@@ -65,8 +65,8 @@ function onForbiddenDomain(tab) {
 	button.onForbiddenDomain(tab);
 }
 
-function onStart(tabId, step) {
-	button.onStart(tabId, step);
+function onStart(tabId, step, autoSave) {
+	button.onStart(tabId, step, autoSave);
 }
 
 async function onError(tabId, message, link) {
@@ -84,8 +84,8 @@ function onEdit(tabId) {
 	button.onEdit(tabId);
 }
 
-function onEnd(tabId) {
-	button.onEnd(tabId);
+function onEnd(tabId, autoSave) {
+	button.onEnd(tabId, autoSave);
 }
 
 function onCancelled(tabId) {

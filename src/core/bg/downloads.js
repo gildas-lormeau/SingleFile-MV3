@@ -48,7 +48,8 @@ export {
 	downloadPage,
 	saveToGDrive,
 	saveToGitHub,
-	saveWithWebDAV
+	saveWithWebDAV,
+	encodeSharpCharacter
 };
 
 async function onMessage(message, sender) {
@@ -147,6 +148,13 @@ async function downloadContent(tab, incognito, message) {
 			console.error(error); // eslint-disable-line no-console
 			ui.onError(tab.id, error.message, error.link);
 		}
+	} finally {
+		// FIXME
+		/*
+		if (message.url) {
+			URL.revokeObjectURL(message.url);
+		}
+		*/
 	}
 }
 

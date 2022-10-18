@@ -102,7 +102,8 @@
 		"storage",
 		"tabs",
 		"activeTab",
-		"scripting"
+		"scripting",
+		"offscreen"
 	],
 	"optional_permissions": [
 		"clipboardWrite",

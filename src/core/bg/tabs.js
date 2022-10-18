@@ -24,6 +24,7 @@
 /* global browser, setTimeout */
 
 import * as config from "./config.js";
+import * as autosave from "./autosave.js";
 import * as business from "./business.js";
 import * as editor from "./editor.js";
 import * as tabsData from "./tabs-data.js";
@@ -45,6 +46,7 @@ async function onMessage(message, sender) {
 		await onInit(sender.tab, message);
 		ui.onInit(sender.tab);
 		business.onInit(sender.tab);
+		autosave.onInit(sender.tab);
 	}
 	if (message.method.endsWith(".getOptions")) {
 		return config.getOptions(message.url);
@@ -71,6 +73,7 @@ async function onTabUpdated(tabId, changeInfo) {
 				// ignored
 			}
 		}, DELAY_MAYBE_INIT);
+		autosave.onTabUpdated(tabId);
 		const tab = await browser.tabs.get(tabId);
 		if (editor.isEditor(tab)) {
 			const allTabsData = await tabsData.get(tab.id);
@@ -79,10 +82,14 @@ async function onTabUpdated(tabId, changeInfo) {
 			ui.onTabActivated(tab);
 		}
 	}
+	if (changeInfo.discarded) {
+		autosave.onTabDiscarded(tabId);
+	}
 }
 
 function onTabReplaced(addedTabId, removedTabId) {
 	tabsData.onTabReplaced(addedTabId, removedTabId);
+	autosave.onTabReplaced(addedTabId, removedTabId);
 	business.onTabReplaced(addedTabId, removedTabId);
 }
 
@@ -99,4 +106,5 @@ function onTabRemoved(tabId) {
 	tabsData.remove(tabId);
 	editor.onTabRemoved(tabId);
 	business.onTabRemoved(tabId);
+	autosave.onTabRemoved(tabId);
 }

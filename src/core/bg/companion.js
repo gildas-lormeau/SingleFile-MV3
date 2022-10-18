@@ -27,8 +27,34 @@ let enabled = true;
 
 export {
 	enabled,
+	onMessage,
+	externalSave,
 	save
 };
+
+async function onMessage(message) {
+	if (message.method.endsWith(".state")) {
+		return { enabled };
+	}
+}
+
+async function externalSave(options) {
+	options.autoSaveExternalSave = false;
+	const port = browser.runtime.connectNative("singlefile_companion");
+	port.postMessage({
+		method: "externalSave",
+		pageData: options
+	});
+	await new Promise((resolve, reject) => {
+		port.onDisconnect.addListener(() => {
+			if (port.error) {
+				reject(new Error(port.error.message + " (Companion)"));
+			} else if (!browser.runtime.lastError || browser.runtime.lastError.message.includes("Native host has exited")) {
+				resolve();
+			}
+		});
+	});
+}
 
 async function save(pageData) {
 	const port = browser.runtime.connectNative("singlefile_companion");

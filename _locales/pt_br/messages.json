@@ -15,6 +15,10 @@
 		"message": "Salvar site via SingleFile Lite",
 		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
+	"menuSaveSelectedLinks": {
+		"message": "Salvar links selecionados",
+		"description": "Menu entry: 'Save selected links'"
+	},
 	"menuEditPage": {
 		"message": "Anotar o site...",
 		"description": "Menu entry: 'Annotate the page...'"
@@ -26,10 +30,6 @@
 	"menuSaveWithProfile": {
 		"message": "Salvar site com perfil",
 		"description": "Menu entry: 'Save with profile'"
-	},
-	"menuSaveSelectedLinks": {
-		"message": "Salvar links selecionados",
-		"description": "Menu entry: 'Save selected links'"
 	},
 	"menuViewPendingSaves": {
 		"message": "Ver conteúdo pendente...",
@@ -75,6 +75,26 @@
 		"message": "Salvar em lote as URLs...",
 		"description": "Menu entry: 'Batch save URLs...'"
 	},
+	"menuAutoSave": {
+		"message": "Salvar autom.",
+		"description": "Menu entry: 'Auto-save'"
+	},
+	"menuAutoSaveDisabled": {
+		"message": "Desativado",
+		"description": "Menu entry: 'Auto-save' > Disabled'"
+	},
+	"menuAutoSaveTab": {
+		"message": "Salvar autom. esta aba",
+		"description": "Menu entry: 'Auto-save' > Auto-save this tab'"
+	},
+	"menuAutoSaveUnpinnedTabs": {
+		"message": "Salvar autom. abas não fixadas",
+		"description": "Menu entry: 'Auto-save' > Auto-save unpinned tabs'"
+	},
+	"menuAutoSaveAllTabs": {
+		"message": "Salvar autom. todas abas",
+		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
+	},
 	"buttonDefaultTooltip": {
 		"message": "Salvar site via SingleFile Lite",
 		"description": "Button title: 'Save page with SingleFile Lite'"
@@ -110,6 +130,14 @@
 	"buttonErrorBadge": {
 		"message": "ERRO",
 		"description": "Badge label for unexpected errors"
+	},
+	"buttonAutoSaveActiveTooltip": {
+		"message": "Salvar autom. o ativo",
+		"description": "Button title: 'Auto-save active'"
+	},
+	"buttonAutoSaveActiveBadge": {
+		"message": "[A]",
+		"description": "Badge label when auto-save is active"
 	},
 	"optionsTitle": {
 		"message": "Opções",
@@ -323,6 +351,10 @@
 		"message": "Favoritos",
 		"description": "Options sub-title: 'Bookmarks'"
 	},
+	"optionsAutoSaveSubTitle": {
+		"message": "Salvar automaticamente",
+		"description": "Options sub-title: 'Auto-save'"
+	},
 	"optionsAutoSettingsSubTitle": {
 		"message": "Regras da configuração automática",
 		"description": "Options sub-title: 'Auto-settings rules'"
@@ -347,9 +379,17 @@
 		"message": "Perfil",
 		"description": "Options label in the Auto-settings rules: 'Profile'"
 	},
+	"optionsAutoSettingsAutoSaveProfile": {
+		"message": "Salvar autom. perfil",
+		"description": "Options label in the Auto-settings rules: 'Auto-save profile'"
+	},
 	"optionsAutoSettingsShowAllProfiles": {
 		"message": "mostrar todos perfis",
 		"description": "Options label in the Auto-settings rules: 'display all profiles'"
+	},
+	"optionsAutoSettingsShowAutoSaveProfile": {
+		"message": "mostrar coluna 'Salvar autom. perfil'",
+		"description": "Options label in the Auto-settings rules: 'display 'Auto-save profile' column'"
 	},
 	"optionsUpdateRuleTooltip": {
 		"message": "Atualizar a regra",
@@ -370,6 +410,42 @@
 	"optionsDeleteRuleConfirm": {
 		"message": "Confirmar a eliminação da regra selecionada",
 		"description": "Popup text 'Confirm the deletion of the selected rule' in the options page"
+	},
+	"optionAutoSaveLoadOrUnload": {
+		"message": "Salvar autom. após carregamento ou purga do site",
+		"description": "auto-save after page load or on page unload"
+	},
+	"optionAutoSaveLoad": {
+		"message": "Salvar autom. após carregamento do site",
+		"description": "Options page label: 'auto-save after page load'"
+	},
+	"optionAutoSaveUnload": {
+		"message": "Salvar autom. após purga do site",
+		"description": "Options page label: 'auto-save on page unload'"
+	},
+	"optionAutoSaveDiscard": {
+		"message": "Salvar autom. ao descartar a aba",
+		"description": "Options page label: 'auto-save on tab discard'"
+	},
+	"optionAutoSaveRemove": {
+		"message": "Salvar autom. ao remover a aba",
+		"description": "Options page label: 'auto-save on tab removal'"
+	},
+	"optionAutoSaveDelay": {
+		"message": "Adiar salvação automática após carregar o site (s)",
+		"description": "Options page label: 'auto-save waiting delay after page load (s)'"
+	},
+	"optionAutoSaveRepeat": {
+		"message": "Auto-salvar periodicamente",
+		"description": "Options page label: 'auto-save periodically'"
+	},
+	"optionAutoSaveRepeatDelay": {
+		"message": "intervalo (s.)",
+		"description": "Options page label: 'period (s)'"
+	},
+	"optionAutoSaveExternalSave": {
+		"message": "salvar o site via SingleFile Companion",
+		"description": "Options page label: 'save the page with SingleFile Companion'"
 	},
 	"optionsEditorSubTitle": {
 		"message": "Editor de anotações",
@@ -516,8 +592,8 @@
 		"description": "Options page label: 'password'"
 	},
 	"optionSaveWithCompanion": {
-		"message": "salvar via SingleFile Lite Companion",
-		"description": "Options page label: 'save with SingleFile Lite Companion'"
+		"message": "salvar via SingleFile Companion",
+		"description": "Options page label: 'save with SingleFile Companion'"
 	},
 	"optionSaveCreatedBookmarks": {
 		"message": "salvar site de um favorito recém-criado",

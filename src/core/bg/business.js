@@ -21,9 +21,10 @@
  *   Source.
  */
 
-/* global browser, globalThis, document */
+/* global browser, window, document */
 
 import * as config from "./config.js";
+import { autoSaveIsEnabled } from "./autosave-util.js";
 import * as editor from "./editor.js";
 import * as ui from "./../../ui/bg/index.js";
 
@@ -64,7 +65,7 @@ export {
 };
 
 async function saveSelectedLinks(tab) {
-	const scriptsInjected = await injectScripts(tab.id);
+	const scriptsInjected = await injectScript(tab.id);
 	if (scriptsInjected) {
 		const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
 		if (response.urls && response.urls.length) {
@@ -116,18 +117,30 @@ async function saveTabs(tabs, options = {}) {
 			url: tab.url,
 			title: tab.title
 		};
-		ui.onStart(tabId, INJECT_SCRIPTS_STEP);
-		const scriptsInjected = await injectScripts(tab.id, tabOptions);
-		if (scriptsInjected || editor.isEditor(tab)) {
-			ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
-			addTask({
-				status: TASK_PENDING_STATE,
-				tab: tabData,
-				options: tabOptions,
-				method: "content.save"
-			});
+		if (options.autoSave) {
+			if (autoSaveIsEnabled(tab)) {
+				const taskInfo = addTask({
+					status: TASK_PROCESSING_STATE,
+					tab: tabData,
+					options: tabOptions,
+					method: "content.autosave"
+				});
+				runTask(taskInfo);
+			}
 		} else {
-			ui.onForbiddenDomain(tab);
+			ui.onStart(tabId, INJECT_SCRIPTS_STEP);
+			const scriptsInjected = await injectScript(tabId, tabOptions);
+			if (scriptsInjected || editor.isEditor(tab)) {
+				ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
+				addTask({
+					status: TASK_PENDING_STATE,
+					tab: tabData,
+					options: tabOptions,
+					method: "content.save"
+				});
+			} else {
+				ui.onForbiddenDomain(tab);
+			}
 		}
 	}));
 	runTasks();
@@ -180,7 +193,7 @@ async function runTask(taskInfo) {
 			taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 			taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 			ui.onStart(taskInfo.tab.id, INJECT_SCRIPTS_STEP);
-			scriptsInjected = await injectScripts(tab.id, taskInfo.options);
+			scriptsInjected = await injectScript(taskInfo.tab.id, taskInfo.options);
 		} catch (tabId) {
 			taskInfo.tab.id = tabId;
 		}
@@ -236,11 +249,11 @@ function onSaveEnd(taskId) {
 	}
 }
 
-async function injectScripts(tabId, options = {}) {
+async function injectScript(tabId, options = {}) {
 	let scriptsInjected;
 	const resultData = (await browser.scripting.executeScript({
 		target: { tabId },
-		func: () => Boolean(globalThis.singlefile)
+		func: () => Boolean(window.singlefile)
 	}))[0];
 	scriptsInjected = resultData && resultData.result;
 	if (scriptsInjected) {
@@ -295,7 +308,7 @@ function setCancelCallback(taskId, cancelCallback) {
 }
 
 function cancelTab(tabId) {
-	Array.from(tasks).filter(taskInfo => taskInfo.tab.id == tabId).forEach(cancel);
+	Array.from(tasks).filter(taskInfo => taskInfo.tab.id == tabId && !taskInfo.options.autoSave).forEach(cancel);
 }
 
 function cancelTask(taskId) {
@@ -326,6 +339,9 @@ function cancel(taskInfo) {
 	});
 	if (taskInfo.cancel) {
 		taskInfo.cancel();
+	}
+	if (taskInfo.method == "content.autosave") {
+		ui.onEnd(tabId, true);
 	}
 	ui.onCancelled(taskInfo.tab);
 	taskInfo.done();

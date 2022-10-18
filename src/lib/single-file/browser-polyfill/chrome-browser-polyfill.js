@@ -301,6 +301,10 @@ if (typeof globalThis == "undefined") {
 						return nativeAPI.devtools.inspectedWindow.tabId;
 					}
 				}
+			},
+			offscreen: nativeAPI.offscreen && {
+				createDocument: parameters => nativeAPI.offscreen.createDocument(parameters),
+				hasDocument: () => nativeAPI.offscreen.hasDocument()
 			}
 		}));
 	}

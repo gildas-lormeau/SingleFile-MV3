@@ -47,10 +47,6 @@
 		"message": "Seleziona il profilo del dominio corrente",
 		"description": "Menu entry: 'Select the profile of the current domain'"
 	},
-	"menuSaveTabs": {
-		"message": "Salva schede",
-		"description": "Menu entry (SingleFile button only): 'Save tabs'"
-	},
 	"menuSaveSelection": {
 		"message": "Salva selezione",
 		"description": "Menu entry: 'Save selection'"
@@ -58,6 +54,10 @@
 	"menuSaveFrame": {
 		"message": "Salva frame",
 		"description": "Menu entry: 'Save frame'"
+	},
+	"menuSaveTabs": {
+		"message": "Salva schede",
+		"description": "Menu entry (SingleFile button only): 'Save tabs'"
 	},
 	"menuSaveSelectedTabs": {
 		"message": "Salva schede selezionate",
@@ -74,6 +74,26 @@
 	"menuBatchSaveUrls": {
 		"message": "Batch save URLs...",
 		"description": "Menu entry: 'Batch save URLs...'"
+	},
+	"menuAutoSave": {
+		"message": "Auto-salvataggio",
+		"description": "Menu entry: 'Auto-save'"
+	},
+	"menuAutoSaveDisabled": {
+		"message": "Disabilitato",
+		"description": "Menu entry: 'Auto-save' > Disabled'"
+	},
+	"menuAutoSaveTab": {
+		"message": "Auto-salva questa scheda",
+		"description": "Menu entry: 'Auto-save' > Auto-save this tab'"
+	},
+	"menuAutoSaveUnpinnedTabs": {
+		"message": "Auto-sava schede sbloccate",
+		"description": "Menu entry: 'Auto-save' > Auto-save unpinned tabs'"
+	},
+	"menuAutoSaveAllTabs": {
+		"message": "Auto-salva tutte le schede",
+		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
 		"message": "Salva pagina con SingleFile Lite",
@@ -110,6 +130,14 @@
 	"buttonErrorBadge": {
 		"message": "ERR",
 		"description": "Badge label for unexpected errors"
+	},
+	"buttonAutoSaveActiveTooltip": {
+		"message": "Auto-salvataggio attivo",
+		"description": "Button title: 'Auto-save active'"
+	},
+	"buttonAutoSaveActiveBadge": {
+		"message": "[A]",
+		"description": "Badge label when auto-save is active"
 	},
 	"optionsTitle": {
 		"message": "Opzioni",
@@ -323,6 +351,10 @@
 		"message": "Segnalibri",
 		"description": "Options sub-title: 'Bookmarks'"
 	},
+	"optionsAutoSaveSubTitle": {
+		"message": "Auto-salva",
+		"description": "Options sub-title: 'Auto-save'"
+	},
 	"optionsAutoSettingsSubTitle": {
 		"message": "Regole auto-impostazioni rules",
 		"description": "Options sub-title: 'Auto-settings rules'"
@@ -347,9 +379,17 @@
 		"message": "Profilo",
 		"description": "Options label in the Auto-settings rules: 'Profile'"
 	},
+	"optionsAutoSettingsAutoSaveProfile": {
+		"message": "Auto-salva profilo",
+		"description": "Options label in the Auto-settings rules: 'Auto-save profile'"
+	},
 	"optionsAutoSettingsShowAllProfiles": {
 		"message": "mostra tutti i profili",
 		"description": "Options label in the Auto-settings rules: 'display all profiles'"
+	},
+	"optionsAutoSettingsShowAutoSaveProfile": {
+		"message": "mostra colonna 'Auto-salva profilo'",
+		"description": "Options label in the Auto-settings rules: 'display 'Auto-save profile' column'"
 	},
 	"optionsUpdateRuleTooltip": {
 		"message": "Aggiorna la regola",
@@ -370,6 +410,42 @@
 	"optionsDeleteRuleConfirm": {
 		"message": "Conferma l'eliminazione delle regole selezionate",
 		"description": "Popup text 'Confirm the deletion of the selected rule' in the options page"
+	},
+	"optionAutoSaveLoadOrUnload": {
+		"message": "auto-salva dopo il caricamento della pagina o al non caricamento della pagina",
+		"description": "auto-save after page load or on page unload"
+	},
+	"optionAutoSaveLoad": {
+		"message": "auto-salva pagina dopo il caricamento",
+		"description": "Options page label: 'auto-save after page load'"
+	},
+	"optionAutoSaveUnload": {
+		"message": "auto-salva al non caricamento della pagina",
+		"description": "Options page label: 'auto-save on page unload'"
+	},
+	"optionAutoSaveDiscard": {
+		"message": "auto-salva all'uscita della scheda",
+		"description": "Options page label: 'auto-save on tab discard'"
+	},
+	"optionAutoSaveRemove": {
+		"message": "auto-save alla rimozione della scheda",
+		"description": "Options page label: 'auto-save on tab removal'"
+	},
+	"optionAutoSaveDelay": {
+		"message": "auto-salva ritardo attesa dopo caricamento pagina (s)",
+		"description": "Options page label: 'auto-save waiting delay after page load (s)'"
+	},
+	"optionAutoSaveRepeat": {
+		"message": "auto-salva periodicamente",
+		"description": "Options page label: 'auto-save periodically'"
+	},
+	"optionAutoSaveRepeatDelay": {
+		"message": "periodo (s.)",
+		"description": "Options page label: 'period (s)'"
+	},
+	"optionAutoSaveExternalSave": {
+		"message": "salva la pagina con SingleFile Companion",
+		"description": "Options page label: 'save the page with SingleFile Companion'"
 	},
 	"optionsEditorSubTitle": {
 		"message": "Editor annotazioni",
@@ -715,13 +791,13 @@
 		"message": "Cancella tutto",
 		"description": "Pending saves button 'Cancel all'"
 	},
-	"pendingsTitleTitle": {
-		"message": "Titolo",
-		"description": "Title of the first column in the table of the pending saves 'Title'"
-	},
 	"pendingsURLTitle": {
 		"message": "URL",
 		"description": "Title of the first column in the table of the pending saves 'URL'"
+	},
+	"pendingsTitleTitle": {
+		"message": "Titolo",
+		"description": "Title of the first column in the table of the pending saves 'Title'"
 	},
 	"pendingsStatusTitle": {
 		"message": "stato",

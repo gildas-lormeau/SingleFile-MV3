@@ -26,7 +26,9 @@
 import "./../../lib/single-file/background.js";
 import * as config from "./config.js";
 import * as bootstrap from "./bootstrap.js";
+import * as autosave from "./autosave.js";
 import * as bookmarks from "./bookmarks.js";
+import * as companion from "./companion.js";
 import * as devtools from "./devtools.js";
 import * as downloads from "./downloads.js";
 import * as editor from "./editor.js";
@@ -40,6 +42,9 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	}
 	if (message.method.startsWith("downloads.")) {
 		return downloads.onMessage(message, sender);
+	}
+	if (message.method.startsWith("autosave.")) {
+		return autosave.onMessage(message, sender);
 	}
 	if (message.method.startsWith("ui.")) {
 		return ui.onMessage(message, sender);
@@ -59,7 +64,21 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	if (message.method.startsWith("bookmarks.")) {
 		return bookmarks.onMessage(message, sender);
 	}
+	if (message.method.startsWith("companion.")) {
+		return companion.onMessage(message, sender);
+	}
 	if (message.method.startsWith("bootstrap.")) {
 		return bootstrap.onMessage(message, sender);
 	}
 });
+if (browser.runtime.onMessageExternal) {
+	browser.runtime.onMessageExternal.addListener(async (message, sender) => {
+		const tabs = await browser.tabs.query({ currentWindow: true, active: true });
+		const currentTab = tabs[0];
+		if (currentTab) {
+			return autosave.onMessageExternal(message, currentTab, sender);
+		} else {
+			return false;
+		}
+	});
+}

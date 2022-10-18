@@ -21,9 +21,9 @@
  *   Source.
  */
 
-/* global browser, navigator, URL, Blob */
+/* global browser, navigator */
 
-import { download } from "./download-util.js";
+// import { download } from "./download-util.js";
 import * as tabsData from "./tabs-data.js";
 
 const CURRENT_PROFILE_NAME = "-";
@@ -69,10 +69,19 @@ const DEFAULT_CONFIG = {
 	backgroundSave: BACKGROUND_SAVE_DEFAULT,
 	defaultEditorMode: "normal",
 	applySystemTheme: true,
+	autoSaveDelay: 1,
+	autoSaveLoad: false,
+	autoSaveUnload: false,
+	autoSaveLoadOrUnload: true,
+	autoSaveDiscard: false,
+	autoSaveRemove: false,
+	autoSaveRepeat: false,
+	autoSaveRepeatDelay: 10,
 	removeAlternativeFonts: true,
 	removeAlternativeMedias: true,
 	removeAlternativeImages: true,
 	groupDuplicateImages: true,
+	maxSizeDuplicateImages: 512 * 1024,
 	saveRawPage: false,
 	saveToClipboard: false,
 	addProof: false,
@@ -100,6 +109,7 @@ const DEFAULT_CONFIG = {
 	saveFavicon: true,
 	includeBOM: false,
 	warnUnsavedPage: true,
+	autoSaveExternalSave: false,
 	insertMetaNoIndex: false,
 	insertMetaCSP: true,
 	insertSingleFileComment: true,
@@ -230,7 +240,7 @@ async function onMessage(message) {
 		await deleteRule(message.url);
 	}
 	if (message.method.endsWith(".addRule")) {
-		await addRule(message.url, message.profileName);
+		await addRule(message.url, message.profileName, message.autoSaveProfileName);
 	}
 	if (message.method.endsWith(".createProfile")) {
 		await createProfile(message.profileName, message.fromProfileName || DEFAULT_PROFILE_NAME);
@@ -254,7 +264,7 @@ async function onMessage(message) {
 		await updateProfile(message.profileName, message.profile);
 	}
 	if (message.method.endsWith(".updateRule")) {
-		await updateRule(message.url, message.newUrl, message.profileName);
+		await updateRule(message.url, message.newUrl, message.profileName, message.autoSaveProfileName);
 	}
 	if (message.method.endsWith(".getConstants")) {
 		return {
@@ -310,12 +320,12 @@ async function getProfiles() {
 	return config.profiles;
 }
 
-async function getOptions(url) {
+async function getOptions(url, autoSave) {
 	const [config, rule, allTabsData] = await Promise.all([getConfig(), getRule(url), tabsData.get()]);
 	const tabProfileName = allTabsData.profileName || DEFAULT_PROFILE_NAME;
 	let selectedProfileName;
 	if (rule) {
-		const profileName = rule["profile"];
+		const profileName = rule[autoSave ? "autoSaveProfile" : "profile"];
 		selectedProfileName = profileName == CURRENT_PROFILE_NAME ? tabProfileName : profileName;
 	} else {
 		selectedProfileName = tabProfileName;
@@ -352,6 +362,9 @@ async function renameProfile(oldProfileName, profileName) {
 		if (rule.profile == oldProfileName) {
 			rule.profile = profileName;
 		}
+		if (rule.autoSaveProfile == oldProfileName) {
+			rule.autoSaveProfile = profileName;
+		}
 	});
 	delete config.profiles[oldProfileName];
 	await configStorage.set({ profiles: config.profiles, rules: config.rules });
@@ -373,6 +386,9 @@ async function deleteProfile(profileName) {
 		if (rule.profile == profileName) {
 			rule.profile = DEFAULT_PROFILE_NAME;
 		}
+		if (rule.autoSaveProfile == profileName) {
+			rule.autoSaveProfile = DEFAULT_PROFILE_NAME;
+		}
 	});
 	delete config.profiles[profileName];
 	await configStorage.set({ profiles: config.profiles, rules: config.rules });
@@ -383,7 +399,7 @@ async function getRules() {
 	return config.rules;
 }
 
-async function addRule(url, profile) {
+async function addRule(url, profile, autoSaveProfile) {
 	if (!url) {
 		throw new Error("URL is empty");
 	}
@@ -393,7 +409,8 @@ async function addRule(url, profile) {
 	}
 	config.rules.push({
 		url,
-		profile
+		profile,
+		autoSaveProfile
 	});
 	await configStorage.set({ rules: config.rules });
 }
@@ -409,11 +426,11 @@ async function deleteRule(url) {
 
 async function deleteRules(profileName) {
 	const config = await getConfig();
-	config.rules = config.rules = profileName ? config.rules.filter(rule => rule.profile != profileName) : [];
+	config.rules = config.rules = profileName ? config.rules.filter(rule => rule.autoSaveProfile != profileName && rule.profile != profileName) : [];
 	await configStorage.set({ rules: config.rules });
 }
 
-async function updateRule(url, newURL, profile) {
+async function updateRule(url, newURL, profile, autoSaveProfile) {
 	if (!url || !newURL) {
 		throw new Error("URL is empty");
 	}
@@ -427,6 +444,7 @@ async function updateRule(url, newURL, profile) {
 	}
 	urlConfig.url = newURL;
 	urlConfig.profile = profile;
+	urlConfig.autoSaveProfile = autoSaveProfile;
 	await configStorage.set({ rules: config.rules });
 }
 
@@ -468,6 +486,8 @@ async function resetProfile(profileName) {
 }
 
 async function exportConfig() {
+	// FIXME
+	/*
 	const config = await getConfig();
 	const url = URL.createObjectURL(new Blob([JSON.stringify({ profiles: config.profiles, rules: config.rules, maxParallelWorkers: config.maxParallelWorkers }, null, 2)], { type: "text/json" }));
 	const downloadInfo = {
@@ -480,6 +500,7 @@ async function exportConfig() {
 	} finally {
 		URL.revokeObjectURL(url);
 	}
+	*/
 }
 
 async function importConfig(config) {

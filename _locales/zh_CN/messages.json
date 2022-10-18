@@ -75,6 +75,26 @@
 		"message": "批量保存网址...",
 		"description": "Menu entry: 'Batch save URLs...'"
 	},
+	"menuAutoSave": {
+		"message": "自动保存",
+		"description": "Menu entry: 'Auto-save'"
+	},
+	"menuAutoSaveDisabled": {
+		"message": "已禁用",
+		"description": "Menu entry: 'Auto-save' > Disabled'"
+	},
+	"menuAutoSaveTab": {
+		"message": "自动保存此标签页",
+		"description": "Menu entry: 'Auto-save' > Auto-save this tab'"
+	},
+	"menuAutoSaveUnpinnedTabs": {
+		"message": "自动保存未固定标签页",
+		"description": "Menu entry: 'Auto-save' > Auto-save unpinned tabs'"
+	},
+	"menuAutoSaveAllTabs": {
+		"message": "自动保存所有标签页",
+		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
+	},
 	"buttonDefaultTooltip": {
 		"message": "使用 SingleFile Lite 保存页面",
 		"description": "Button title: 'Save page with SingleFile Lite'"
@@ -110,6 +130,14 @@
 	"buttonErrorBadge": {
 		"message": "错误",
 		"description": "Badge label for unexpected errors"
+	},
+	"buttonAutoSaveActiveTooltip": {
+		"message": "自动保存活动页面",
+		"description": "Button title: 'Auto-save active'"
+	},
+	"buttonAutoSaveActiveBadge": {
+		"message": "[自动]",
+		"description": "Badge label when auto-save is active"
 	},
 	"optionsTitle": {
 		"message": "选项",
@@ -323,6 +351,14 @@
 		"message": "书签",
 		"description": "Options sub-title: 'Bookmarks'"
 	},
+	"optionsAutoSaveSubTitle": {
+		"message": "自动保存",
+		"description": "Options sub-title: 'Auto-save'"
+	},
+	"optionsAutoSettingsSubTitle": {
+		"message": "自动设置规则",
+		"description": "Options sub-title: 'Auto-settings rules'"
+	},
 	"optionsDeleteDisplayedRulesConfirm": {
 		"message": "确认删除所有已显示规则",
 		"description": "Popup text 'Confirm the deletion of all displayed rules'"
@@ -330,10 +366,6 @@
 	"optionsDeleteRulesTooltip": {
 		"message": "删除所有已显示规则",
 		"description": "Popup text 'Delete all displayed rules'"
-	},
-	"optionsAutoSettingsSubTitle": {
-		"message": "自动设置规则",
-		"description": "Options sub-title: 'Auto-settings rules'"
 	},
 	"optionsAutoSettingsUrl": {
 		"message": "网址",
@@ -347,9 +379,17 @@
 		"message": "配置文件",
 		"description": "Options label in the Auto-settings rules: 'Profile'"
 	},
+	"optionsAutoSettingsAutoSaveProfile": {
+		"message": "自动保存配置文件",
+		"description": "Options label in the Auto-settings rules: 'Auto-save profile'"
+	},
 	"optionsAutoSettingsShowAllProfiles": {
 		"message": "显示所有配置文件",
 		"description": "Options label in the Auto-settings rules: 'display all profiles'"
+	},
+	"optionsAutoSettingsShowAutoSaveProfile": {
+		"message": "显示 “自动保存配置文件” 列",
+		"description": "Options label in the Auto-settings rules: 'display 'Auto-save profile' column'"
 	},
 	"optionsUpdateRuleTooltip": {
 		"message": "更新规则",
@@ -370,6 +410,42 @@
 	"optionsDeleteRuleConfirm": {
 		"message": "确认删除所选规则",
 		"description": "Popup text 'Confirm the deletion of the selected rule' in the options page"
+	},
+	"optionAutoSaveLoadOrUnload": {
+		"message": "在页面加载完成后或开始卸载时进行自动保存",
+		"description": "auto-save after page load or on page unload"
+	},
+	"optionAutoSaveLoad": {
+		"message": "在页面加载完成后进行自动保存",
+		"description": "Options page label: 'auto-save after page load'"
+	},
+	"optionAutoSaveUnload": {
+		"message": "在页面开始卸载时进行自动保存",
+		"description": "Options page label: 'auto-save on page unload'"
+	},
+	"optionAutoSaveDiscard": {
+		"message": "在页面丢弃时进行自动保存",
+		"description": "Options page label: 'auto-save on tab discard'"
+	},
+	"optionAutoSaveRemove": {
+		"message": "在页面移除时进行自动保存",
+		"description": "Options page label: 'auto-save on tab removal'"
+	},
+	"optionAutoSaveDelay": {
+		"message": "页面加载完成后延迟该时间再进行自动保存（秒）",
+		"description": "Options page label: 'auto-save waiting delay after page load (s)'"
+	},
+	"optionAutoSaveRepeat": {
+		"message": "定期自动保存",
+		"description": "Options page label: 'auto-save periodically'"
+	},
+	"optionAutoSaveRepeatDelay": {
+		"message": "周期（秒）",
+		"description": "Options page label: 'period (s)'"
+	},
+	"optionAutoSaveExternalSave": {
+		"message": "使用 SingleFile Companion 保存页面",
+		"description": "Options page label: 'save the page with SingleFile Companion'"
 	},
 	"optionsEditorSubTitle": {
 		"message": "标注编辑器",
@@ -715,13 +791,13 @@
 		"message": "取消全部",
 		"description": "Pending saves button 'Cancel all'"
 	},
-	"pendingsTitleTitle": {
-		"message": "标题",
-		"description": "Title of the first column in the table of the pending saves 'Title'"
-	},
 	"pendingsURLTitle": {
 		"message": "网址",
 		"description": "Title of the first column in the table of the pending saves 'URL'"
+	},
+	"pendingsTitleTitle": {
+		"message": "标题",
+		"description": "Title of the first column in the table of the pending saves 'Title'"
 	},
 	"pendingsStatusTitle": {
 		"message": "状态",

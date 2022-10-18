@@ -128,6 +128,13 @@ export default [{
 		plugins: []
 	}]
 }, {
+	input: ["src/core/bg/offscreen-document.js"],
+	output: [{
+		file: "lib/single-file-extension-offscreen-document.js",
+		format: "iife",
+		plugins: []
+	}]
+}, {
 	input: ["src/lib/single-file/background.js"],
 	output: [{
 		file: "lib/single-file-background.js",

@@ -63,7 +63,8 @@ async function remove(tabId) {
 	}
 	const tabsData = await getPersistent();
 	if (tabsData[tabId]) {
-		tabsData[tabId] = {};
+		const autoSave = tabsData[tabId].autoSave;
+		tabsData[tabId] = { autoSave };
 		await setPersistent(tabsData);
 	}
 }
@@ -100,7 +101,7 @@ async function cleanup() {
 		cleanedUp = true;
 		const tabs = await browser.tabs.query({ currentWindow: true, highlighted: true });
 		Object.keys(persistentData).filter(key => {
-			if (key != "profileName") {
+			if (key != "autoSaveAll" && key != "autoSaveUnpinned" && key != "profileName") {
 				return !tabs.find(tab => tab.id == key);
 			}
 		}).forEach(tabId => delete persistentData[tabId]);

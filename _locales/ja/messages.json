@@ -47,10 +47,6 @@
 		"message": "現在のドメインのプロファイルを選択",
 		"description": "Menu entry: 'Select the profile of the current domain'"
 	},
-	"menuSaveTabs": {
-		"message": "タブを保存",
-		"description": "Menu entry (SingleFile button only): 'Save tabs'"
-	},
 	"menuSaveSelection": {
 		"message": "選択を保存",
 		"description": "Menu entry: 'Save selection'"
@@ -58,6 +54,10 @@
 	"menuSaveFrame": {
 		"message": "フレームを保存",
 		"description": "Menu entry: 'Save frame'"
+	},
+	"menuSaveTabs": {
+		"message": "タブを保存",
+		"description": "Menu entry (SingleFile button only): 'Save tabs'"
 	},
 	"menuSaveSelectedTabs": {
 		"message": "選択したタブを保存",
@@ -74,6 +74,26 @@
 	"menuBatchSaveUrls": {
 		"message": "Batch save URLs...",
 		"description": "Menu entry: 'Batch save URLs...'"
+	},
+	"menuAutoSave": {
+		"message": "自動保存",
+		"description": "Menu entry: 'Auto-save'"
+	},
+	"menuAutoSaveDisabled": {
+		"message": "無効",
+		"description": "Menu entry: 'Auto-save' > Disabled'"
+	},
+	"menuAutoSaveTab": {
+		"message": "このタブを自動保存する",
+		"description": "Menu entry: 'Auto-save' > Auto-save this tab'"
+	},
+	"menuAutoSaveUnpinnedTabs": {
+		"message": "固定解除されたタブの自動保存",
+		"description": "Menu entry: 'Auto-save' > Auto-save unpinned tabs'"
+	},
+	"menuAutoSaveAllTabs": {
+		"message": "すべてのタブを自動的に保存する",
+		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
 		"message": "SingleFile Lite でページを保存",
@@ -110,6 +130,14 @@
 	"buttonErrorBadge": {
 		"message": "エラー",
 		"description": "Badge label for unexpected errors"
+	},
+	"buttonAutoSaveActiveTooltip": {
+		"message": "有効な自動保存",
+		"description": "Button title: 'Auto-save active'"
+	},
+	"buttonAutoSaveActiveBadge": {
+		"message": "[A]",
+		"description": "Badge label when auto-save is active"
 	},
 	"optionsTitle": {
 		"message": "オプション（設定）",
@@ -323,6 +351,10 @@
 		"message": "ブックマーク",
 		"description": "Options sub-title: 'Bookmarks'"
 	},
+	"optionsAutoSaveSubTitle": {
+		"message": "自動保存",
+		"description": "Options sub-title: 'Auto-save'"
+	},
 	"optionsAutoSettingsSubTitle": {
 		"message": "自動設定のルール",
 		"description": "Options sub-title: 'Auto-settings rules'"
@@ -347,9 +379,17 @@
 		"message": "プロファイル",
 		"description": "Options label in the Auto-settings rules: 'Profile'"
 	},
+	"optionsAutoSettingsAutoSaveProfile": {
+		"message": "プロファイルの自動保存",
+		"description": "Options label in the Auto-settings rules: 'Auto-save profile'"
+	},
 	"optionsAutoSettingsShowAllProfiles": {
 		"message": "すべてのプロファイルを表示します",
 		"description": "Options label in the Auto-settings rules: 'display all profiles'"
+	},
+	"optionsAutoSettingsShowAutoSaveProfile": {
+		"message": "「プロファイルの自動保存」列を表示する",
+		"description": "Options label in the Auto-settings rules: 'display 'Auto-save profile' column'"
 	},
 	"optionsUpdateRuleTooltip": {
 		"message": "ルールを更新する",
@@ -370,6 +410,42 @@
 	"optionsDeleteRuleConfirm": {
 		"message": "選択したルールの削除を確認する",
 		"description": "Popup text 'Confirm the deletion of the selected rule' in the options page"
+	},
+	"optionAutoSaveLoadOrUnload": {
+		"message": "ページの読み込み後またはページの非読み込み時に自動保存",
+		"description": "auto-save after page load or on page unload"
+	},
+	"optionAutoSaveLoad": {
+		"message": "ページ読み込み後の自動保存",
+		"description": "Options page label: 'auto-save after page load'"
+	},
+	"optionAutoSaveUnload": {
+		"message": "ページの非読み込み時に自動保存",
+		"description": "Options page label: 'auto-save on page unload'"
+	},
+	"optionAutoSaveDiscard": {
+		"message": "auto-save on tab discard",
+		"description": "Options page label: 'auto-save on tab discard'"
+	},
+	"optionAutoSaveRemove": {
+		"message": "auto-save on tab removal",
+		"description": "Options page label: 'auto-save on tab removal'"
+	},
+	"optionAutoSaveDelay": {
+		"message": "ページ読み込み後の自動保存待ち時間（秒）",
+		"description": "Options page label: 'auto-save waiting delay after page load (s)'"
+	},
+	"optionAutoSaveRepeat": {
+		"message": "定期的に自動保存する",
+		"description": "Options page label: 'auto-save periodically'"
+	},
+	"optionAutoSaveRepeatDelay": {
+		"message": "所要時間（秒）",
+		"description": "Options page label: 'period (s)'"
+	},
+	"optionAutoSaveExternalSave": {
+		"message": "save the page with SingleFile Companion",
+		"description": "Options page label: 'save the page with SingleFile Companion'"
 	},
 	"optionsEditorSubTitle": {
 		"message": "注釈エディタ",
@@ -715,13 +791,13 @@
 		"message": "すべてをキャンセルする",
 		"description": "Pending saves button 'Cancel all'"
 	},
-	"pendingsTitleTitle": {
-		"message": "タイトル",
-		"description": "Title of the first column in the table of the pending saves 'Title'"
-	},
 	"pendingsURLTitle": {
 		"message": "URL",
 		"description": "Title of the first column in the table of the pending saves 'URL'"
+	},
+	"pendingsTitleTitle": {
+		"message": "タイトル",
+		"description": "Title of the first column in the table of the pending saves 'Title'"
 	},
 	"pendingsStatusTitle": {
 		"message": "状態",

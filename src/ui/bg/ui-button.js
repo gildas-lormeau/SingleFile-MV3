@@ -25,6 +25,7 @@
 
 import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
+import { autoSaveIsEnabled } from "../../core/bg/autosave-util.js";
 
 const DEFAULT_ICON_PATH = "/src/ui/resources/icon_128.png";
 const WAIT_ICON_PATH_PREFIX = "/src/ui/resources/icon_128_wait";
@@ -38,10 +39,14 @@ const BUTTON_BLOCKED_BADGE_MESSAGE = browser.i18n.getMessage("buttonBlockedBadge
 const BUTTON_OK_BADGE_MESSAGE = browser.i18n.getMessage("buttonOKBadge");
 const BUTTON_SAVE_PROGRESS_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonSaveProgressTooltip");
 const BUTTON_UPLOAD_PROGRESS_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonUploadProgressTooltip");
+const BUTTON_AUTOSAVE_ACTIVE_BADGE_MESSAGE = browser.i18n.getMessage("buttonAutoSaveActiveBadge");
+const BUTTON_AUTOSAVE_ACTIVE_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonAutoSaveActiveTooltip");
 const DEFAULT_COLOR = [2, 147, 20, 192];
 const ACTIVE_COLOR = [4, 229, 36, 192];
 const FORBIDDEN_COLOR = [255, 255, 255, 1];
 const ERROR_COLOR = [229, 4, 12, 192];
+const AUTOSAVE_DEFAULT_COLOR = [208, 208, 208, 192];
+const AUTOSAVE_INITIALIZING_COLOR = [64, 64, 64, 192];
 const INJECT_SCRIPTS_STEP = 1;
 
 const BUTTON_STATES = {
@@ -87,6 +92,20 @@ const BUTTON_STATES = {
 		setBadgeText: { text: BUTTON_BLOCKED_BADGE_MESSAGE },
 		setTitle: { title: BUTTON_BLOCKED_TOOLTIP_MESSAGE },
 		setIcon: { path: DEFAULT_ICON_PATH }
+	},
+	autosave: {
+		inject: {
+			setBadgeBackgroundColor: { color: AUTOSAVE_INITIALIZING_COLOR },
+			setBadgeText: { text: BUTTON_AUTOSAVE_ACTIVE_BADGE_MESSAGE },
+			setTitle: { title: BUTTON_AUTOSAVE_ACTIVE_TOOLTIP_MESSAGE },
+			setIcon: { path: DEFAULT_ICON_PATH }
+		},
+		default: {
+			setBadgeBackgroundColor: { color: AUTOSAVE_DEFAULT_COLOR },
+			setBadgeText: { text: BUTTON_AUTOSAVE_ACTIVE_BADGE_MESSAGE },
+			setTitle: { title: BUTTON_AUTOSAVE_ACTIVE_TOOLTIP_MESSAGE },
+			setIcon: { path: DEFAULT_ICON_PATH }
+		}
 	}
 };
 
@@ -122,7 +141,7 @@ export {
 	init
 };
 
-async function init(businessApi) {
+function init(businessApi) {
 	business = businessApi;
 }
 
@@ -152,10 +171,15 @@ function onMessage(message, sender) {
 	return Promise.resolve({});
 }
 
-function onStart(tabId, step) {
-	const state = step == INJECT_SCRIPTS_STEP ? getButtonState("inject") : getButtonState("execute");
-	state.setTitle = { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE + " (" + step + "/2)" };
-	state.setIcon = { path: WAIT_ICON_PATH_PREFIX + "0.png" };
+function onStart(tabId, step, autoSave) {
+	let state;
+	if (autoSave) {
+		state = getButtonState("inject", true);
+	} else {
+		state = step == INJECT_SCRIPTS_STEP ? getButtonState("inject") : getButtonState("execute");
+		state.setTitle = { title: BUTTON_INITIALIZING_TOOLTIP_MESSAGE + " (" + step + "/2)" };
+		state.setIcon = { path: WAIT_ICON_PATH_PREFIX + "0.png" };
+	}
 	refresh(tabId, state);
 }
 
@@ -167,8 +191,8 @@ function onEdit(tabId) {
 	refresh(tabId, getButtonState("edit"));
 }
 
-function onEnd(tabId) {
-	refresh(tabId, getButtonState("end"));
+function onEnd(tabId, autoSave) {
+	refresh(tabId, autoSave ? getButtonState("default", true) : getButtonState("end"));
 }
 
 function onForbiddenDomain(tab) {
@@ -198,7 +222,8 @@ function onProgress(tabId, index, maxIndex, tooltipMessage) {
 }
 
 async function refreshTab(tab) {
-	const state = getButtonState("default");
+	const autoSave = await autoSaveIsEnabled(tab);
+	const state = getButtonState("default", autoSave);
 	await refresh(tab.id, state);
 }
 
@@ -240,6 +265,6 @@ async function refreshProperty(tabId, browserActionMethod, browserActionParamete
 	}
 }
 
-function getButtonState(name) {
-	return JSON.parse(JSON.stringify(BUTTON_STATES[name]));
+function getButtonState(name, autoSave) {
+	return JSON.parse(JSON.stringify(autoSave ? BUTTON_STATES.autosave[name] : BUTTON_STATES[name]));
 }
