@@ -23,7 +23,7 @@
 
 /* global browser, navigator */
 
-// import { download } from "./download-util.js";
+import { download } from "./download-util.js";
 import * as tabsData from "./tabs-data.js";
 
 const CURRENT_PROFILE_NAME = "-";
@@ -486,21 +486,14 @@ async function resetProfile(profileName) {
 }
 
 async function exportConfig() {
-	// FIXME
-	/*
 	const config = await getConfig();
-	const url = URL.createObjectURL(new Blob([JSON.stringify({ profiles: config.profiles, rules: config.rules, maxParallelWorkers: config.maxParallelWorkers }, null, 2)], { type: "text/json" }));
+	const url = "data:text/json," + JSON.stringify({ profiles: config.profiles, rules: config.rules, maxParallelWorkers: config.maxParallelWorkers }, null, 2);
 	const downloadInfo = {
 		url,
 		filename: `singlefile-settings-${(new Date()).toISOString().replace(/:/g, "_")}.json`,
 		saveAs: true
 	};
-	try {
-		await download(downloadInfo, "_");
-	} finally {
-		URL.revokeObjectURL(url);
-	}
-	*/
+	await download(downloadInfo, "_");
 }
 
 async function importConfig(config) {
