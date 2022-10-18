@@ -197,20 +197,26 @@ async function saveContent(message, tab) {
 				browser.tabs.remove(replacedTabIds[tabId] || tabId);
 				delete replacedTabIds[tabId];
 			}
-			// FIXME
-			/*
 			if (pageData && pageData.url) {
-				URL.revokeObjectURL(pageData.url);
+				revokeObjectURL(pageData.url);
 			}
-			*/
 			ui.onEnd(tabId, true);
 		}
 	}
 }
 
 async function getPageData(options) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "offscreen.save", options });
+}
+
+async function revokeObjectURL(url) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "offscreen.revokeObjectURL", url });
+}
+
+async function createOffscreenDocument() {
 	if (!await browser.offscreen.hasDocument()) {
 		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save feature", reasons: ["TESTING"] });
 	}
-	return browser.runtime.sendMessage({ method: "offscreen.save", options });
 }
