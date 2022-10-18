@@ -139,10 +139,10 @@ class GDrive {
 			onProgress: options.onProgress
 		});
 		try {
-			return {
-				cancelUpload: () => uploader.cancelled = true,
-				uploadPromise: await uploader.upload()
-			};
+			if (setCancelCallback) {
+				setCancelCallback(() => uploader.cancelled = true);
+			}
+			await uploader.upload();
 		}
 		catch (error) {
 			if (error.message == "path_not_found" && retry) {
