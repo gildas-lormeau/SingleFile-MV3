@@ -27,12 +27,6 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 
 ## Notable features of SingleFile Lite
 
-- **unreliable auto-updates**
-
-  > With Manifest V2, it was possible to auto-update the extension without
-  > breaking the extension. With Manifest V3, it's no longer possible (cf.
-  > https://crbug.com/1271154).
-
 - **save time limited to 5 minutes max.**
 
   > With Manifest V2, it was possible to process a page for a very long time.
