@@ -37,10 +37,6 @@ const EXECUTE_SCRIPTS_STEP = 2;
 const TASK_PENDING_STATE = "pending";
 const TASK_PROCESSING_STATE = "processing";
 const CONTENT_SCRIPTS = [
-	"lib/chrome-browser-polyfill.js",
-	"lib/single-file-bootstrap.js",
-	"lib/single-file-extension-bootstrap.js",
-	"lib/single-file-infobar.js",
 	"lib/single-file.js",
 	"lib/single-file-extension-infobar.js",
 	"lib/single-file-extension.js"
