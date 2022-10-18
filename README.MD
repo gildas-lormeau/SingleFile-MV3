@@ -40,8 +40,8 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 
 - **limited support for fonts dynamically loaded with the `FontFace` API**
 
-  > With Manifest V2, it was possible to keep fonts loaded early with the
-  > `FontFace` API. With Manifest V3, it's no longer possible (cf.
+  > With Manifest V2, it was possible to detect and save fonts loaded early with
+  > the `FontFace` API. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1207006 and https://crbug.com/1054624).
 
 - and more to come!
