@@ -86,7 +86,8 @@
 				"<all_urls>"
 			],
 			"resources": [
-				"lib/single-file-infobar.js"
+				"lib/single-file-infobar.js",
+				"lib/single-file-hooks-frames.js"
 			]
 		}
 	],
