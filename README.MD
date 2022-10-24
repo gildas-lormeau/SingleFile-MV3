@@ -27,11 +27,6 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 
 ## Notable features of SingleFile Lite
 
-- **save time limited to 5 minutes max.**
-
-  > With Manifest V2, it was possible to process a page for a very long time.
-  > With Manifest V3, it's no longer possible (cf. https://crbug.com/1152255).
-
 - **no "Referrer" header injection**
 
   > With Manifest V2, it was possible to inject a "Referrer" HTTP header if
