@@ -22,7 +22,8 @@
 				"lib/single-file-extension-frames.js"
 			],
 			"all_frames": true,
-			"match_about_blank": true
+			"match_about_blank": true,
+			"match_origin_as_fallback": true
 		},
 		{
 			"matches": [
@@ -34,6 +35,7 @@
 			],
 			"all_frames": true,
 			"match_about_blank": true,
+			"match_origin_as_fallback": true,
 			"world": "MAIN"
 		},
 		{
