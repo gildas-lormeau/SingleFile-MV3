@@ -218,6 +218,6 @@ async function revokeObjectURL(url) {
 
 async function createOffscreenDocument() {
 	if (!await browser.offscreen.hasDocument()) {
-		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save feature", reasons: ["TESTING"] });
+		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save feature", reasons: ["DOM_PARSER"] });
 	}
 }
