@@ -1122,6 +1122,7 @@ pre code {
 				element.style.setProperty(pointerEvents, "none", "important");
 			});
 			document.replaceChild(contentDocument.documentElement, document.documentElement);
+			document.querySelectorAll("[data-single-file-note-refs]").forEach(noteRefElement => noteRefElement.dataset.singleFileNoteRefs = noteRefElement.dataset.singleFileNoteRefs.replace(/,/g, " "));
 			deserializeShadowRoots(document);
 			document.querySelectorAll(NOTE_TAGNAME).forEach(containerElement => attachNoteListeners(containerElement, true));
 			document.documentElement.appendChild(getStyleElement(HIGHLIGHTS_WEB_STYLESHEET));
