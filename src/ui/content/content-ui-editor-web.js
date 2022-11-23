@@ -1158,6 +1158,7 @@ pre code {
 		const containerElement = document.createElement(NOTE_TAGNAME);
 		const noteElement = document.createElement("div");
 		const headerElement = document.createElement("header");
+		const blockquoteElement = document.createElement("blockquote");
 		const mainElement = document.createElement("textarea");
 		const resizeElement = document.createElement("div");
 		const removeNoteElement = document.createElement("img");
@@ -1165,13 +1166,15 @@ pre code {
 		const noteShadow = containerElement.attachShadow({ mode: "open" });
 		headerElement.appendChild(anchorIconElement);
 		headerElement.appendChild(removeNoteElement);
+		blockquoteElement.appendChild(mainElement);
 		noteElement.appendChild(headerElement);
-		noteElement.appendChild(mainElement);
+		noteElement.appendChild(blockquoteElement);
 		noteElement.appendChild(resizeElement);
 		noteShadow.appendChild(getStyleElement(NOTES_WEB_STYLESHEET));
 		noteShadow.appendChild(noteElement);
 		const notesElements = Array.from(document.querySelectorAll(NOTE_TAGNAME));
 		const noteId = Math.max.call(Math, 0, ...notesElements.map(noteElement => Number(noteElement.dataset.noteId))) + 1;
+		noteElement.cite = "https://www.w3.org/TR/annotation-model/#selector(type=CssSelector,value=[data-single-file-note-refs~=\"" + noteId + "\"])";
 		noteElement.classList.add(NOTE_CLASS);
 		noteElement.classList.add(NOTE_ANCHORED_CLASS);
 		noteElement.classList.add(color);
@@ -2078,11 +2081,11 @@ pre code {
 	}
 
 	function getNoteRefs(anchorElement) {
-		return JSON.parse("[" + (anchorElement.dataset.singleFileNoteRefs || "") + "]");
+		return anchorElement.dataset.singleFileNoteRefs ? anchorElement.dataset.singleFileNoteRefs.split(" ") : [];
 	}
 
 	function setNoteRefs(anchorElement, noteRefs) {
-		anchorElement.dataset.singleFileNoteRefs = noteRefs.toString();
+		anchorElement.dataset.singleFileNoteRefs = noteRefs.join(" ");
 	}
 
 	function minifyText(text) {
