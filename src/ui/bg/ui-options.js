@@ -137,6 +137,7 @@ const userInterfaceLabel = document.getElementById("userInterfaceLabel");
 const filenameLabel = document.getElementById("filenameLabel");
 const htmlContentLabel = document.getElementById("htmlContentLabel");
 const imagesLabel = document.getElementById("imagesLabel");
+const infobarLabel = document.getElementById("infobarLabel");
 const stylesheetsLabel = document.getElementById("stylesheetsLabel");
 const fontsLabel = document.getElementById("fontsLabel");
 const networkLabel = document.getElementById("networkLabel");
@@ -165,6 +166,7 @@ const infobarTemplateLabel = document.getElementById("infobarTemplateLabel");
 const blockMixedContentLabel = document.getElementById("blockMixedContentLabel");
 const saveOriginalURLsLabel = document.getElementById("saveOriginalURLsLabel");
 const includeInfobarLabel = document.getElementById("includeInfobarLabel");
+const removeInfobarSavedDateLabel = document.getElementById("removeInfobarSavedDateLabel");
 const miscLabel = document.getElementById("miscLabel");
 const helpLabel = document.getElementById("helpLabel");
 const synchronizeLabel = document.getElementById("synchronizeLabel");
@@ -252,6 +254,7 @@ const infobarTemplateInput = document.getElementById("infobarTemplateInput");
 const blockMixedContentInput = document.getElementById("blockMixedContentInput");
 const saveOriginalURLsInput = document.getElementById("saveOriginalURLsInput");
 const includeInfobarInput = document.getElementById("includeInfobarInput");
+const removeInfobarSavedDateInput = document.getElementById("removeInfobarSavedDateInput");
 const confirmInfobarInput = document.getElementById("confirmInfobarInput");
 const autoCloseInput = document.getElementById("autoCloseInput");
 const openEditorInput = document.getElementById("openEditorInput");
@@ -620,6 +623,7 @@ titleLabel.textContent = browser.i18n.getMessage("optionsTitle");
 userInterfaceLabel.textContent = browser.i18n.getMessage("optionsUserInterfaceSubTitle");
 filenameLabel.textContent = browser.i18n.getMessage("optionsFileNameSubTitle");
 htmlContentLabel.textContent = browser.i18n.getMessage("optionsHTMLContentSubTitle");
+infobarLabel.textContent = browser.i18n.getMessage("optionsInfobarSubTitle");
 imagesLabel.textContent = browser.i18n.getMessage("optionsImagesSubTitle");
 stylesheetsLabel.textContent = browser.i18n.getMessage("optionsStylesheetsSubTitle");
 fontsLabel.textContent = browser.i18n.getMessage("optionsFontsSubTitle");
@@ -635,6 +639,7 @@ infobarTemplateLabel.textContent = browser.i18n.getMessage("optionInfobarTemplat
 blockMixedContentLabel.textContent = browser.i18n.getMessage("optionBlockMixedContent");
 saveOriginalURLsLabel.textContent = browser.i18n.getMessage("optionSaveOriginalURLs");
 includeInfobarLabel.textContent = browser.i18n.getMessage("optionIncludeInfobar");
+removeInfobarSavedDateLabel.textContent = browser.i18n.getMessage("optionRemoveInfobarSavedDate");
 confirmInfobarLabel.textContent = browser.i18n.getMessage("optionConfirmInfobar");
 autoCloseLabel.textContent = browser.i18n.getMessage("optionAutoClose");
 editorLabel.textContent = browser.i18n.getMessage("optionsEditorSubTitle");
@@ -905,6 +910,7 @@ async function refresh(profileName) {
 	blockMixedContentInput.checked = profileOptions.blockMixedContent;
 	saveOriginalURLsInput.checked = profileOptions.saveOriginalURLs;
 	includeInfobarInput.checked = profileOptions.includeInfobar;
+	removeInfobarSavedDateInput.checked = profileOptions.removeSavedDate;
 	confirmInfobarInput.checked = profileOptions.confirmInfobarContent;
 	autoCloseInput.checked = profileOptions.autoClose;
 	openEditorInput.checked = profileOptions.openEditor;
@@ -1005,6 +1011,7 @@ async function update() {
 			blockMixedContent: blockMixedContentInput.checked,
 			saveOriginalURLs: saveOriginalURLsInput.checked,
 			includeInfobar: includeInfobarInput.checked,
+			removeSavedDate: removeInfobarSavedDateInput.checked,
 			confirmInfobarContent: confirmInfobarInput.checked,
 			autoClose: autoCloseInput.checked,
 			openEditor: openEditorInput.checked,

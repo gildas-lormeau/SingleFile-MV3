@@ -126,6 +126,7 @@ const DEFAULT_CONFIG = {
 	insertMetaNoIndex: false,
 	insertMetaCSP: true,
 	insertSingleFileComment: true,
+	removeSavedDate: false,
 	blockMixedContent: false,
 	saveOriginalURLs: false,
 	acceptHeaders: {
