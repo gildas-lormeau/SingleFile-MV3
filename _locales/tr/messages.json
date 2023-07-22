@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "Sayfayı SingleFile ile kaydet",
-		"description": "Menu entry: 'Save page with SingleFile'"
+		"message": "Sayfayı SingleFile Lite ile kaydet",
+		"description": "Menu entry: 'Save page with SingleFile Lite'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Seçilen bağlantıları kaydet",
@@ -57,7 +57,7 @@
 	},
 	"menuSaveTabs": {
 		"message": "Sekmeleri kaydet",
-		"description": "Menu entry (SingleFile button only): 'Save tabs'"
+		"description": "Menu entry (SingleFile Lite button only): 'Save tabs'"
 	},
 	"menuSaveSelectedTabs": {
 		"message": "Seçili sekmeleri kaydet",
@@ -96,8 +96,8 @@
 		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Sayfayı SingleFile ile kaydet",
-		"description": "Button title: 'Save page with SingleFile'"
+		"message": "Sayfayı SingleFile Lite ile kaydet",
+		"description": "Button title: 'Save page with SingleFile Lite'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
@@ -105,11 +105,11 @@
 	},
 	"buttonBlockedTooltip": {
 		"message": "Bu sayfa SinglePage ile kaydedilemiyor",
-		"description": "Button title: 'This page cannot be saved with SingleFile'"
+		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "SingleFile Başlatılıyor",
-		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
+		"message": "SingleFile Lite Başlatılıyor",
+		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -278,6 +278,10 @@
 	"optionLoadDeferredImagesDispatchScrollEvent": {
 		"message": "\"scroll\" olayını gönder",
 		"description": "Options page label: 'dispatch \"scroll\" event'"
+	},
+	"optionLoadDeferredImagesBeforeFrames": {
+		"message": "ertelenen çerçeveleri kaydet",
+		"description": "Options page label: 'load deferred frames'"
 	},
 	"optionRemoveAlternativeImages": {
 		"message": "alternatif ekran çözünürlükleri için görüntüleri kaldır",
@@ -472,8 +476,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "açıklama düzenleyicide SingleFile ile kaydedilen sayfaları açın",
-		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
+		"message": "açıklama düzenleyicide SingleFile Lite ile kaydedilen sayfaları açın",
+		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "varsayılan mod",
@@ -556,7 +560,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "SingleFile'ın Woleet API'ye kaydedeceğiniz her sayfanın bir SHA256 hash'ini göndermesine izin verdiğinizi onaylayın. Bu özellikle ilgili daha fazla bilgiyi yardım sayfasında veya seçeneğin yanındaki soru işaretine tıklayarak bulabilirsiniz.",
+		"message": "SingleFile Lite'ın Woleet API'ye kaydedeceğiniz her sayfanın bir SHA256 hash'ini göndermesine izin verdiğinizi onaylayın. Bu özellikle ilgili daha fazla bilgiyi yardım sayfasında veya seçeneğin yanındaki soru işaretine tıklayarak bulabilirsiniz.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {
