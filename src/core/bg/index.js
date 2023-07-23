@@ -34,6 +34,7 @@ import * as downloads from "./downloads.js";
 import * as editor from "./editor.js";
 import * as tabsData from "./tabs-data.js";
 import * as tabs from "./tabs.js";
+import * as externalMesssages from "./external-messages.js";
 import * as ui from "./../../ui/bg/index.js";
 
 browser.runtime.onMessage.addListener((message, sender) => {
@@ -72,13 +73,5 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	}
 });
 if (browser.runtime.onMessageExternal) {
-	browser.runtime.onMessageExternal.addListener(async (message, sender) => {
-		const tabs = await browser.tabs.query({ currentWindow: true, active: true });
-		const currentTab = tabs[0];
-		if (currentTab) {
-			return autosave.onMessageExternal(message, currentTab, sender);
-		} else {
-			return false;
-		}
-	});
+	browser.runtime.onMessageExternal.addListener(externalMesssages.onMessage);
 }
