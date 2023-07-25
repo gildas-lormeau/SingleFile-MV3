@@ -55,6 +55,7 @@ document.getElementById("URLTitleLabel").onclick = () => {
 };
 let previousState;
 setInterval(refresh, 1000);
+refresh();
 
 function resetTable() {
 	resultsTable.innerHTML = "";
