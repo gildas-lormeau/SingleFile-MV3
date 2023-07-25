@@ -27,7 +27,6 @@ const browser = globalThis.browser;
 const document = globalThis.document;
 const Document = globalThis.Document;
 
-
 if (document instanceof Document && browser && browser.runtime && browser.runtime.getURL) {
 	const scriptElement = document.createElement("script");
 	scriptElement.src = browser.runtime.getURL("/lib/single-file-hooks-frames.js");
