@@ -291,6 +291,9 @@ addEventListener("message", event => {
 			linkElement.href = message.icon;
 			document.head.appendChild(linkElement);
 		}
+		if (tabData.options.displayInfobarInEditor) {
+			displayInfobar();
+		}
 		tabData.docSaved = true;
 		if (!message.reset) {
 			const defaultEditorMode = tabData.options.defaultEditorMode;
@@ -472,6 +475,12 @@ function enableCutOuterPage() {
 
 function savePage() {
 	editorElement.contentWindow.postMessage(JSON.stringify({ method: "getContent", compressHTML: tabData.options.compressHTML, updatedResources }), "*");
+}
+
+function displayInfobar() {
+	editorElement.contentWindow.postMessage(JSON.stringify({
+		method: "displayInfobar"
+	}), "*");
 }
 
 function getPosition(event) {
