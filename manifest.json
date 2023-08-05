@@ -99,6 +99,9 @@
 			"https://www.googleapis.com/auth/drive.file"
 		]
 	},
+	"side_panel": {
+		"default_path": "src/ui/pages/panel.html"
+	},
 	"permissions": [
 		"contextMenus",
 		"downloads",
@@ -106,7 +109,8 @@
 		"tabs",
 		"activeTab",
 		"scripting",
-		"offscreen"
+		"offscreen",
+		"sidePanel"
 	],
 	"optional_permissions": [
 		"clipboardWrite",
