@@ -39,12 +39,6 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
   > necessary. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1149619).
 
-- **limited support for fonts dynamically loaded with the `FontFace` API**
-
-  > With Manifest V2, it was possible to detect and save fonts loaded early with
-  > the `FontFace` API. With Manifest V3, it's no longer possible (cf.
-  > https://crbug.com/1207006 and https://crbug.com/1054624).
-
 ## Benefits of the Manifest V3
 
 - Ability to save frames with `src` using `blob:` or `data:` protocols via 
