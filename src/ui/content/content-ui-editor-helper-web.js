@@ -22,11 +22,22 @@
  */
 
 import * as serializer from "single-file-core/modules/html-serializer.js";
+import * as infobar from "single-file-core/common/infobar.js";
 
 const helper = {
 	serialize(doc, compressHTML) {
 		return serializer.process(doc, compressHTML);
-	}
+	},
+	appendInfobar(doc, options, useShadowRoot) {
+		return infobar.appendInfobar(doc, options, useShadowRoot);
+	},
+	extractInfobarData(doc) {
+		return infobar.extractInfobarData(doc);
+	},
+	displayIcon(doc, useShadowRoot) {
+		return infobar.displayIcon(doc, useShadowRoot);
+	},
+	INFOBAR_TAGNAME: infobar.INFOBAR_TAGNAME
 };
 
 export {

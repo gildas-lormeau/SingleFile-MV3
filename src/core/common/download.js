@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, infobar, document, URL, Blob, MouseEvent, setTimeout, open */
+/* global browser, document, URL, Blob, MouseEvent, setTimeout, open */
 
 export {
 	downloadPage
@@ -32,9 +32,6 @@ async function downloadPage(pageData, options) {
 	try {
 		if (options.includeBOM) {
 			pageData.content = "\ufeff" + pageData.content;
-		}
-		if (options.includeInfobar) {
-			await infobar.includeScript(pageData);
 		}
 		if (options.backgroundSave || options.openEditor || options.saveToGDrive || options.saveToGitHub || options.saveWithCompanion || options.saveWithWebDAV) {
 			blobURL = getContentBlobURL(pageData);
