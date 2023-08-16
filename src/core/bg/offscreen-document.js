@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, Blob, URL, extension, infobar, XMLHttpRequest */
+/* global browser, Blob, URL, extension, XMLHttpRequest */
 
 browser.runtime.onMessage.addListener(message => {
 	if (message.method == "offscreen.save") {
@@ -36,9 +36,6 @@ browser.runtime.onMessage.addListener(message => {
 async function getPageData(message) {
 	const { options } = message;
 	const pageData = await extension.getPageData(options, null, null, { fetch });
-	if (options.includeInfobar) {
-		pageData.content += await infobar.getScript();
-	}
 	const blob = new Blob([pageData.content], { type: "text/html" });
 	pageData.content = URL.createObjectURL(blob);
 	return pageData;
