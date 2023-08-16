@@ -44,4 +44,4 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 - Ability to save frames with `src` using `blob:` or `data:` protocols via 
   [`match_origin_as_fallback`](https://developer.chrome.com/docs/extensions/mv3/content_scripts/#match_origin_as_fallback).
 
-- Sidebar integration like in Firefoc
+- Sidebar integration like in Firefox
