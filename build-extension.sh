@@ -1,9 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo apt install zip jq
+dpkg -s zip &> /dev/null
+if [ $? -ne 0 ]
+then
+    echo "Installing zip"
+    sudo apt install zip
+fi
 
-npm install
-npm update
+dpkg -s jq &> /dev/null
+if [ $? -ne 0 ]
+then
+    echo "Installing jq"
+    sudo apt install jq
+fi
 
 npx rollup -c rollup.config.js
 
