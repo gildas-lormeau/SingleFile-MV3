@@ -7,13 +7,6 @@ then
     sudo apt install zip
 fi
 
-dpkg -s jq &> /dev/null
-if [ $? -ne 0 ]
-then
-    echo "Installing jq"
-    sudo apt install jq
-fi
-
 npx rollup -c rollup.config.js
 
 rm singlefile-lite-extension.zip
