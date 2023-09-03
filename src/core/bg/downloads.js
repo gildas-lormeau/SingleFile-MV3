@@ -36,7 +36,7 @@ import { pushGitHub } from "./../../lib/github/github.js";
 import { download } from "./download-util.js";
 
 const GDRIVE_CLIENT_ID = "207618107333-7tjs1im1pighftpoepea2kvkubnfjj44.apps.googleusercontent.com";
-const GDRIVE_CLIENT_KEY = "000000000000000000000000";
+const GDRIVE_CLIENT_KEY = "VQJ8Gq8Vxx72QyxPyeLtWvUt";
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const CONFLICT_ACTION_SKIP = "skip";
 const CONFLICT_ACTION_UNIQUIFY = "uniquify";
