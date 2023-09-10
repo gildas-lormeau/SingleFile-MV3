@@ -106,9 +106,10 @@ async function downloadTabPage(message, tab) {
 
 async function downloadContent(tab, incognito, message) {
 	try {
+		let response;
 		if (message.saveWithWebDAV) {
 			const pageBlob = await (await fetch(message.content)).blob();
-			await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), pageBlob, message.webDAVURL, message.webDAVUser, message.webDAVPassword);
+			response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), pageBlob, message.webDAVURL, message.webDAVUser, message.webDAVPassword);
 		} else if (message.saveToGDrive) {
 			const pageBlob = await (await fetch(message.content)).blob();
 			await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), pageBlob, {
@@ -118,7 +119,8 @@ async function downloadContent(tab, incognito, message) {
 			});
 		} else if (message.saveToGitHub) {
 			const pageContent = await (await fetch(message.content)).text();
-			await (await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), [pageContent], message.githubToken, message.githubUser, message.githubRepository, message.githubBranch)).pushPromise;
+			response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), [pageContent], message.githubToken, message.githubUser, message.githubRepository, message.githubBranch);
+			await response.pushPromise;
 		} else if (message.saveWithCompanion) {
 			await companion.save({
 				filename: message.filename,
@@ -127,13 +129,16 @@ async function downloadContent(tab, incognito, message) {
 			});
 		} else {
 			message.url = message.content;
-			await downloadPage(message, {
+			response = await downloadPage(message, {
 				confirmFilename: message.confirmFilename,
 				incognito,
 				filenameConflictAction: message.filenameConflictAction,
 				filenameReplacementCharacter: message.filenameReplacementCharacter,
 				includeInfobar: message.includeInfobar
 			});
+		}
+		if (message.replaceBookmarkURL && response && response.url) {
+			await bookmarks.update(message.bookmarkId, { url: response.url });
 		}
 		ui.onEnd(tab.id);
 		if (message.openSavedPage) {
@@ -307,14 +312,15 @@ async function downloadPage(pageData, options) {
 			downloadInfo.incognito = true;
 		}
 		const downloadData = await download(downloadInfo, options.filenameReplacementCharacter);
-		if (downloadData.filename && pageData.bookmarkId && pageData.replaceBookmarkURL) {
-			if (!downloadData.filename.startsWith("file:")) {
-				if (downloadData.filename.startsWith("/")) {
-					downloadData.filename = downloadData.filename.substring(1);
+		if (downloadData.filename) {
+			let url = downloadData.filename;
+			if (!url.startsWith("file:")) {
+				if (url.startsWith("/")) {
+					url = downloadData.filename.substring(1);
 				}
-				downloadData.filename = "file:///" + encodeSharpCharacter(downloadData.filename);
+				url = "file:///" + encodeSharpCharacter(downloadData.filename);
 			}
-			await bookmarks.update(pageData.bookmarkId, { url: downloadData.filename });
+			return { url };
 		}
 	}
 }
