@@ -260,7 +260,7 @@ async function refreshAsync(tabId, state) {
 
 async function refreshProperty(tabId, browserActionMethod, browserActionParameter) {
 	const actionMethodSupported = browserActionMethod != "setBadgeBackgroundColor" || config.BADGE_COLOR_SUPPORTED;
-	if (browser.browserAction[browserActionMethod] && actionMethodSupported) {
+	if (browser.action[browserActionMethod] && actionMethodSupported) {
 		const parameter = JSON.parse(JSON.stringify(browserActionParameter));
 		parameter.tabId = tabId;
 		await browser.action[browserActionMethod](parameter);
