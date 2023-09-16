@@ -151,6 +151,7 @@ async function saveContent(message, tab) {
 		options.tabId = tabId;
 		options.tabIndex = tab.index;
 		options.keepFilename = options.saveToGDrive || options.saveToGitHub || options.saveWithWebDAV;
+		options.filenameConflictAction = message.filenameConflictAction;
 		let pageData;
 		try {
 			if (options.autoSaveExternalSave) {
@@ -164,21 +165,21 @@ async function saveContent(message, tab) {
 					await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), blob, options, {
 						forceWebAuthFlow: options.forceWebAuthFlow
 					}, {
-						filenameConflictAction: message.filenameConflictAction
+						filenameConflictAction: options.filenameConflictAction
 					});
 				} else if (options.saveWithWebDAV) {
 					await downloads.saveWithWebDAV(message.taskId, downloads.encodeSharpCharacter(pageData.filename), pageData.content, options.webDAVURL, options.webDAVUser, options.webDAVPassword, {
-						filenameConflictAction: message.filenameConflictAction
+						filenameConflictAction: options.filenameConflictAction
 					});
 				} else if (options.saveToGitHub) {
 					await (await downloads.saveToGitHub(message.taskId, downloads.encodeSharpCharacter(pageData.filename), pageData.content, options.githubToken, options.githubUser, options.githubRepository, options.githubBranch, {
-						filenameConflictAction: message.filenameConflictAction
+						filenameConflictAction: options.filenameConflictAction
 					})).pushPromise;
 				} else if (options.saveWithCompanion) {
 					await companion.save({
 						filename: pageData.filename,
 						content: pageData.content,
-						filenameConflictAction: pageData.filenameConflictAction
+						filenameConflictAction: options.filenameConflictAction
 					});
 				} else {
 					await downloads.downloadPage(pageData, options);
