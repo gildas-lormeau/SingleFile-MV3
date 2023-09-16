@@ -32,7 +32,7 @@ export { pushGitHub };
 
 let pendingPush;
 
-async function pushGitHub(token, userName, repositoryName, branchName, path, content, { filenameConflictAction, prompt } = {}) {
+async function pushGitHub(token, userName, repositoryName, branchName, path, content, { filenameConflictAction, prompt }) {
 	while (pendingPush) {
 		await pendingPush;
 	}
