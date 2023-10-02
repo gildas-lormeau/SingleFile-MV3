@@ -46,6 +46,7 @@ const LOG_PANEL_WIDTH = browser.i18n.getMessage("logPanelWidth");
 const CSS_PROPERTIES = new Set(Array.from(getComputedStyle(document.documentElement)));
 
 let selectedAreaElement, logsWindowElement;
+createLogsWindowElement();
 
 export {
 	getSelectedLinks,
@@ -75,7 +76,6 @@ function onStartPage(options) {
 	let maskElement = document.querySelector(MASK_TAGNAME);
 	if (!maskElement) {
 		if (options.logsEnabled) {
-			createLogsWindowElement();
 			document.documentElement.appendChild(logsWindowElement);
 		}
 		if (options.shadowEnabled) {
