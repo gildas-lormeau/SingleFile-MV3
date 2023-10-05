@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "使用 SingleFile Lite 保存页面",
-		"description": "Menu entry: 'Save page with SingleFile Lite'"
+		"message": "使用 SingleFile 保存页面",
+		"description": "Menu entry: 'Save page with SingleFile'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "保存所选链接",
@@ -96,20 +96,20 @@
 		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "使用 SingleFile Lite 保存页面",
-		"description": "Button title: 'Save page with SingleFile Lite'"
+		"message": "使用 SingleFile 保存页面",
+		"description": "Button title: 'Save page with SingleFile'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "SingleFile Lite 无法保存此页面",
-		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
+		"message": "SingleFile 无法保存此页面",
+		"description": "Button title: 'This page cannot be saved with SingleFile'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "正在初始化 SingleFile Lite",
-		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
+		"message": "正在初始化 SingleFile",
+		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -148,7 +148,7 @@
 		"description": "Options sub-title: 'User interface'"
 	},
 	"optionAddMenuEntry": {
-		"message": "在页面的上下文菜单中添加 SingleFile Lite 条目",
+		"message": "在页面的上下文菜单中添加 SingleFile 条目",
 		"description": "Options page label: 'add entry in the context menu of the webpage'"
 	},
 	"optionDisplayShadow": {
@@ -211,7 +211,7 @@
 		"message": "replacement character",
 		"description": "Options page label: 'replacement character'"
 	},
-	"optionReplaceEmojisInFilename" : {
+	"optionReplaceEmojisInFilename": {
 		"message": "用文字替换表情符号",
 		"description": "Options page label: 'replace emojis with text'"
 	},
@@ -254,6 +254,42 @@
 	"optionRemoveHiddenElements": {
 		"message": "移除隐藏元素",
 		"description": "Options page label: 'remove hidden elements'"
+	},
+	"optionsFileFormatSubTitle": {
+		"message": "文件格式",
+		"description": "Options sub-title: 'File format'"
+	},
+	"optionFileFormat": {
+		"message": "格式",
+		"description": "Options page label: 'format'"
+	},
+	"optionFileFormatSelectHTML": {
+		"message": "HTML",
+		"description": "Options page label: 'HTML'"
+	},
+	"optionFileFormatSelectSelfExtractingUniversal": {
+		"message": "自解压缩 ZIP（通用）",
+		"description": "Options page label: 'self-extracting ZIP (universal)'"
+	},
+	"optionFileFormatSelectSelfExtracting": {
+		"message": "自解压缩 ZIP",
+		"description": "Options page label: 'self-extracting ZIP'"
+	},
+	"optionFileFormatSelectZIP": {
+		"message": "ZIP",
+		"description": "Options page label: 'ZIP'"
+	},
+	"optionPassword": {
+		"message": "密码",
+		"description": "Options page label: 'password'"
+	},
+	"optionCreateRootDirectory": {
+		"message": "创建根目录",
+		"description": "Options page label: 'create a root directory'"
+	},
+	"optionInsertTextBody": {
+		"message": "使文本可被搜索",
+		"description": "Options page label: 'make text searchable'"
 	},
 	"optionsInfobarSubTitle": {
 		"message": "信息栏",
@@ -480,8 +516,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "在标注编辑器中打开用 SingleFile Lite 保存的页面",
-		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
+		"message": "在标注编辑器中打开用 SingleFile 保存的页面",
+		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "默认模式",
@@ -568,7 +604,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "请确认您是否允许 SingleFile Lite 将您要保存的每个页面的 SHA256 哈希值发送给 Woleet API 。您可以在帮助页面或者通过点击该选项旁的问号找到此功能的更多信息。",
+		"message": "请确认您是否允许 SingleFile 将您要保存的每个页面的 SHA256 哈希值发送给 Woleet API 。您可以在帮助页面或者通过点击该选项旁的问号找到此功能的更多信息。",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

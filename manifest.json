@@ -54,6 +54,9 @@
 	"background": {
 		"service_worker": "lib/single-file-extension-background.js"
 	},
+	"side_panel": {
+		"default_path": "src/ui/pages/panel.html"
+	},
 	"options_ui": {
 		"browser_style": true,
 		"page": "src/ui/pages/options.html",
@@ -89,7 +92,17 @@
 			],
 			"resources": [
 				"lib/single-file-infobar.js",
-				"lib/single-file-hooks-frames.js"
+				"lib/single-file-hooks-frames.js",
+				"lib/single-file-extension-editor-init.js",
+				"lib/single-file-extension-editor.js",
+				"lib/single-file-extension-editor-helper.js",
+				"lib/single-file-zip.min.js",
+				"lib/single-file-z-worker.js",
+				"src/lib/readability/Readability.js",
+				"src/lib/readability/Readability-readerable.js",
+				"src/ui/pages/editor-note-web.css",
+				"src/ui/pages/editor-mask-web.css",
+				"src/ui/pages/editor-frame-web.css"
 			]
 		}
 	],
@@ -99,10 +112,8 @@
 			"https://www.googleapis.com/auth/drive.file"
 		]
 	},
-	"side_panel": {
-		"default_path": "src/ui/pages/panel.html"
-	},
 	"permissions": [
+		"identity",
 		"contextMenus",
 		"downloads",
 		"storage",
@@ -113,8 +124,9 @@
 		"sidePanel"
 	],
 	"optional_permissions": [
-		"clipboardWrite",
 		"identity",
+		"clipboardWrite",
+		"nativeMessaging",
 		"bookmarks"
 	],
 	"host_permissions": [

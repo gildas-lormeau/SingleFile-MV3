@@ -21,25 +21,34 @@
  *   Source.
  */
 
-/* global browser, Blob, URL, extension, XMLHttpRequest */
+/* global browser, Blob, URL, XMLHttpRequest */
 
-browser.runtime.onMessage.addListener(message => {
-	if (message.method == "offscreen.save") {
-		return getPageData(message);
+import { getPageData, compress } from "./../../index.js";
+import * as yabson from "./../../lib/yabson/yabson.js";
+
+browser.runtime.onMessage.addListener(async ({ method, pageData, url, options }) => {
+	if (method == "processPage") {
+		const result = await getPageData(options, null, null, { fetch });
+		const blob = new Blob([result.content], { type: "text/html" });
+		return { 
+			url: URL.createObjectURL(blob),
+			archiveTime: result.archiveTime,
+			doctype: result.doctype,
+			filename: result.filename,
+			title: result.title
+		};
 	}
-	if (message.method == "offscreen.revokeObjectURL") {
-		URL.revokeObjectURL(message.url);
-		return Promise.resolve({});
+	if (method == "compressPage") {
+		const blob = await compress(await yabson.parse(pageData), options);
+		return { 
+			url: URL.createObjectURL(blob)
+		};
+	}
+	if (method == "revokeObjectURL") {
+		URL.revokeObjectURL(url);
+		return {};
 	}
 });
-
-async function getPageData(message) {
-	const { options } = message;
-	const pageData = await extension.getPageData(options, null, null, { fetch });
-	const blob = new Blob([pageData.content], { type: "text/html" });
-	pageData.content = URL.createObjectURL(blob);
-	return pageData;
-}
 
 function fetch(url, options = {}) {
 	return new Promise((resolve, reject) => {

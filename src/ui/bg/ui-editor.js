@@ -21,10 +21,12 @@
  *   Source.
  */
 
-/* global browser, document, matchMedia, addEventListener, webkitRequestFileSystem, TEMPORARY, Blob */
+/* global browser, document, matchMedia, addEventListener, prompt, URL, MouseEvent, Blob, webkitRequestFileSystem, TEMPORARY */
 
 import * as download from "../../core/common/download.js";
 import { onError } from "./../common/content-error.js";
+import * as zip from "./../../../lib/single-file-zip.js";
+import * as yabson from "./../../lib/yabson/yabson.js";
 
 const FS_SIZE = 100 * 1024 * 1024;
 
@@ -53,7 +55,7 @@ const savePageButton = document.querySelector(".save-page-button");
 const printPageButton = document.querySelector(".print-page-button");
 const lastButton = toolbarElement.querySelector(".buttons:last-of-type [type=button]:last-of-type");
 
-let tabData, tabDataContents = [];
+let tabData, tabDataContents = [], downloadParser;
 
 addYellowNoteButton.title = browser.i18n.getMessage("editorAddYellowNote");
 addPinkNoteButton.title = browser.i18n.getMessage("editorAddPinkNote");
@@ -266,13 +268,37 @@ addEventListener("resize", viewportSizeChange);
 addEventListener("message", event => {
 	const message = JSON.parse(event.data);
 	if (message.method == "setContent") {
-		const pageData = {
-			content: message.content,
-			filename: tabData.filename
-		};
 		tabData.options.openEditor = false;
 		tabData.options.openSavedPage = false;
-		download.downloadPage(pageData, tabData.options);
+		if (message.compressContent) {	
+			tabData.options.compressContent = true;
+			if (tabData.selfExtractingArchive !== undefined) {
+				tabData.options.selfExtractingArchive = tabData.selfExtractingArchive;
+			}
+			if (tabData.extractDataFromPageTags !== undefined) {
+				tabData.options.extractDataFromPage = tabData.extractDataFromPageTags;
+			}
+			if (tabData.options.insertTextBody !== undefined) {
+				tabData.options.insertTextBody = tabData.insertTextBody;
+			}
+			getContentPageData(tabData.content, message.content, { password: tabData.options.password })
+				.then(pageData => {
+					pageData.content = message.content;
+					pageData.title = message.title;
+					pageData.doctype = message.doctype;
+					pageData.viewport = message.viewport;
+					pageData.url = message.url;
+					pageData.filename = tabData.filename;
+					download.downloadPage(pageData, tabData.options);
+				});
+		} else {
+			const pageData = {
+				content: message.content,
+				filename: tabData.filename
+			};
+			tabData.options.compressContent = false;
+			download.downloadPage(pageData, tabData.options);
+		}
 	}
 	if (message.method == "onUpdate") {
 		tabData.docSaved = message.saved;
@@ -280,7 +306,7 @@ addEventListener("message", event => {
 	if (message.method == "onInit") {
 		tabData.options.disableFormatPage = !message.formatPageEnabled;
 		formatPageButton.hidden = !message.formatPageEnabled;
-		document.title = "[SingleFile Lite] " + message.title;
+		document.title = "[SingleFile] " + message.title;
 		if (message.filename) {
 			tabData.filename = message.filename;
 		}
@@ -325,27 +351,27 @@ browser.runtime.onMessage.addListener(message => {
 		return Promise.resolve({});
 	}
 	if (message.method == "editor.setTabData") {
-		if (message.content) {
-			if (message.truncated) {
-				tabDataContents.push(message.content);
-			} else {
-				tabDataContents = [message.content];
-			}
-			if (!message.truncated || message.finished) {
+		if (message.truncated) {
+			tabDataContents.push(message.content);
+		} else {
+			tabDataContents = [message.content];
+		}
+		if (!message.truncated || message.finished) {
+			if (message.content) {
 				tabData = JSON.parse(tabDataContents.join(""));
 				tabData.tabId = message.tabId;
 				tabData.options = message.options;
 				tabDataContents = [];
-				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
+				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content, password: tabData.options.password, compressContent: message.compressContent }), "*");
 				editorElement.contentWindow.focus();
 				saveTabData();
+			} else {
+				tabData = { tabId: message.tabId };
+				loadTabData().then(() => {
+					editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
+					editorElement.contentWindow.focus();
+				});
 			}
-		} else {
-			tabData = { tabId: message.tabId };
-			loadTabData().then(() => {
-				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
-				editorElement.contentWindow.focus();
-			});
 		}
 		return Promise.resolve({});
 	}
@@ -354,6 +380,9 @@ browser.runtime.onMessage.addListener(message => {
 	}
 	if (message.method == "content.error") {
 		onError(message.error, message.link);
+	}
+	if (message.method == "content.download") {
+		return downloadContent(message);
 	}
 });
 
@@ -367,6 +396,24 @@ addEventListener("beforeunload", event => {
 		event.returnValue = "";
 	}
 });
+
+async function downloadContent(message) {
+	if (!downloadParser) {
+		downloadParser = yabson.getParser();
+	}
+	const result = await downloadParser.next(message.data);
+	if (result.done) {
+		downloadParser = null;
+		const link = document.createElement("a");
+		link.download = result.value.filename;
+		link.href = URL.createObjectURL(new Blob([result.value.content]), "text/html");
+		link.dispatchEvent(new MouseEvent("click"));
+		URL.revokeObjectURL(link.href);
+		return browser.runtime.sendMessage({ method: "downloads.end", taskId: result.value.taskId }).then(() => ({}));
+	} else {
+		return Promise.resolve({});
+	}
+}
 
 function loadTabData() {
 	return new Promise((resolve, reject) => {
@@ -477,11 +524,12 @@ function enableCutOuterPage() {
 }
 
 function savePage() {
-	editorElement.contentWindow.postMessage(JSON.stringify({ 
-		method: "getContent", 
+	editorElement.contentWindow.postMessage(JSON.stringify({
+		method: "getContent",
 		compressHTML: tabData.options.compressHTML,
 		includeInfobar: tabData.options.includeInfobar,
-		updatedResources
+		updatedResources,
+		filename: tabData.filename
 	}), "*");
 }
 
@@ -497,5 +545,90 @@ function getPosition(event) {
 		return touch;
 	} else {
 		return event;
+	}
+}
+
+async function getContentPageData(zipContent, page, options) {
+	zip.configure({ workerScripts: { inflate: ["/lib/single-file-z-worker.js"] } });
+	const zipReader = new zip.ZipReader(new zip.Uint8ArrayReader(new Uint8Array(zipContent)));
+	const entries = await zipReader.getEntries();
+	const resources = [];
+	await Promise.all(entries.map(async entry => {
+		let data;
+		if (!options.password && entry.bitFlag.encrypted) {
+			options.password = prompt("Please enter the password to view the page");
+		}
+		if (entry.filename.match(/^([0-9_]+\/)?index.html$/)) {
+			data = page;
+		} else {
+			if (entry.filename.endsWith(".html")) {
+				data = await entry.getData(new zip.TextWriter(), options);
+			} else {
+				data = await entry.getData(new zip.Uint8ArrayWriter(), options);
+			}
+		}
+		const extensionMatch = entry.filename.match(/\.([^.]+)/);
+		resources.push({
+			filename: entry.filename.match(/^([0-9_]+\/)?(.*)$/)[2],
+			extension: extensionMatch && extensionMatch[1],
+			content: data,
+			url: entry.comment
+		});
+	}));
+	return getPageData(resources);
+}
+
+function getPageData(resources) {
+	const pageData = JSON.parse(JSON.stringify(EMPTY_PAGE_DATA));
+	for (const resource of resources) {
+		const resourcePageData = getPageDataResource(resource, "", pageData);
+		const filename = resource.filename.substring(resourcePageData.prefixPath.length);
+		resource.name = filename;
+		if (filename.startsWith("images/")) {
+			resourcePageData.resources.images.push(resource);
+		}
+		if (filename.startsWith("fonts/")) {
+			resourcePageData.resources.fonts.push(resource);
+		}
+		if (filename.startsWith("scripts/")) {
+			resourcePageData.resources.scripts.push(resource);
+		}
+		if (filename.endsWith(".css")) {
+			resourcePageData.resources.stylesheets.push(resource);
+		}
+		if (filename.endsWith(".html")) {
+			resourcePageData.content = resource.content;
+		}
+	}
+	return pageData;
+}
+
+const EMPTY_PAGE_DATA = {
+	name: "",
+	prefixPath: "",
+	resources: {
+		stylesheets: [],
+		images: [],
+		fonts: [],
+		scripts: [],
+		frames: []
+	}
+};
+
+function getPageDataResource(resource, prefixPath = "", pageData) {
+	const filename = resource.filename.substring(prefixPath.length);
+	resource.name = filename;
+	if (filename.startsWith("frames/")) {
+		const framesIndex = Number(filename.match(/^frames\/(\d+)\//)[1]);
+		const framePath = "frames/" + framesIndex + "/";
+		if (!pageData.resources.frames[framesIndex]) {
+			pageData.resources.frames[framesIndex] = Object.assign(JSON.parse(JSON.stringify(EMPTY_PAGE_DATA)), {
+				name: framePath,
+				prefixPath: prefixPath + framePath
+			});
+		}
+		return getPageDataResource(resource, prefixPath + framePath, pageData.resources.frames[framesIndex]);
+	} else {
+		return pageData;
 	}
 }

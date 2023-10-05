@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "Зберегти сторінку з допомогою SingleFile Lite",
-		"description": "Menu entry: 'Save page with SingleFile Lite'"
+		"message": "Зберегти сторінку з допомогою SingleFile",
+		"description": "Menu entry: 'Save page with SingleFile'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Зберегти вибрані посилання",
@@ -96,20 +96,20 @@
 		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Зберегти сторінку з допомогою SingleFile Lite",
-		"description": "Button title: 'Save page with SingleFile Lite'"
+		"message": "Зберегти сторінку з допомогою SingleFile",
+		"description": "Button title: 'Save page with SingleFile'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "Ця сторінка не може бути збережена з SingleFile Lite",
-		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
+		"message": "Ця сторінка не може бути збережена з SingleFile",
+		"description": "Button title: 'This page cannot be saved with SingleFile'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "Ініціалізація SingleFile Lite",
-		"description": "Button title during initialization: 'Initializing SingleFile Lite(x/2)'"
+		"message": "Ініціалізація SingleFile",
+		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -211,7 +211,7 @@
 		"message": "замінний символ",
 		"description": "Options page label: 'replacement character'"
 	},
-	"optionReplaceEmojisInFilename" : {
+	"optionReplaceEmojisInFilename": {
 		"message": "Замініть смайлики на текст",
 		"description": "Options page label: 'replace emojis with text'"
 	},
@@ -254,6 +254,42 @@
 	"optionRemoveHiddenElements": {
 		"message": "видалити приховані елементи",
 		"description": "Options page label: 'remove hidden elements'"
+	},
+	"optionsFileFormatSubTitle": {
+		"message": "Формат файлу",
+		"description": "Options sub-title: 'File format'"
+	},
+	"optionFileFormat": {
+		"message": "формату",
+		"description": "Options page label: 'format'"
+	},
+	"optionFileFormatSelectHTML": {
+		"message": "HTML",
+		"description": "Options page label: 'HTML'"
+	},
+	"optionFileFormatSelectSelfExtractingUniversal": {
+		"message": "саморозпаковується ZIP (універсальний)",
+		"description": "Options page label: 'self-extracting ZIP (universal)'"
+	},
+	"optionFileFormatSelectSelfExtracting": {
+		"message": "саморозпаковується ZIP",
+		"description": "Options page label: 'self-extracting ZIP'"
+	},
+	"optionFileFormatSelectZIP": {
+		"message": "ZIP",
+		"description": "Options page label: 'ZIP'"
+	},
+	"optionPassword": {
+		"message": "пароль",
+		"description": "Options page label: 'password'"
+	},
+	"optionCreateRootDirectory": {
+		"message": "створити кореневий каталог",
+		"description": "Options page label: 'create a root directory'"
+	},
+	"optionInsertTextBody": {
+		"message": "зробити текст доступним для пошуку",
+		"description": "Options page label: 'make text searchable'"
 	},
 	"optionsInfobarSubTitle": {
 		"message": "Інфобар",
@@ -480,8 +516,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "відкривати сторінки, збережені за допомогою SingleFile Lite, в редакторі анотацій",
-		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
+		"message": "відкривати сторінки, збережені за допомогою SingleFile, в редакторі анотацій",
+		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "режим за замовчуванням",

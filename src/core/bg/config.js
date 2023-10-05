@@ -32,19 +32,7 @@ const DISABLED_PROFILE_NAME = "__Disabled_Settings__";
 const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
 
-const IS_NOT_SAFARI = !/Safari/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent) || /Vivaldi/.test(navigator.userAgent) || /OPR/.test(navigator.userAgent);
-const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent) || /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/Vivaldi/.test(navigator.userAgent) && !/OPR/.test(navigator.userAgent));
-const BADGE_COLOR_SUPPORTED = IS_NOT_SAFARI;
-const AUTO_SAVE_SUPPORTED = IS_NOT_SAFARI;
-const SELECTABLE_TABS_SUPPORTED = IS_NOT_SAFARI;
-const AUTO_OPEN_EDITOR_SUPPORTED = IS_NOT_SAFARI;
-const OPEN_SAVED_PAGE_SUPPORTED = IS_NOT_SAFARI;
-const INFOBAR_SUPPORTED = IS_NOT_SAFARI;
-const BOOKMARKS_API_SUPPORTED = IS_NOT_SAFARI;
-const IDENTITY_API_SUPPORTED = IS_NOT_SAFARI;
-const CLIPBOARD_API_SUPPORTED = IS_NOT_SAFARI;
-const NATIVE_API_API_SUPPORTED = IS_NOT_SAFARI;
-const WEB_BLOCKING_API_SUPPORTED = IS_NOT_SAFARI;
+const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
 
 const DEFAULT_CONFIG = {
 	removeHiddenElements: true,
@@ -126,9 +114,16 @@ const DEFAULT_CONFIG = {
 	includeBOM: false,
 	warnUnsavedPage: true,
 	displayInfobarInEditor: false,
+	compressContent: false,
+	createRootDirectory: false,
+	selfExtractingArchive: true,
+	extractDataFromPage: true,
+	insertTextBody: false,
 	autoSaveExternalSave: false,
 	insertMetaNoIndex: false,
 	insertMetaCSP: true,
+	passReferrerOnError: false,
+	password: "",
 	insertSingleFileComment: true,
 	removeSavedDate: false,
 	blockMixedContent: false,
@@ -166,17 +161,6 @@ export {
 	DISABLED_PROFILE_NAME,
 	CURRENT_PROFILE_NAME,
 	BACKGROUND_SAVE_SUPPORTED,
-	BADGE_COLOR_SUPPORTED,
-	AUTO_SAVE_SUPPORTED,
-	SELECTABLE_TABS_SUPPORTED,
-	OPEN_SAVED_PAGE_SUPPORTED,
-	AUTO_OPEN_EDITOR_SUPPORTED,
-	INFOBAR_SUPPORTED,
-	BOOKMARKS_API_SUPPORTED,
-	IDENTITY_API_SUPPORTED,
-	CLIPBOARD_API_SUPPORTED,
-	NATIVE_API_API_SUPPORTED,
-	WEB_BLOCKING_API_SUPPORTED,
 	getConfig as get,
 	getRule,
 	getOptions,
@@ -296,18 +280,7 @@ async function onMessage(message) {
 			DISABLED_PROFILE_NAME,
 			DEFAULT_PROFILE_NAME,
 			CURRENT_PROFILE_NAME,
-			BACKGROUND_SAVE_SUPPORTED,
-			BADGE_COLOR_SUPPORTED,
-			AUTO_SAVE_SUPPORTED,
-			SELECTABLE_TABS_SUPPORTED,
-			OPEN_SAVED_PAGE_SUPPORTED,
-			AUTO_OPEN_EDITOR_SUPPORTED,
-			INFOBAR_SUPPORTED,
-			BOOKMARKS_API_SUPPORTED,
-			IDENTITY_API_SUPPORTED,
-			CLIPBOARD_API_SUPPORTED,
-			NATIVE_API_API_SUPPORTED,
-			WEB_BLOCKING_API_SUPPORTED
+			BACKGROUND_SAVE_SUPPORTED
 		};
 	}
 	if (message.method.endsWith(".getRules")) {
@@ -560,10 +533,12 @@ async function resetProfile(profileName) {
 
 async function exportConfig() {
 	const config = await getConfig();
-	const url = "data:text/json," + JSON.stringify({ profiles: config.profiles, rules: config.rules, maxParallelWorkers: config.maxParallelWorkers, processInForeground: config.processInForeground }, null, 2);
+	const textContent = JSON.stringify({ profiles: config.profiles, rules: config.rules, maxParallelWorkers: config.maxParallelWorkers, processInForeground: config.processInForeground }, null, 2);
+	const filename = `singlefile-settings-${(new Date()).toISOString().replace(/:/g, "_")}.json`;
+	const url = "data:text/json," + textContent;
 	const downloadInfo = {
 		url,
-		filename: `singlefile-settings-${(new Date()).toISOString().replace(/:/g, "_")}.json`,
+		filename,
 		saveAs: true
 	};
 	await download(downloadInfo, "_");

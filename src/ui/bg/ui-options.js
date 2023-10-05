@@ -21,38 +21,20 @@
  *   Source.
  */
 
-/* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement */
+/* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement, MouseEvent */
 
 const HELP_ICON_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABIUlEQVQ4y+2TsarCMBSGvxTBRdqiUZAWOrhJB9EXcPKFfCvfQYfulUKHDqXg4CYUJSioYO4mSDX3ttzt3n87fMlHTpIjlsulxpDZbEYYhgghSNOUOI5Ny2mZYBAELBYLer0eAJ7ncTweKYri4x7LJJRS0u12n7XrukgpjSc0CpVSXK/XZ32/31FKNW85z3PW6zXT6RSAJEnIsqy5UGvNZrNhu90CcDqd+C6tT6J+v//2Th+PB2VZ1hN2Oh3G4zGTyQTbtl/YbrdjtVpxu91+Ljyfz0RRhG3bzOfzF+Y4TvNXvlwuaK2pE4tfzr/wzwsty0IIURlL0998KxRCMBqN8H2/wlzXJQxD2u12vVkeDoeUZUkURRU+GAw4HA7s9/sK+wK6CWHasQ/S/wAAAABJRU5ErkJggg==";
 const HELP_PAGE_PATH = "/src/ui/pages/help.html";
 let DEFAULT_PROFILE_NAME,
 	DISABLED_PROFILE_NAME,
 	CURRENT_PROFILE_NAME,
-	BACKGROUND_SAVE_SUPPORTED,
-	AUTO_SAVE_SUPPORTED,
-	OPEN_SAVED_PAGE_SUPPORTED,
-	AUTO_OPEN_EDITOR_SUPPORTED,
-	INFOBAR_SUPPORTED,
-	BOOKMARKS_API_SUPPORTED,
-	IDENTITY_API_SUPPORTED,
-	CLIPBOARD_API_SUPPORTED,
-	NATIVE_API_API_SUPPORTED,
-	WEB_BLOCKING_API_SUPPORTED;
+	BACKGROUND_SAVE_SUPPORTED;
 browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	({
 		DEFAULT_PROFILE_NAME,
 		DISABLED_PROFILE_NAME,
 		CURRENT_PROFILE_NAME,
-		BACKGROUND_SAVE_SUPPORTED,
-		AUTO_SAVE_SUPPORTED,
-		OPEN_SAVED_PAGE_SUPPORTED,
-		AUTO_OPEN_EDITOR_SUPPORTED,
-		INFOBAR_SUPPORTED,
-		BOOKMARKS_API_SUPPORTED,
-		IDENTITY_API_SUPPORTED,
-		CLIPBOARD_API_SUPPORTED,
-		NATIVE_API_API_SUPPORTED,
-		WEB_BLOCKING_API_SUPPORTED
+		BACKGROUND_SAVE_SUPPORTED
 	} = data);
 	init();
 });
@@ -91,6 +73,7 @@ const githubRepositoryLabel = document.getElementById("githubRepositoryLabel");
 const githubBranchLabel = document.getElementById("githubBranchLabel");
 const saveWithCompanionLabel = document.getElementById("saveWithCompanionLabel");
 const compressHTMLLabel = document.getElementById("compressHTMLLabel");
+const insertTextBodyLabel = document.getElementById("insertTextBodyLabel");
 const compressCSSLabel = document.getElementById("compressCSSLabel");
 const moveStylesInHeadLabel = document.getElementById("moveStylesInHeadLabel");
 const loadDeferredImagesLabel = document.getElementById("loadDeferredImagesLabel");
@@ -135,12 +118,20 @@ const saveCreatedBookmarksLabel = document.getElementById("saveCreatedBookmarksL
 const replaceBookmarkURLLabel = document.getElementById("replaceBookmarkURLLabel");
 const allowedBookmarkFoldersLabel = document.getElementById("allowedBookmarkFoldersLabel");
 const ignoredBookmarkFoldersLabel = document.getElementById("ignoredBookmarkFoldersLabel");
+const createRootDirectoryLabel = document.getElementById("createRootDirectoryLabel");
+const passwordLabel = document.getElementById("passwordLabel");
 const titleLabel = document.getElementById("titleLabel");
 const userInterfaceLabel = document.getElementById("userInterfaceLabel");
 const filenameLabel = document.getElementById("filenameLabel");
 const htmlContentLabel = document.getElementById("htmlContentLabel");
-const imagesLabel = document.getElementById("imagesLabel");
+const fileFormatLabel = document.getElementById("fileFormatLabel");
+const fileFormatSelectHTMLLabel = document.getElementById("fileFormatSelectHTMLLabel");
+const fileFormatSelectSelfExtractingUniversalLabel = document.getElementById("fileFormatSelectSelfExtractingUniversalLabel");
+const fileFormatSelectSelfExtractingLabel = document.getElementById("fileFormatSelectSelfExtractingLabel");
+const fileFormatSelectZIPLabel = document.getElementById("fileFormatSelectZIPLabel");
+const fileFormatSelectLabel = document.getElementById("fileFormatSelectLabel");
 const infobarLabel = document.getElementById("infobarLabel");
+const imagesLabel = document.getElementById("imagesLabel");
 const stylesheetsLabel = document.getElementById("stylesheetsLabel");
 const fontsLabel = document.getElementById("fontsLabel");
 const networkLabel = document.getElementById("networkLabel");
@@ -217,6 +208,7 @@ const githubBranchInput = document.getElementById("githubBranchInput");
 const saveWithCompanionInput = document.getElementById("saveWithCompanionInput");
 const saveToFilesystemInput = document.getElementById("saveToFilesystemInput");
 const compressHTMLInput = document.getElementById("compressHTMLInput");
+const insertTextBodyInput = document.getElementById("insertTextBodyInput");
 const compressCSSInput = document.getElementById("compressCSSInput");
 const moveStylesInHeadInput = document.getElementById("moveStylesInHeadInput");
 const loadDeferredImagesInput = document.getElementById("loadDeferredImagesInput");
@@ -256,6 +248,9 @@ const saveCreatedBookmarksInput = document.getElementById("saveCreatedBookmarksI
 const replaceBookmarkURLInput = document.getElementById("replaceBookmarkURLInput");
 const allowedBookmarkFoldersInput = document.getElementById("allowedBookmarkFoldersInput");
 const ignoredBookmarkFoldersInput = document.getElementById("ignoredBookmarkFoldersInput");
+const fileFormatSelectInput = document.getElementById("fileFormatSelectInput");
+const createRootDirectoryInput = document.getElementById("createRootDirectoryInput");
+const passwordInput = document.getElementById("passwordInput");
 const groupDuplicateImagesInput = document.getElementById("groupDuplicateImagesInput");
 const infobarTemplateInput = document.getElementById("infobarTemplateInput");
 const blockMixedContentInput = document.getElementById("blockMixedContentInput");
@@ -302,6 +297,7 @@ const promptCancelButton = document.getElementById("promptCancelButton");
 const promptConfirmButton = document.getElementById("promptConfirmButton");
 const manifest = browser.runtime.getManifest();
 const requestPermissionIdentity = manifest.optional_permissions && manifest.optional_permissions.includes("identity");
+
 let sidePanelDisplay;
 if (location.href.endsWith("#side-panel")) {
 	sidePanelDisplay = true;
@@ -438,7 +434,14 @@ resetButton.addEventListener("click", async event => {
 	}
 }, false);
 exportButton.addEventListener("click", async () => {
-	await browser.runtime.sendMessage({ method: "config.exportConfig" });
+	const response = await browser.runtime.sendMessage({ method: "config.exportConfig" });
+	if (response.filename && response.textContent) {
+		const link = document.createElement("a");
+		link.download = response.filename;
+		link.href = "data:application/octet-stream," + response.textContent;
+		link.target = "_blank";
+		link.dispatchEvent(new MouseEvent("click"));
+	}
 }, false);
 importButton.addEventListener("click", () => {
 	fileInput.onchange = async () => {
@@ -584,6 +587,7 @@ githubRepositoryLabel.textContent = browser.i18n.getMessage("optionGitHubReposit
 githubBranchLabel.textContent = browser.i18n.getMessage("optionGitHubBranch");
 saveWithCompanionLabel.textContent = browser.i18n.getMessage("optionSaveWithCompanion");
 compressHTMLLabel.textContent = browser.i18n.getMessage("optionCompressHTML");
+insertTextBodyLabel.textContent = browser.i18n.getMessage("optionInsertTextBody");
 compressCSSLabel.textContent = browser.i18n.getMessage("optionCompressCSS");
 moveStylesInHeadLabel.textContent = browser.i18n.getMessage("optionMoveStylesInHead");
 loadDeferredImagesLabel.textContent = browser.i18n.getMessage("optionLoadDeferredImages");
@@ -628,11 +632,19 @@ saveCreatedBookmarksLabel.textContent = browser.i18n.getMessage("optionSaveCreat
 replaceBookmarkURLLabel.textContent = browser.i18n.getMessage("optionReplaceBookmarkURL");
 allowedBookmarkFoldersLabel.textContent = browser.i18n.getMessage("optionAllowedBookmarkFolders");
 ignoredBookmarkFoldersLabel.textContent = browser.i18n.getMessage("optionIgnoredBookmarkFolders");
+createRootDirectoryLabel.textContent = browser.i18n.getMessage("optionCreateRootDirectory");
+passwordLabel.textContent = browser.i18n.getMessage("optionPassword");
 groupDuplicateImagesLabel.textContent = browser.i18n.getMessage("optionGroupDuplicateImages");
 titleLabel.textContent = browser.i18n.getMessage("optionsTitle");
 userInterfaceLabel.textContent = browser.i18n.getMessage("optionsUserInterfaceSubTitle");
 filenameLabel.textContent = browser.i18n.getMessage("optionsFileNameSubTitle");
 htmlContentLabel.textContent = browser.i18n.getMessage("optionsHTMLContentSubTitle");
+fileFormatLabel.textContent = browser.i18n.getMessage("optionsFileFormatSubTitle");
+fileFormatSelectHTMLLabel.textContent = browser.i18n.getMessage("optionFileFormatSelectHTML");
+fileFormatSelectSelfExtractingUniversalLabel.textContent = browser.i18n.getMessage("optionFileFormatSelectSelfExtractingUniversal");
+fileFormatSelectSelfExtractingLabel.textContent = browser.i18n.getMessage("optionFileFormatSelectSelfExtracting");
+fileFormatSelectZIPLabel.textContent = browser.i18n.getMessage("optionFileFormatSelectZIP");
+fileFormatSelectLabel.textContent = browser.i18n.getMessage("optionFileFormat");
 infobarLabel.textContent = browser.i18n.getMessage("optionsInfobarSubTitle");
 imagesLabel.textContent = browser.i18n.getMessage("optionsImagesSubTitle");
 stylesheetsLabel.textContent = browser.i18n.getMessage("optionsStylesheetsSubTitle");
@@ -697,38 +709,20 @@ browser.runtime.sendMessage({ method: "tabsData.get" }).then(allTabsData => {
 getHelpContents();
 
 function init() {
-	if (!AUTO_SAVE_SUPPORTED) {
-		document.getElementById("autoSaveSection").hidden = true;
-		document.getElementById("showAutoSaveProfileOption").hidden = true;
-		rulesContainerElement.classList.add("compact");
-	}
+	document.getElementById("autoSaveSection").hidden = true;
+	document.getElementById("showAutoSaveProfileOption").hidden = true;
+	rulesContainerElement.classList.add("compact");
 	if (!BACKGROUND_SAVE_SUPPORTED) {
 		document.getElementById("backgroundSaveOptions").hidden = true;
 		document.getElementById("confirmFilenameOption").hidden = true;
 		document.getElementById("filenameConflictAction").hidden = true;
-	}
-	if (!BOOKMARKS_API_SUPPORTED) {
 		document.getElementById("bookmarksOptions").hidden = true;
-	}
-	if (!OPEN_SAVED_PAGE_SUPPORTED) {
 		document.getElementById("openSavedPageOption").hidden = true;
-	}
-	if (!AUTO_OPEN_EDITOR_SUPPORTED) {
 		document.getElementById("autoOpenEditorOption").hidden = true;
-	}
-	if (!INFOBAR_SUPPORTED) {
 		document.getElementById("displayInfobarOption").hidden = true;
-	}
-	if (!IDENTITY_API_SUPPORTED) {
 		document.getElementById("saveToGDriveOption").hidden = true;
-	}
-	if (!CLIPBOARD_API_SUPPORTED) {
 		document.getElementById("saveToClipboardOption").hidden = true;
-	}
-	if (!NATIVE_API_API_SUPPORTED) {
 		document.getElementById("saveWithCompanionOption").hidden = true;
-	}
-	if (!WEB_BLOCKING_API_SUPPORTED) {
 		document.getElementById("passReferrerOnErrorOption").hidden = true;
 	}
 }
@@ -917,10 +911,18 @@ async function refresh(profileName) {
 	saveCreatedBookmarksInput.checked = profileOptions.saveCreatedBookmarks;
 	replaceBookmarkURLInput.checked = profileOptions.replaceBookmarkURL;
 	replaceBookmarkURLInput.disabled = !profileOptions.saveCreatedBookmarks;
-	allowedBookmarkFoldersInput.value = profileOptions.allowedBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(","); // eslint-disable-line no-useless-escape
+	allowedBookmarkFoldersInput.value = profileOptions.allowedBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(",");
 	allowedBookmarkFoldersInput.disabled = !profileOptions.saveCreatedBookmarks;
-	ignoredBookmarkFoldersInput.value = profileOptions.ignoredBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(","); // eslint-disable-line no-useless-escape
+	ignoredBookmarkFoldersInput.value = profileOptions.ignoredBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(",");
 	ignoredBookmarkFoldersInput.disabled = !profileOptions.saveCreatedBookmarks;
+	fileFormatSelectInput.value = profileOptions.compressContent ? profileOptions.selfExtractingArchive ? profileOptions.extractDataFromPage ?
+		"self-extracting-zip-universal" : "self-extracting-zip" : "zip" : "html";
+	createRootDirectoryInput.checked = profileOptions.createRootDirectory;
+	createRootDirectoryInput.disabled = !profileOptions.compressContent;
+	passwordInput.value = profileOptions.password;
+	passwordInput.disabled = !profileOptions.compressContent;
+	insertTextBodyInput.checked = profileOptions.insertTextBody;
+	insertTextBodyInput.disabled = !profileOptions.compressContent || (!profileOptions.selfExtractingArchive && !profileOptions.extractDataFromPage);
 	infobarTemplateInput.value = profileOptions.infobarTemplate;
 	blockMixedContentInput.checked = profileOptions.blockMixedContent;
 	saveOriginalURLsInput.checked = profileOptions.saveOriginalURLs;
@@ -987,6 +989,7 @@ async function update() {
 			githubBranch: githubBranchInput.value,
 			saveWithCompanion: saveWithCompanionInput.checked,
 			compressHTML: compressHTMLInput.checked,
+			insertTextBody: insertTextBodyInput.checked,
 			compressCSS: compressCSSInput.checked,
 			moveStylesInHead: moveStylesInHeadInput.checked,
 			loadDeferredImages: loadDeferredImagesInput.checked,
@@ -1025,6 +1028,11 @@ async function update() {
 			replaceBookmarkURL: replaceBookmarkURLInput.checked,
 			allowedBookmarkFolders: allowedBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),
 			ignoredBookmarkFolders: ignoredBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),
+			compressContent: fileFormatSelectInput.value.includes("zip"),
+			createRootDirectory: createRootDirectoryInput.checked,
+			selfExtractingArchive: fileFormatSelectInput.value.includes("self-extracting"),
+			extractDataFromPage: fileFormatSelectInput.value == "self-extracting-zip-universal",
+			password: passwordInput.value,
 			groupDuplicateImages: groupDuplicateImagesInput.checked,
 			infobarTemplate: infobarTemplateInput.value,
 			blockMixedContent: blockMixedContentInput.checked,

@@ -13,7 +13,7 @@
 	},
 	"menuSavePage": {
 		"message": "Сохранить страницу",
-		"description": "Menu entry: 'Save page with SingleFile Lite'"
+		"description": "Menu entry: 'Save page with SingleFile'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Сохранить выбранные ссылки",
@@ -96,20 +96,20 @@
 		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Сохранить страницу с помощью SingleFile Lite",
-		"description": "Button title: 'Save page with SingleFile Lite'"
+		"message": "Сохранить страницу с помощью SingleFile",
+		"description": "Button title: 'Save page with SingleFile'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "Эта страница не может быть сохранена SingleFile Lite",
-		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
+		"message": "Эта страница не может быть сохранена SingleFile",
+		"description": "Button title: 'This page cannot be saved with SingleFile'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "Инициализация SingleFile Lite",
-		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
+		"message": "Инициализация SingleFile",
+		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -480,8 +480,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "сохранять открытые страницы из редактора аннотаций SingleFile Lite",
-		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
+		"message": "сохранять открытые страницы из редактора аннотаций SingleFile",
+		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "режим по умолчанию",
@@ -568,7 +568,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "Подтвердите, что разрешаете SingleFile Lite отправлять в Woleet API SHA256-хеш каждой сохраняемой вами страницы. Дополнительную информацию об этой функции можно найти на странице помощи или нажав на знак вопроса рядом с параметром.",
+		"message": "Подтвердите, что разрешаете SingleFile отправлять в Woleet API SHA256-хеш каждой сохраняемой вами страницы. Дополнительную информацию об этой функции можно найти на странице помощи или нажав на знак вопроса рядом с параметром.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

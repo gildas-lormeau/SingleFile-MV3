@@ -1,7 +1,7 @@
 {
 	"name": "single-file-lite",
 	"version": "1.0.0",
-	"description": "SingleFile Lite",
+	"description": "SingleFile",
 	"author": "Gildas Lormeau",
 	"license": "AGPL-3.0-or-later",
 	"scripts": {

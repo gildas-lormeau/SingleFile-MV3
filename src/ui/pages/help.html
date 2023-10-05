@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>SingleFile Lite help</title>
+	<title>SingleFile help</title>
 	<link rel="stylesheet" href="help.css">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<meta name="color-scheme" content="light dark">
@@ -13,7 +13,7 @@
 <body>
 	<div>
 		<div id="titleBorder">
-			<h2>SingleFile Lite</h2>
+			<h2>SingleFile</h2>
 			<h4>Save a complete page into a single HTML file</h4>
 		</div> <span id="index"> <a href="#getting-started">Getting started</a> - <a href="#general-notes">Additional
 				notes</a> - <a href="#options">Options description</a> - <a href="#annotation-editor">Annotation
@@ -26,16 +26,16 @@
 			<li><a id="getting-started">Getting started</a>
 				<ul>
 					<li>Wait until the page is fully loaded.</li>
-					<li>Click on the SingleFile Lite button <img src="../resources/icon_16.png" class="icon"> in the
+					<li>Click on the SingleFile button <img src="../resources/icon_16.png" class="icon"> in the
 						extension toolbar to process and save the page.</li>
 					<li>You can click again on the button to cancel the action when processing a page.</li>
 				</ul>
 			</li>
 			<li><a id="general-notes">Additional notes</a>
 				<ul>
-					<li>To save multiple tabs, select them first and click on the SingleFile Lite button <img
+					<li>To save multiple tabs, select them first and click on the SingleFile button <img
 							src="../resources/icon_16.png" class="icon">.</li>
-					<li>Open the context menu by right-clicking the SingleFile Lite button <img
+					<li>Open the context menu by right-clicking the SingleFile button <img
 							src="../resources/icon_16.png" class="icon"> in the extension toolbar or on the webpage. It
 						allows you to save: <ul>
 							<li>the current tab,</li>
@@ -44,7 +44,13 @@
 						</ul>
 					</li>
 					<li>You can also process multiple tabs in one click and save: <ul>
-							<li>the selected tabs,</li>
+							<li id="selectableTabsMenu">the selected tabs,</li>
+							<li>or the unpinned tabs,</li>
+							<li>or all the tabs.</li>
+						</ul>
+					</li>
+					<li id="autoSaveMenu">The context menu also allows you to activate the auto-save of: <ul>
+							<li>the current tab,</li>
 							<li>or the unpinned tabs,</li>
 							<li>or all the tabs.</li>
 						</ul>
@@ -52,22 +58,27 @@
 					<li>You can highlight text, add notes, format and remove content before saving the page with the <a
 							href="#annotation-editor">Annotation editor</a> by selecting "Annotate and save the page..."
 						in the context menu</li>
+					<li id="autoSaveHint">With auto-save active, pages are automatically saved every time after being
+						loaded (or before
+						being unloaded if not). </li>
 					<li>Select "Save Selection" from the context menu without selecting any content first to display a
 						selector that will help you choose content by hovering over it with the mouse.</li>
-					<li>Right-click on the SingleFile Lite button and select "Options" to open the options page.</li>
-					<li>Enable the option "Destination &gt; upload to Google Drive" to upload pages to Google Drive</li>
-					<li>You can use the customizable shortcut Ctrl+Shift+Y to save the current tab or the selected tabs.
+					<li>Right-click on the SingleFile button and select "Options" to open the options page.</li>
+					<li id="saveToGDriveHint">Enable the option "Destination &gt; upload to Google Drive" to upload
+						pages to Google Drive</li>
+					<li id="shortcutsSection">You can use the customizable shortcut Ctrl+Shift+Y to save the current tab
+						or the selected tabs.
 						Go to about:addons and select "Manage extension shortcuts" in the cogwheel menu to change it in
 						Firefox. Go to chrome://extensions/shortcuts to change it in Chrome..</li>
 					<li>The default save folder is the download folder configured in your browser, cf. about:preferences
-						in Firefox and chrome://settings in Chrome.</li>
+						in Firefox, chrome://settings in Chrome, and Settings > General > File download location in
+						Safari.</li>
 				</ul>
 			</li>
 			<li><a id="options">Options description</a>
-				<p>You can customize SingleFile Lite through the options page. Right-click on SingleFile Lite button
-					<img src="../resources/icon_16.png" class="icon"> in the browser toolbar and select
-					"Options"/"Manage extension" in the context menu to open the options page.
-				</p>
+				<p>You can customize SingleFile through the options page. Right-click on SingleFile button <img
+						src="../resources/icon_16.png" class="icon"> in the browser toolbar and select "Options"/"Manage
+					extension" in the context menu to open the options page.</p>
 				<p>Profiles</p>
 				<ul>
 					<li>
@@ -77,8 +88,8 @@
 							respectively to create, delete and rename a profile. </p>
 					</li>
 					<li>
-						<p>You can select the default profile through the context menu of SingleFile Lite. The selection
-							is persistent and applied to all tabs. </p>
+						<p>You can select the default profile through the context menu of SingleFile. The selection is
+							persistent and applied to all tabs. </p>
 					</li>
 					<li>
 						<p>You can also override the default profile by associating a profile to a complete or partial
@@ -90,22 +101,22 @@
 				<ul>
 					<li data-options-label="addMenuEntryLabel"> <span class="option">Option: add entry in the context
 							menu of the webpage</span>
-						<p>Check this option to display an entry for SingleFile Lite in the context menu of the webpage.
-							The context menu of the SingleFile Lite button <img src="../resources/icon_16.png"
-								class="icon"> in the extension toolbar is displayed whether this option is checked or
-							not. </p>
+						<p>Check this option to display an entry for SingleFile in the context menu of the webpage. The
+							context menu of the SingleFile button <img src="../resources/icon_16.png" class="icon"> in
+							the extension toolbar is displayed whether this option is checked or not. </p>
 						<p class="notice">It is recommended to <u>check</u> this option</p>
 					</li>
 					<li data-options-label="shadowEnabledLabel"> <span class="option">Option: overlay a shadow on the
 							page during processing</span>
-						<p>Check this option to overlay a shadow on the page when SingleFile Lite is retrieving page
+						<p>Check this option to overlay a shadow on the page when SingleFile is retrieving page
 							resources. This reminds you that you should not close the tab. </p>
 						<p class="notice">It is recommended to <u>check</u> this option</p>
 					</li>
-					<li data-options-label="openSavedPageLabel"> <span class="option">Option: open saved pages in a new
-							tab</span>
+					<li data-options-label="openSavedPageLabel" id="openSavedPageOption"> <span class="option">Option:
+							open saved pages in a new tab</span>
 						<p>Check this option to display the saved page in a new tab. This option can be useful, for
-							example, in order to check the page is properly saved.</p>
+							example, in order to check the page is properly saved. This option does not work with
+							archive formats based on ZIP files.</p>
 					</li>
 					<li data-options-label="autoCloseLabel"> <span class="option">Option: auto-close the tab after the
 							page is saved</span>
@@ -147,13 +158,15 @@
 							character</span>
 						<p>Enter the character used to replace invalid characters in the filename.</p>
 					</li>
-					<li data-options-label="confirmFilenameLabel"> <span class="option">Option: open the "Save as"
+					<li data-options-label="confirmFilenameLabel" id="confirmFilenameOption"> <span
+							class="option">Option: open the "Save as"
 							dialog to confirm the file name</span>
 						<p>Check this option to display the "Save as" dialog in order to confirm the file name before
 							saving the page. If the option "save pages in background" is unchecked then a prompt dialog
 							will be displayed instead of the "Save as" dialog. </p>
 					</li>
-					<li data-options-label="filenameConflictActionLabel"> <span class="option">Option: file name
+					<li data-options-label="filenameConflictActionLabel" id="filenameConflictActionOption"> <span
+							class="option">Option: file name
 							conflict resolution</span>
 						<p>Choose the most appropriate action when the filename of the saved page is conflicting with
 							existing ones on the filesystem. The "skip duplicate files" action only detects duplicates
@@ -162,6 +175,52 @@
 					<li data-options-label="replaceEmojisInFilenameLabel">
 						<span class="option">Option: replace emojis with text</span>
 						<p>Check this option to replace emojis in the file name with their unicode text representation.
+						</p>
+					</li>
+				</ul>
+				<p>File format</p>
+				<ul>
+					<li data-options-label="fileFormatSelectLabel">
+						<span class="option">Option: format</span>
+						<p>Select the ouput format of the saved file:
+						</p>
+						<ul>
+							<li><code>"HTML"</code>: HTML file (default format). This format produces HTML files that do
+								not depend on JavaScript to be opened.
+							</li>
+							<li><code>"self-extracting ZIP (universal)"</code>: self-extracting ZIP file that can be
+								opened on any platform. This format produces files smaller than the "HTML" format but
+								requires JavaScript to be enabled to open the file.
+							</li>
+							<li><code>"self-extracting ZIP"</code>: self-extracting ZIP file that can be
+								opened on any platform from HTTP but not from the filesystem in some browsers (e.g.
+								in browsers based on Chromium or WebKit) without SingleFile to be installed. This format
+								produces files smaller (approx. 1%) than the "self-extracting ZIP (universal)" format.
+							</li>
+							<li><code>"ZIP"</code>: ZIP file. This format produces ZIP files that cannot be opened in a
+								browser but can be opened in the annotation editor.
+							</li>
+						</ul>
+					</li>
+					<li data-options-label="passwordLabel">
+						<span class="option">Option: password</span>
+						<p>Type a password to encrypt the ZIP file with AES-256 (compatible with Winzip). Be careful, if
+							you lose the password, it will be impossible to open the file. Enabling this option
+							increases the CPU consumption and the time needed to save or read a page.</p>
+						</p>
+					</li>
+					<li data-options-label="createRootDirectoryLabel">
+						<span class="option">Option: create a root directory</span>
+						<p>Check this option to create a root directory in the ZIP file. The directory name consists of
+							a timestamp and the identifier of the tab where the saved page is displayed.
+						</p>
+					</li>
+					<li data-options-label="insertTextBodyLabel">
+						<span class="option">Option: make text searchable</span>
+						<p>Check this option to insert the text content of the saved page into the self-extracting ZIP
+							file. This makes it possible, for example, to search for pages from the text. Note that if
+							the selected fomrmat is "self-extracting ZIP (universal)", the text content is
+							encoded in UTF-8 but the page is declared in ISO-8859-1.
 						</p>
 					</li>
 				</ul>
@@ -192,7 +251,7 @@
 							considerably reduce the size of the file without altering the document most of the time. It
 							may also decrease the time needed to save a page.</p>
 					</li>
-					<li data-options-label="saveOriginalURLsLabel"> <span class="option"></span>Option: save original
+					<li data-options-label="saveOriginalURLsLabel"> <span class="option"></span>: save original
 						URLs of embedded resources</span>
 						<p>Check this option to save the URLs of the resources embedded into the saved page. URLs
 							are stored in attributes with a name prefixed with "data-sf-original-" and suffixed with the
@@ -213,7 +272,8 @@
 				</ul>
 				<p>Infobar</p>
 				<ul>
-					<li data-options-label="displayInfobarLabel"> <span class="option">Option: display an infobar when
+					<li data-options-label="displayInfobarLabel" id="displayInfobarOption"> <span class="option">Option:
+							display an infobar when
 							viewing a saved page</span>
 						<p>Check this option to display the ℹ button at the top right of the page when viewing a saved
 							page. By clicking this button, you can get more information about the saved date and open
@@ -244,7 +304,7 @@
 						the saved page</span>
 						<p>Check this
 							option to display the ℹ button at the top right of the page when viewing a saved page in a
-							browser where SingleFile Lite is not installed.</p>
+							browser where SingleFile is not installed.</p>
 					</li>
 				</ul>
 				<p>Stylesheets</p>
@@ -284,14 +344,15 @@
 							images together</span>
 						<p>Check this option to avoid saving multiple times duplicate images. Checking this option
 							should not alter the document in modern browsers and can considerably reduce the size of the
-							file.</p>
+							file. This option is ignored with archive formats based on ZIP files.</p>
 						<p class="notice">It is recommended to <u>check</u> this option</p>
 					</li>
 					<li data-options-label="loadDeferredImagesLabel"> <span class="option">Option: save deferred
 							images</span>
-						<p>Check this option to save all the deferred images that are not yet displayed. This may help
-							to save all the images without scrolling the page. This feature does its best effort and is
-							not guaranteed to work on all sites. It will also increase the time needed to save a page.
+						<p>Check this option to save all the deferred images (or frames) that are not yet displayed.
+							This may help to save all the images without scrolling the page. This feature does its best
+							effort and is not guaranteed to work on all sites. It will also increase the time needed to
+							save a page.
 						</p>
 						<p class="notice">It is recommended to <u>check</u> this option</p>
 					</li>
@@ -352,14 +413,16 @@
 						<p>Check this option to save the downloaded page on the filesystem of your computer.</p>
 						<p class="notice">It is recommended to <u>check</u> this option</p>
 					</li>
-					<li data-options-label="saveToClipboardLabel"> <span class="option">Option: copy to clipboard</span>
-						<p>Check this option to copy the page to the clipboard.</p>
+					<li data-options-label="saveToClipboardLabel" id="saveToClipboardOption"> <span
+							class="option">Option: copy to clipboard</span>
+						<p>Check this option to copy the page to the clipboard. This option does not work with
+							archive formats based on ZIP files.</p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
 					<li data-options-label="saveToGitHubLabel"> <span class="option">Option: upload to GitHub</span>
 						<p>Check this option to save the page on GitHub. See the <a
-								href="https://github.com/gildas-lormeau/SingleFile-Lite/wiki/How-to-publish-saved-pages-with-SingleFile Lite-on-GitHub"
-								target="_blank">documentation page</a> to learn how to configure SingleFile Lite to save
+								href="https://github.com/gildas-lormeau/SingleFile/wiki/How-to-publish-saved-pages-with-SingleFile-on-GitHub"
+								target="_blank">documentation page</a> to learn how to configure SingleFile to save
 							pages on GitHub. Warning: once a page saved on GitHub, it is complicated to delete it, see
 							the <a
 								href="https://docs.github.com/github/authenticating-to-github/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
@@ -404,20 +467,22 @@
 					<li data-options-label="webDAVPasswordLabel"> <span class="option">Option: password</span>
 						<p>Enter your password.</p>
 					</li>
-					<li data-options-label="saveToGDriveLabel"> <span class="option">Option: upload to Google
+					<li data-options-label="saveToGDriveLabel" id="saveToGDriveOption"> <span class="option">Option:
+							upload to Google
 							Drive</span>
 						<p>Check this option to save the page on Google Drive.</p>
-						<p>The permissions requested by SingleFile Lite allow it to access only to the files and folders
-							it has created. When you uncheck this option, SingleFile Lite revokes automatically its
-							access to your Google Drive account. </p>
+						<p>The permissions requested by SingleFile allow it to access only to the files and folders it
+							has created. When you uncheck this option, SingleFile revokes automatically its access to
+							your Google Drive account. </p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
-					<li data-options-label="saveWithCompanionLabel"> <span class="option">Option: save with
+					<li data-options-label="saveWithCompanionLabel" id="saveWithCompanionOption"> <span
+							class="option">Option: save with
 							SingleFile Companion</span>
 						<p>Check this option to delegate the saving process to SingleFile Companion. It is a program
 							that runs outside the browser and can help to make the saving process more transparent. It
 							also allows the pages to be saved in another directory than the download directory. You can
-							find more info <a href="https://github.com/gildas-lormeau/SingleFile/tree/master/companion"
+							find more info <a href="https://github.com/gildas-lormeau/single-file-companion"
 								target="_blank">here</a></p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
@@ -429,8 +494,8 @@
 							Check the options below to block the download of the corresponding resource types.
 						</p>
 					</li>
-					<li data-options-label="blockMixedContentLabel"> <span class="option"></span>Option: block mixed
-						contents</span>
+					<li data-options-label="blockMixedContentLabel"> <span class="option">Option: block mixed
+							contents</span>
 						<p>Check this option to block active content served from HTTP when viewing a page in HTTPS. You
 							can find more information about mixed content pages <a
 								href="https://developer.mozilla.org/docs/Web/Security/Mixed_content"
@@ -498,26 +563,26 @@
 							removes the entry "Annotate and save the page..." from the context menu.</p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
-					<li data-options-label="autoOpenEditorLabel"> <span class="option">Option: open the annotation
-							editor when viewing a page saved with SingleFile Lite </span>
-						<p>Check this option to open the annotation editor when displaying a page saved by SingleFile
-							Lite.
+					<li data-options-label="autoOpenEditorLabel" id="autoOpenEditorOption"> <span class="option">Option:
+							open the annotation editor when viewing a page saved with SingleFile</span>
+						<p>Check this option to open the annotation editor when displaying a page saved by SingleFile.
 						</p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
 					<li data-options-label="displayInfobarInEditorLabel"> <span class="option">Option:
-						display the infobar</span>
+							display the infobar</span>
 						<p>Check this option to display the infobar when displaying a page in the annotation editor.</p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
-					</p>
+						</p>
+					</li>
 				</ul>
-				<p>Bookmarks</p>
-				<ul>
+				<p id="bookmarksSection">Bookmarks</p>
+				<ul id="bookmarksOptions">
 					<li data-options-label="saveCreatedBookmarksLabel"> <span class="option">Option: save the page of a
 							newly created bookmark</span>
 						<p>Check this option to save pages that you add into your bookmarks. Note that if the page is to
-							be saved is not already displayed in a tab, SingleFile Lite will open temporarily a new tab
-							to save the page. </p>
+							be saved is not already displayed in a tab, SingleFile will open temporarily a new tab to
+							save the page. </p>
 						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
 					<li data-options-label="replaceBookmarkURLLabel"> <span class="option">Option: link the new bookmark
@@ -529,13 +594,65 @@
 					<li data-options-label="ignoredBookmarkFoldersLabel"> <span class="option">Option: ignored
 							folders</span>
 						<p>Enter a list of bookmark folder names to ignore. The folder names must be separated with a
-							comma. SingleFile Lite will ignore bookmarks added in folders that contains these names.
+							comma. SingleFile will ignore bookmarks added in folders that contains these names.
 						</p>
 					</li>
 					<li data-options-label="allowedBookmarkFoldersLabel"> <span class="option">Option: allowed
 							folders</span>
 						<p>Enter a list of bookmark folder names to allow. The folder names must be separated with a
-							comma. SingleFile Lite will only save pages added in folders that contains these names.
+							comma. SingleFile will only save pages added in folders that contains these names.
+						</p>
+					</li>
+				</ul>
+				<p id="autoSaveSection">Auto-save</p>
+				<ul id="autoSaveOptions">
+					<li data-options-label="autoSaveLoadOrUnloadLabel"> <span class="option">Option: auto-save after
+							page load or on page unload</span>
+						<p>Check this option to auto-save pages after being loaded. If you browse to another page before
+							the page is fully loaded then the page will be saved just before being unloaded. With this
+							option active, you are guaranteed pages will always be saved. Some frame contents may be
+							missing (if you checked "remove frames") when pages are saved before being unloaded. </p>
+					</li>
+					<li data-options-label="autoSaveLoadLabel"> <span class="option">Option: auto-save after page
+							load</span>
+						<p>Check this option to auto-save pages after being loaded.</p>
+					</li>
+					<li data-options-label="autoSaveUnloadLabel"> <span class="option">Option: auto-save on page
+							unload</span>
+						<p>Check this option to auto-save pages before being unloaded instead of saving pages after
+							being loaded. With this option active, you are guaranteed pages will always be saved but
+							some frame contents may be missing (if you checked "remove frames"). </p>
+					</li>
+					<li data-options-label="autoSaveDiscardLabel"> <span class="option">Option: auto-save on tab
+							discard</span>
+						<p>Check this option to auto-save pages when discarding a tab. Some frame contents may be
+							missing (if you checked "remove frames"). </p>
+					</li>
+					<li data-options-label="autoSaveRemoveLabel"> <span class="option">Option: auto-save on tab
+							removal</span>
+						<p>Check this option to auto-save pages when closing a tab. Some frame contents may be missing
+							(if you checked "remove frames"). </p>
+					</li>
+					<li data-options-label="autoSaveDelayLabel"> <span class="option">Option: auto-save waiting delay
+							after load (s)</span>
+						<p>Enter the delay in seconds to wait before saving a page when the "auto-save on page load or
+							on page unload" or "auto-save on page load" is checked. </p>
+					</li>
+					<li data-options-label="autoSaveRepeatLabel"> <span class="option">Option: auto-save
+							periodically</span>
+						<p>Check this option to auto-save pages periodically after load.</p>
+					</li>
+					<li data-options-label="autoSaveRepeatDelayLabel"> <span class="option">Option: period (s)</span>
+						<p>Enter the delay in seconds to wait before each page saving when the "auto-save
+							periodically" option is checked. </p>
+					</li>
+					<li data-options-label="autoSaveExternalSaveLabel"> <span class="option">Option: save the page with
+							SingleFile Companion</span>
+						<p>Check this option to delegate the capturing and saving process to SingleFile Companion. It is
+							a program that runs outside the browser and can help to make the saving process more
+							transparent. It also allows the pages to be saved in another directory than the download
+							directory. You can find more info <a
+								href="https://github.com/gildas-lormeau/single-file-companion" target="_blank">here</a>
 						</p>
 					</li>
 				</ul>
@@ -564,7 +681,8 @@
 						<p>Enter your personal access token on Woleet, see the <a href="http://app.woleet.io/"
 								target="_blank">registration page</a> on Woleet for more information.</p>
 					</li>
-					<li data-options-label="backgroundSaveLabel"> <span class="option">Option: save pages in
+					<li data-options-label="backgroundSaveLabel" id="backgroundSaveOption"> <span class="option">Option:
+							save pages in
 							background</span>
 						<p>Uncheck this option if you get invalid file names like
 							"37bec68b-446a-46a5-8642-19a89c231b46.html" or interrupted downloads when saving pages. You
@@ -582,9 +700,10 @@
 				</ul>
 				<p id="auto-settings-rules">Auto-settings rules</p>
 				<ul>
-					<li>The auto-settings rules let you associate a complete or partial URL with a profile. When two or
-						more rules match a URL of a page to save, the rule with the longest URL will be chosen. The
-						special profile "-" means the current profile. </li>
+					<li>The auto-settings rules let you associate a complete or partial URL with a profile. It also
+						allows to associate a specific profile for the auto-save, or to disable it (check "display
+						'Auto-save profile' column"). When two or more rules match a URL of a page to save, the rule
+						with the longest URL will be chosen. The special profile "-" means the current profile. </li>
 					<li>You can use the special value "*" as URL to create a rule that applies to all URLs</li>
 					<li>You can use regular expressions by prefixing the URL with "regexp:" (e.g. "regexp:.*\.com" to
 						match all URLs containing ".com"). When zero or more rules based on URLs and one or more rules
@@ -726,6 +845,8 @@
 					<li><code>{visit-seconds-locale}</code>: the localized value of the seconds (e.g. "31")</li>
 					<li><code>{url-href}</code>: the URL of the page (e.g. "http://example.com/category/index.html")
 					</li>
+					<li><code>{url-href-digest-sha-1}</code>: the SHA-1 hash value of the URL of the page (e.g.
+						4b826844d9f5c128533e4ff14d746334f3ac9e00)</li>
 					<li><code>{url-href-flat}</code>: the URL of the page with replaced slashes (e.g.
 						"http__example.com_category_index.html")</li>
 					<li><code>{url-pathname}</code>: the path name of the URL (e.g. "category/index.html")</li>
@@ -764,8 +885,8 @@
 			</li>
 			<li>
 				<a id="external-messages">Integration with other extensions</a>
-				<p>SingleFile Lite can receive messages from other extensions. The messages must be sent to the
-					extension ID of SingleFile Lite and must be a string containing one of the following values:
+				<p>SingleFile can receive messages from other extensions. The messages must be sent to the extension ID
+					of SingleFile and must be a string containing one of the following values:
 				<ul>
 					<li>
 						<code>"save-page"</code>: save the current page
@@ -807,9 +928,9 @@
 						<ul>
 							<li>For security reasons, you cannot save pages hosted on https://chrome.google.com,
 								https://addons.mozilla.org and some other Mozilla domains. When this happens, 🚫 is
-								displayed on top of the SingleFile Lite icon.</li>
-							<li>For security reasons, SingleFile Lite is sometimes unable to save the image
-								representation of canvas and snapshots of video elements.</li>
+								displayed on top of the SingleFile icon.</li>
+							<li>For security reasons, SingleFile is sometimes unable to save the image representation of
+								canvas and snapshots of video elements.</li>
 							<li>The last saved path cannot be remembered by default. To circumvent this limitation,
 								disable the option "Misc. &gt; Save pages in background".</li>
 							<li>The following characters are replaced with _ in filenames: ~, +, \, ?, %, *, :, |, ",
@@ -834,7 +955,7 @@
 							<li>The "File name &gt; file name conflict resolution" option does not work if set to
 								"prompt for a name".
 							</li>
-							<li>Sometimes, SingleFile Lite is unable to save the contents of sandboxed iframes.</li>
+							<li>Sometimes, SingleFile is unable to save the contents of sandboxed iframes.</li>
 							<li>When processing a page from the filesystem, external resources (e.g. images,
 								stylesheets, fonts etc.) will not be embedded into the saved page.</li>
 						</ul>
@@ -845,12 +966,12 @@
 				<p>Please follow these steps if you find an unknown issue:</p>
 				<ul>
 					<li>Save the page in incognito.</li>
-					<li>If saving page in incognito did not fix the issue, reset SingleFile Lite options.</li>
+					<li>If saving page in incognito did not fix the issue, reset SingleFile options.</li>
 					<li>If resetting options did not fix the issue, restart the browser.</li>
 					<li>If restarting the browser did not fix the issue, try to disable all other extensions to see if
 						there is a conflict.</li>
 					<li>If there is a conflict then try to determine against which extension(s).</li>
-					<li>Please report the issue <a href="https://github.com/gildas-lormeau/SingleFile-Lite/issues"
+					<li>Please report the issue <a href="https://github.com/gildas-lormeau/SingleFile/issues"
 							target="_blank">here</a>
 						with a short description on how to reproduce it.</li>
 				</ul>
@@ -903,6 +1024,7 @@
 			</li>
 		</ol>
 	</div>
+	<script type="module" src="../bg/ui-help.js"></script>
 </body>
 
 </html>

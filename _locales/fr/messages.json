@@ -12,8 +12,8 @@
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
 	"menuSavePage": {
-		"message": "Sauver la page avec SingleFile Lite",
-		"description": "Menu entry: 'Save page with SingleFile Lite'"
+		"message": "Sauver la page avec SingleFile",
+		"description": "Menu entry: 'Save page with SingleFile'"
 	},
 	"menuSaveSelectedLinks": {
 		"message": "Sauver les liens selectionnés",
@@ -96,20 +96,20 @@
 		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
 	"buttonDefaultTooltip": {
-		"message": "Sauver la page avec SingleFile Lite",
-		"description": "Button title: 'Save page with SingleFile Lite'"
+		"message": "Sauver la page avec SingleFile",
+		"description": "Button title: 'Save page with SingleFile'"
 	},
 	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
 	"buttonBlockedTooltip": {
-		"message": "Cette page ne peut pas être sauvée avec SingleFile Lite",
-		"description": "Button title: 'This page cannot be saved with SingleFile Lite'"
+		"message": "Cette page ne peut pas être sauvée avec SingleFile",
+		"description": "Button title: 'This page cannot be saved with SingleFile'"
 	},
 	"buttonInitializingTooltip": {
-		"message": "Initialisation de SingleFile Lite",
-		"description": "Button title during initialization: 'Initializing SingleFile Lite (x/2)'"
+		"message": "Initialisation de SingleFile",
+		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
 	},
 	"buttonInitializingBadge": {
 		"message": "•••",
@@ -211,7 +211,7 @@
 		"message": "caractère de remplacement",
 		"description": "Options page label: 'replacement character'"
 	},
-	"optionReplaceEmojisInFilename" : {
+	"optionReplaceEmojisInFilename": {
 		"message": "remplacer les emojis par du texte",
 		"description": "Options page label: 'replace emojis with text'"
 	},
@@ -254,6 +254,42 @@
 	"optionRemoveHiddenElements": {
 		"message": "supprimer les élements cachés",
 		"description": "Options page label: 'remove hidden elements'"
+	},
+	"optionsFileFormatSubTitle": {
+		"message": "Format de fichier",
+		"description": "Options sub-title: 'File format'"
+	},
+	"optionFileFormat": {
+		"message": "format",
+		"description": "Options page label: 'format'"
+	},
+	"optionFileFormatSelectHTML": {
+		"message": "HTML",
+		"description": "Options page label: 'HTML'"
+	},
+	"optionFileFormatSelectSelfExtractingUniversal": {
+		"message": "auto-extractibles ZIP (universel)",
+		"description": "Options page label: 'self-extracting ZIP (universal)'"
+	},
+	"optionFileFormatSelectSelfExtracting": {
+		"message": "auto-extractibles ZIP",
+		"description": "Options page label: 'self-extracting ZIP'"
+	},
+	"optionFileFormatSelectZIP": {
+		"message": "ZIP",
+		"description": "Options page label: 'ZIP'"
+	},
+	"optionPassword": {
+		"message": "mot de passe",
+		"description": "Options page label: 'password'"
+	},
+	"optionCreateRootDirectory": {
+		"message": "créer un répertoire racine",
+		"description": "Options page label: 'create a root directory'"
+	},
+	"optionInsertTextBody": {
+		"message": "rendre le texte indexable",
+		"description": "Options page label: 'make text searchable'"
 	},
 	"optionsInfobarSubTitle": {
 		"message": "Barre d'information",
@@ -480,8 +516,8 @@
 		"description": "Options page label: 'open saved pages in a new tab'"
 	},
 	"optionAutoOpenEditor": {
-		"message": "ouvrir les pages sauvées avec SingleFile Lite dans l'éditeur d'annotations",
-		"description": "Options page label: 'open pages saved with SingleFile Lite in the annotation editor'"
+		"message": "ouvrir les pages sauvées avec SingleFile dans l'éditeur d'annotations",
+		"description": "Options page label: 'open pages saved with SingleFile in the annotation editor'"
 	},
 	"optionDefaultEditorMode": {
 		"message": "mode par défaut",
@@ -568,7 +604,7 @@
 		"description": "Options page label: 'add proof of existence'"
 	},
 	"optionsAddProofConfirm": {
-		"message": "Confirmez que vous autorisez SingleFile Lite à envoyer à l'API de Woleet un hachage SHA256 de chaque page que vous allez enregistrer. Vous trouverez plus d'informations sur cette fonctionnalité dans la page d'aide ou en cliquant sur le point d'interrogation à côté de l'option.",
+		"message": "Confirmez que vous autorisez SingleFile à envoyer à l'API de Woleet un hachage SHA256 de chaque page que vous allez enregistrer. Vous trouverez plus d'informations sur cette fonctionnalité dans la page d'aide ou en cliquant sur le point d'interrogation à côté de l'option.",
 		"description": "Popup text displayed wen enabling the option 'add proof of existence'"
 	},
 	"optionWoleetKey": {

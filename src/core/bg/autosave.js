@@ -21,9 +21,7 @@
  *   Source.
  */
 
-/* global browser, fetch, Blob */
-
-const OFFSCREEN_DOCUMENT_URL = "/src/ui/pages/offscreen-document.html";
+/* global browser, fetch */
 
 import * as config from "./config.js";
 import * as business from "./business.js";
@@ -33,6 +31,7 @@ import * as tabsData from "./tabs-data.js";
 import * as ui from "./../../ui/bg/index.js";
 import * as woleet from "./../../lib/woleet/woleet.js";
 import { autoSaveIsEnabled } from "./autosave-util.js";
+import * as offscreen from "./offscreen.js";
 
 const pendingMessages = {};
 const replacedTabIds = {};
@@ -151,51 +150,60 @@ async function saveContent(message, tab) {
 		options.tabId = tabId;
 		options.tabIndex = tab.index;
 		options.keepFilename = options.saveToGDrive || options.saveToGitHub || options.saveWithWebDAV;
-		let pageData;
+		let pageData, result;
 		try {
 			if (options.autoSaveExternalSave) {
 				await companion.externalSave(options);
 			} else {
-				pageData = await getPageData(options);
-				pageData.url = pageData.content;
-				pageData.content = await (await fetch(pageData.content)).text();
-				if (options.saveToGDrive) {
-					const blob = new Blob([pageData.content], { type: "text/html" });
-					await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), blob, options, {
-						forceWebAuthFlow: options.forceWebAuthFlow
-					}, {
-						filenameConflictAction: options.filenameConflictAction
-					});
-				} else if (options.saveWithWebDAV) {
-					await downloads.saveWithWebDAV(message.taskId, downloads.encodeSharpCharacter(pageData.filename), pageData.content, options.webDAVURL, options.webDAVUser, options.webDAVPassword, {
-						filenameConflictAction: options.filenameConflictAction
-					});
-				} else if (options.saveToGitHub) {
-					await (await downloads.saveToGitHub(message.taskId, downloads.encodeSharpCharacter(pageData.filename), pageData.content, options.githubToken, options.githubUser, options.githubRepository, options.githubBranch, {
-						filenameConflictAction: options.filenameConflictAction
-					})).pushPromise;
-				} else if (options.saveWithCompanion) {
-					await companion.save({
-						filename: pageData.filename,
-						content: pageData.content,
-						filenameConflictAction: options.filenameConflictAction
-					});
-				} else {
-					await downloads.downloadPage(pageData, options);
-					if (options.openSavedPage) {
-						const createTabProperties = { active: true, url: pageData.url, windowId: tab.windowId };
-						const index = tab.index;
-						try {
-							await browser.tabs.get(tabId);
-							createTabProperties.index = index + 1;
-						} catch (error) {
-							createTabProperties.index = index;
-						}
-						browser.tabs.create(createTabProperties);
-					}
+				result = await offscreen.processPage(options);
+				let skipped;
+				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveToGitHub && !options.saveWithCompanion) {
+					const testSkip = await downloads.testSkipSave(pageData.filename, options);
+					skipped = testSkip.skipped;
+					options.filenameConflictAction = testSkip.filenameConflictAction;
 				}
-				if (pageData.hash) {
-					await woleet.anchor(pageData.hash, options.woleetKey);
+				if (!skipped) {
+					if (options.saveToGDrive) {
+						const content = await (await fetch(result.url)).blob();
+						await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options, {
+							forceWebAuthFlow: options.forceWebAuthFlow
+						}, {
+							filenameConflictAction: options.filenameConflictAction
+						});
+					} else if (options.saveWithWebDAV) {
+						const content = await (await fetch(result.url)).blob();
+						await downloads.saveWithWebDAV(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options.webDAVURL, options.webDAVUser, options.webDAVPassword, {
+							filenameConflictAction: options.filenameConflictAction
+						});
+					} else if (options.saveToGitHub) {
+						const content = await (await fetch(result.url)).blob();
+						await (await downloads.saveToGitHub(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options.githubToken, options.githubUser, options.githubRepository, options.githubBranch, {
+							filenameConflictAction: options.filenameConflictAction
+						})).pushPromise;
+					} else if (options.saveWithCompanion && !options.compressContent) {
+						const content = await (await fetch(result.url)).text();
+						await companion.save({
+							filename: pageData.filename,
+							content: content,
+							filenameConflictAction: options.filenameConflictAction
+						});
+					} else {
+						await downloads.downloadPage(pageData, options);
+						if (options.openSavedPage && !options.compressContent) {
+							const createTabProperties = { active: true, url: result.url, windowId: tab.windowId };
+							const index = tab.index;
+							try {
+								await browser.tabs.get(tabId);
+								createTabProperties.index = index + 1;
+							} catch (error) {
+								createTabProperties.index = index;
+							}
+							browser.tabs.create(createTabProperties);
+						}
+					}
+					if (pageData.hash) {
+						await woleet.anchor(pageData.hash, options.woleetKey);
+					}
 				}
 			}
 		} finally {
@@ -205,26 +213,10 @@ async function saveContent(message, tab) {
 				browser.tabs.remove(replacedTabIds[tabId] || tabId);
 				delete replacedTabIds[tabId];
 			}
-			if (pageData && pageData.url) {
-				revokeObjectURL(pageData.url);
+			if (result && result.url) {
+				offscreen.revokeObjectURL(result.url);
 			}
 			ui.onEnd(tabId, true);
 		}
-	}
-}
-
-async function getPageData(options) {
-	await createOffscreenDocument();
-	return browser.runtime.sendMessage({ method: "offscreen.save", options });
-}
-
-async function revokeObjectURL(url) {
-	await createOffscreenDocument();
-	return browser.runtime.sendMessage({ method: "offscreen.revokeObjectURL", url });
-}
-
-async function createOffscreenDocument() {
-	if (!await browser.offscreen.hasDocument()) {
-		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save feature", reasons: ["DOM_PARSER"] });
 	}
 }

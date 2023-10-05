@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>SingleFile Lite options</title>
+	<title>SingleFile options</title>
 	<link rel="stylesheet" href="options.css">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<meta name="color-scheme" content="light dark">
@@ -83,6 +83,30 @@
 			<div class="option">
 				<label for="replaceEmojisInFilenameInput" id="replaceEmojisInFilenameLabel"></label>
 				<input type="checkbox" id="replaceEmojisInFilenameInput">
+			</div>
+		</details>
+		<details>
+			<summary id="fileFormatLabel"></summary>
+			<div class="option">
+				<label for="fileFormatSelectInput" id="fileFormatSelectLabel"></label>
+				<select id="fileFormatSelectInput">
+					<option id="fileFormatSelectHTMLLabel" value="html"></option>
+					<option id="fileFormatSelectSelfExtractingUniversalLabel" value="self-extracting-zip-universal"></option>
+					<option id="fileFormatSelectSelfExtractingLabel" value="self-extracting-zip"></option>
+					<option id="fileFormatSelectZIPLabel" value="zip"></option>
+				</select>
+			</div>
+			<div class="option vertical">
+				<label for="passwordInput" id="passwordLabel"></label>
+				<input type="text" id="passwordInput">
+			</div>
+			<div class="option">
+				<label for="createRootDirectoryInput" id="createRootDirectoryLabel"></label>
+				<input type="checkbox" id="createRootDirectoryInput">
+			</div>
+			<div class="option">
+				<label for="insertTextBodyInput" id="insertTextBodyLabel"></label>
+				<input type="checkbox" id="insertTextBodyInput">
 			</div>
 		</details>
 		<details>

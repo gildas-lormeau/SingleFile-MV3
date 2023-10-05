@@ -26,9 +26,14 @@
 import { fetch, frameFetch } from "./lib/single-file/fetch/content/content-fetch.js";
 
 export {
-	getPageData
+	getPageData,
+	compress
 };
 
 function getPageData(options, doc, win, initOptions = { fetch, frameFetch }) {
 	return globalThis.singlefile.getPageData(options, initOptions, doc, win);
+}
+
+function compress(pageData, options) {
+	return globalThis.singlefile.processors.compression.process(pageData, options);
 }

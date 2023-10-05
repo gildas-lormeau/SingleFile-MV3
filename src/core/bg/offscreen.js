@@ -21,16 +21,36 @@
  *   Source.
  */
 
-/* global globalThis */
+/* global browser */
 
-const browser = globalThis.browser;
-const document = globalThis.document;
-const Document = globalThis.Document;
+import * as yabson from "./../../lib/yabson/yabson.js";
 
-if (document instanceof Document && browser && browser.runtime && browser.runtime.getURL) {
-	const scriptElement = document.createElement("script");
-	scriptElement.src = browser.runtime.getURL("/lib/single-file-hooks-frames.js");
-	scriptElement.async = false;
-	(document.documentElement || document).appendChild(scriptElement);
-	scriptElement.remove();
+const OFFSCREEN_DOCUMENT_URL = "/src/ui/pages/offscreen-document.html";
+
+export {
+	compressPage,
+	processPage,
+	revokeObjectURL
+};
+
+async function compressPage(pageData, options) {
+	pageData = Array.from(await yabson.serialize(pageData));
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "compressPage", pageData, options });
+}
+
+async function processPage(options) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "processPage", options });
+}
+
+async function revokeObjectURL(url) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "revokeObjectURL", url });
+}
+
+async function createOffscreenDocument() {
+	if (!await browser.offscreen.hasDocument()) {
+		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER"] });
+	}
 }

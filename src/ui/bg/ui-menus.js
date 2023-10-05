@@ -31,8 +31,6 @@ import { refreshAutoSaveTabs } from "./../../core/bg/autosave-util.js";
 import * as button from "./ui-button.js";
 
 const menus = browser.contextMenus;
-const BROWSER_MENUS_API_SUPPORTED = menus && menus.onClicked && menus.create && menus.update && menus.removeAll;
-
 const MENU_ID_SAVE_PAGE = "save-page";
 const MENU_ID_EDIT_AND_SAVE_PAGE = "edit-and-save-page";
 const MENU_ID_SAVE_WITH_PROFILE = "save-with-profile";
@@ -119,7 +117,7 @@ function onMessage(message) {
 async function createMenus(tab) {
 	const [profiles, allTabsData] = await Promise.all([config.getProfiles(), tabsData.get()]);
 	const options = await config.getOptions(tab && tab.url);
-	if (BROWSER_MENUS_API_SUPPORTED && options) {
+	if (options) {
 		const pageContextsEnabled = ["page", "frame", "image", "link", "video", "audio", "selection"];
 		const defaultContextsDisabled = [];
 		if (options.browserActionMenuEnabled) {
@@ -205,13 +203,11 @@ async function createMenus(tab) {
 			parentId: MENU_ID_SAVE_TABS
 		});
 		if (options.contextMenuEnabled) {
-			if (config.SELECTABLE_TABS_SUPPORTED) {
-				menus.create({
-					id: MENU_ID_SAVE_SELECTED_TABS,
-					contexts: pageContextsEnabled,
-					title: MENU_SAVE_SELECTED_TABS_MESSAGE
-				});
-			}
+			menus.create({
+				id: MENU_ID_SAVE_SELECTED_TABS,
+				contexts: pageContextsEnabled,
+				title: MENU_SAVE_SELECTED_TABS_MESSAGE
+			});
 			menus.create({
 				id: MENU_ID_SAVE_UNPINNED_TABS,
 				contexts: pageContextsEnabled,
@@ -327,54 +323,52 @@ async function createMenus(tab) {
 				});
 			}
 		}
-		if (config.AUTO_SAVE_SUPPORTED) {
-			menus.create({
-				id: MENU_ID_AUTO_SAVE,
-				contexts: defaultContexts,
-				title: MENU_AUTOSAVE_MESSAGE
-			});
-			menus.create({
-				id: MENU_ID_AUTO_SAVE_DISABLED,
-				type: "radio",
-				title: MENU_AUTOSAVE_DISABLED_MESSAGE,
-				contexts: defaultContexts,
-				checked: true,
-				parentId: MENU_ID_AUTO_SAVE
-			});
-			menusCheckedState.set(MENU_ID_AUTO_SAVE_DISABLED, true);
-			menus.create({
-				id: MENU_ID_AUTO_SAVE_TAB,
-				type: "radio",
-				title: MENU_AUTOSAVE_TAB_MESSAGE,
-				contexts: defaultContexts,
-				checked: false,
-				parentId: MENU_ID_AUTO_SAVE
-			});
-			menusCheckedState.set(MENU_ID_AUTO_SAVE_TAB, false);
-			menus.create({
-				id: MENU_ID_AUTO_SAVE_UNPINNED,
-				type: "radio",
-				title: MENU_AUTOSAVE_UNPINNED_TABS_MESSAGE,
-				contexts: defaultContexts,
-				checked: false,
-				parentId: MENU_ID_AUTO_SAVE
-			});
-			menusCheckedState.set(MENU_ID_AUTO_SAVE_UNPINNED, false);
-			menus.create({
-				id: MENU_ID_AUTO_SAVE_ALL,
-				type: "radio",
-				title: MENU_AUTOSAVE_ALL_TABS_MESSAGE,
-				contexts: defaultContexts,
-				checked: false,
-				parentId: MENU_ID_AUTO_SAVE
-			});
-			menusCheckedState.set(MENU_ID_AUTO_SAVE_ALL, false);
-			menus.create({
-				id: "separator-4",
-				contexts: defaultContexts,
-				type: "separator"
-			});
-		}
+		menus.create({
+			id: MENU_ID_AUTO_SAVE,
+			contexts: defaultContexts,
+			title: MENU_AUTOSAVE_MESSAGE
+		});
+		menus.create({
+			id: MENU_ID_AUTO_SAVE_DISABLED,
+			type: "radio",
+			title: MENU_AUTOSAVE_DISABLED_MESSAGE,
+			contexts: defaultContexts,
+			checked: true,
+			parentId: MENU_ID_AUTO_SAVE
+		});
+		menusCheckedState.set(MENU_ID_AUTO_SAVE_DISABLED, true);
+		menus.create({
+			id: MENU_ID_AUTO_SAVE_TAB,
+			type: "radio",
+			title: MENU_AUTOSAVE_TAB_MESSAGE,
+			contexts: defaultContexts,
+			checked: false,
+			parentId: MENU_ID_AUTO_SAVE
+		});
+		menusCheckedState.set(MENU_ID_AUTO_SAVE_TAB, false);
+		menus.create({
+			id: MENU_ID_AUTO_SAVE_UNPINNED,
+			type: "radio",
+			title: MENU_AUTOSAVE_UNPINNED_TABS_MESSAGE,
+			contexts: defaultContexts,
+			checked: false,
+			parentId: MENU_ID_AUTO_SAVE
+		});
+		menusCheckedState.set(MENU_ID_AUTO_SAVE_UNPINNED, false);
+		menus.create({
+			id: MENU_ID_AUTO_SAVE_ALL,
+			type: "radio",
+			title: MENU_AUTOSAVE_ALL_TABS_MESSAGE,
+			contexts: defaultContexts,
+			checked: false,
+			parentId: MENU_ID_AUTO_SAVE
+		});
+		menusCheckedState.set(MENU_ID_AUTO_SAVE_ALL, false);
+		menus.create({
+			id: "separator-4",
+			contexts: defaultContexts,
+			type: "separator"
+		});
 		menus.create({
 			id: MENU_ID_BATCH_SAVE_URLS,
 			contexts: defaultContexts,
@@ -394,134 +388,132 @@ async function createMenus(tab) {
 }
 
 async function initialize() {
-	if (BROWSER_MENUS_API_SUPPORTED) {
-		createMenus();
-		menus.onClicked.addListener(async (event, tab) => {
-			if (event.menuItemId == MENU_ID_SAVE_PAGE) {
-				if (event.linkUrl) {
-					business.saveUrls([event.linkUrl]);
-				} else {
-					business.saveTabs([tab]);
-				}
+	createMenus();
+	menus.onClicked.addListener(async (event, tab) => {
+		if (event.menuItemId == MENU_ID_SAVE_PAGE) {
+			if (event.linkUrl) {
+				business.saveUrls([event.linkUrl]);
+			} else {
+				business.saveTabs([tab]);
 			}
-			if (event.menuItemId == MENU_ID_EDIT_AND_SAVE_PAGE) {
-				const allTabsData = await tabsData.get(tab.id);
-				if (allTabsData[tab.id].savedPageDetected) {
-					business.openEditor(tab);
-				} else {
-					if (event.linkUrl) {
-						business.saveUrls([event.linkUrl], { openEditor: true });
-					} else {
-						business.saveTabs([tab], { openEditor: true });
-					}
-				}
-			}
-			if (event.menuItemId == MENU_ID_SAVE_SELECTED_LINKS) {
-				business.saveSelectedLinks(tab);
-			}
-			if (event.menuItemId == MENU_ID_VIEW_PENDINGS) {
-				await browser.tabs.create({ active: true, url: "/src/ui/pages/pendings.html" });
-			}
-			if (event.menuItemId == MENU_ID_SAVE_SELECTED) {
-				business.saveTabs([tab], { selected: true });
-			}
-			if (event.menuItemId == MENU_ID_SAVE_FRAME) {
-				business.saveTabs([tab], { frameId: event.frameId });
-			}
-			if (event.menuItemId == MENU_ID_SAVE_SELECTED_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_SELECTED_TABS) {
-				const tabs = await queryTabs({ currentWindow: true, highlighted: true });
-				business.saveTabs(tabs);
-			}
-			if (event.menuItemId == MENU_ID_SAVE_UNPINNED_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_UNPINNED_TABS) {
-				const tabs = await queryTabs({ currentWindow: true, pinned: false });
-				business.saveTabs(tabs);
-			}
-			if (event.menuItemId == MENU_ID_SAVE_ALL_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_ALL_TABS) {
-				const tabs = await queryTabs({ currentWindow: true });
-				business.saveTabs(tabs);
-			}
-			if (event.menuItemId == MENU_ID_BATCH_SAVE_URLS) {
-				business.batchSaveUrls();
-			}
-			if (event.menuItemId == MENU_ID_AUTO_SAVE_TAB) {
-				const allTabsData = await tabsData.get(tab.id);
-				allTabsData[tab.id].autoSave = true;
-				await tabsData.set(allTabsData);
-				refreshExternalComponents(tab);
-			}
-			if (event.menuItemId == MENU_ID_AUTO_SAVE_DISABLED) {
-				const allTabsData = await tabsData.get();
-				Object.keys(allTabsData).forEach(tabId => {
-					if (typeof allTabsData[tabId] == "object" && allTabsData[tabId].autoSave) {
-						allTabsData[tabId].autoSave = false;
-					}
-				});
-				allTabsData.autoSaveUnpinned = allTabsData.autoSaveAll = false;
-				await tabsData.set(allTabsData);
-				refreshExternalComponents(tab);
-			}
-			if (event.menuItemId == MENU_ID_AUTO_SAVE_ALL) {
-				const allTabsData = await tabsData.get();
-				allTabsData.autoSaveAll = event.checked;
-				await tabsData.set(allTabsData);
-				refreshExternalComponents(tab);
-			}
-			if (event.menuItemId == MENU_ID_AUTO_SAVE_UNPINNED) {
-				const allTabsData = await tabsData.get();
-				allTabsData.autoSaveUnpinned = event.checked;
-				await tabsData.set(allTabsData);
-				refreshExternalComponents(tab);
-			}
-			if (event.menuItemId.startsWith(MENU_ID_SAVE_WITH_PROFILE_PREFIX)) {
-				const profiles = await config.getProfiles();
-				const profileId = event.menuItemId.split(MENU_ID_SAVE_WITH_PROFILE_PREFIX)[1];
-				let profileName;
-				if (profileId == "default") {
-					profileName = config.DEFAULT_PROFILE_NAME;
-				} else {
-					const profileIndex = Number(profileId);
-					profileName = Object.keys(profiles)[profileIndex];
-				}
-				profiles[profileName].profileName = profileName;
-				business.saveTabs([tab], profiles[profileName]);
-			}
-			if (event.menuItemId.startsWith(MENU_ID_SELECT_PROFILE_PREFIX)) {
-				const [profiles, allTabsData] = await Promise.all([config.getProfiles(), tabsData.get()]);
-				const profileId = event.menuItemId.split(MENU_ID_SELECT_PROFILE_PREFIX)[1];
-				if (profileId == "default") {
-					allTabsData.profileName = config.DEFAULT_PROFILE_NAME;
-				} else {
-					const profileIndex = Number(profileId);
-					allTabsData.profileName = Object.keys(profiles)[profileIndex];
-				}
-				await tabsData.set(allTabsData);
-				refreshExternalComponents(tab);
-			}
-			if (event.menuItemId.startsWith(MENU_ID_ASSOCIATE_WITH_PROFILE_PREFIX)) {
-				const [profiles, rule] = await Promise.all([config.getProfiles(), config.getRule(tab.url, true)]);
-				const profileId = event.menuItemId.split(MENU_ID_ASSOCIATE_WITH_PROFILE_PREFIX)[1];
-				let profileName;
-				if (profileId == "default") {
-					profileName = config.DEFAULT_PROFILE_NAME;
-				} else if (profileId == "current") {
-					profileName = config.CURRENT_PROFILE_NAME;
-				} else {
-					const profileIndex = Number(profileId);
-					profileName = Object.keys(profiles)[profileIndex];
-				}
-				if (rule) {
-					await config.updateRule(rule.url, rule.url, profileName, profileName);
-				} else {
-					await updateTitleValue(MENU_ID_ASSOCIATE_WITH_PROFILE, MENU_UPDATE_RULE_MESSAGE);
-					await config.addRule(new URL(tab.url).hostname, profileName, profileName);
-				}
-			}
-		});
-		if (menusCreated) {
-			pendingRefresh = true;
-		} else {
-			(await browser.tabs.query({})).forEach(async tab => await refreshTab(tab));
 		}
+		if (event.menuItemId == MENU_ID_EDIT_AND_SAVE_PAGE) {
+			const allTabsData = await tabsData.get(tab.id);
+			if (allTabsData[tab.id].savedPageDetected) {
+				business.openEditor(tab);
+			} else {
+				if (event.linkUrl) {
+					business.saveUrls([event.linkUrl], { openEditor: true });
+				} else {
+					business.saveTabs([tab], { openEditor: true });
+				}
+			}
+		}
+		if (event.menuItemId == MENU_ID_SAVE_SELECTED_LINKS) {
+			business.saveSelectedLinks(tab);
+		}
+		if (event.menuItemId == MENU_ID_VIEW_PENDINGS) {
+			await browser.tabs.create({ active: true, url: "/src/ui/pages/pendings.html" });
+		}
+		if (event.menuItemId == MENU_ID_SAVE_SELECTED) {
+			business.saveTabs([tab], { selected: true });
+		}
+		if (event.menuItemId == MENU_ID_SAVE_FRAME) {
+			business.saveTabs([tab], { frameId: event.frameId });
+		}
+		if (event.menuItemId == MENU_ID_SAVE_SELECTED_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_SELECTED_TABS) {
+			const tabs = await queryTabs({ currentWindow: true, highlighted: true });
+			business.saveTabs(tabs);
+		}
+		if (event.menuItemId == MENU_ID_SAVE_UNPINNED_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_UNPINNED_TABS) {
+			const tabs = await queryTabs({ currentWindow: true, pinned: false });
+			business.saveTabs(tabs);
+		}
+		if (event.menuItemId == MENU_ID_SAVE_ALL_TABS || event.menuItemId == MENU_ID_BUTTON_SAVE_ALL_TABS) {
+			const tabs = await queryTabs({ currentWindow: true });
+			business.saveTabs(tabs);
+		}
+		if (event.menuItemId == MENU_ID_BATCH_SAVE_URLS) {
+			business.batchSaveUrls();
+		}
+		if (event.menuItemId == MENU_ID_AUTO_SAVE_TAB) {
+			const allTabsData = await tabsData.get(tab.id);
+			allTabsData[tab.id].autoSave = true;
+			await tabsData.set(allTabsData);
+			refreshExternalComponents(tab);
+		}
+		if (event.menuItemId == MENU_ID_AUTO_SAVE_DISABLED) {
+			const allTabsData = await tabsData.get();
+			Object.keys(allTabsData).forEach(tabId => {
+				if (typeof allTabsData[tabId] == "object" && allTabsData[tabId].autoSave) {
+					allTabsData[tabId].autoSave = false;
+				}
+			});
+			allTabsData.autoSaveUnpinned = allTabsData.autoSaveAll = false;
+			await tabsData.set(allTabsData);
+			refreshExternalComponents(tab);
+		}
+		if (event.menuItemId == MENU_ID_AUTO_SAVE_ALL) {
+			const allTabsData = await tabsData.get();
+			allTabsData.autoSaveAll = event.checked;
+			await tabsData.set(allTabsData);
+			refreshExternalComponents(tab);
+		}
+		if (event.menuItemId == MENU_ID_AUTO_SAVE_UNPINNED) {
+			const allTabsData = await tabsData.get();
+			allTabsData.autoSaveUnpinned = event.checked;
+			await tabsData.set(allTabsData);
+			refreshExternalComponents(tab);
+		}
+		if (event.menuItemId.startsWith(MENU_ID_SAVE_WITH_PROFILE_PREFIX)) {
+			const profiles = await config.getProfiles();
+			const profileId = event.menuItemId.split(MENU_ID_SAVE_WITH_PROFILE_PREFIX)[1];
+			let profileName;
+			if (profileId == "default") {
+				profileName = config.DEFAULT_PROFILE_NAME;
+			} else {
+				const profileIndex = Number(profileId);
+				profileName = Object.keys(profiles)[profileIndex];
+			}
+			profiles[profileName].profileName = profileName;
+			business.saveTabs([tab], profiles[profileName]);
+		}
+		if (event.menuItemId.startsWith(MENU_ID_SELECT_PROFILE_PREFIX)) {
+			const [profiles, allTabsData] = await Promise.all([config.getProfiles(), tabsData.get()]);
+			const profileId = event.menuItemId.split(MENU_ID_SELECT_PROFILE_PREFIX)[1];
+			if (profileId == "default") {
+				allTabsData.profileName = config.DEFAULT_PROFILE_NAME;
+			} else {
+				const profileIndex = Number(profileId);
+				allTabsData.profileName = Object.keys(profiles)[profileIndex];
+			}
+			await tabsData.set(allTabsData);
+			refreshExternalComponents(tab);
+		}
+		if (event.menuItemId.startsWith(MENU_ID_ASSOCIATE_WITH_PROFILE_PREFIX)) {
+			const [profiles, rule] = await Promise.all([config.getProfiles(), config.getRule(tab.url, true)]);
+			const profileId = event.menuItemId.split(MENU_ID_ASSOCIATE_WITH_PROFILE_PREFIX)[1];
+			let profileName;
+			if (profileId == "default") {
+				profileName = config.DEFAULT_PROFILE_NAME;
+			} else if (profileId == "current") {
+				profileName = config.CURRENT_PROFILE_NAME;
+			} else {
+				const profileIndex = Number(profileId);
+				profileName = Object.keys(profiles)[profileIndex];
+			}
+			if (rule) {
+				await config.updateRule(rule.url, rule.url, profileName, profileName);
+			} else {
+				await updateTitleValue(MENU_ID_ASSOCIATE_WITH_PROFILE, MENU_UPDATE_RULE_MESSAGE);
+				await config.addRule(new URL(tab.url).hostname, profileName, profileName);
+			}
+		}
+	});
+	if (menusCreated) {
+		pendingRefresh = true;
+	} else {
+		(await browser.tabs.query({})).forEach(async tab => await refreshTab(tab));
 	}
 }
 
@@ -537,26 +529,22 @@ async function refreshExternalComponents(tab) {
 }
 
 async function refreshTab(tab) {
-	if (BROWSER_MENUS_API_SUPPORTED && menusCreated) {
+	if (menusCreated) {
 		const promises = [];
 		const allTabsData = await tabsData.get(tab.id);
 		if (allTabsData[tab.id].editorDetected) {
 			updateAllVisibleValues(false);
 		} else {
 			updateAllVisibleValues(true);
-			if (config.AUTO_SAVE_SUPPORTED) {
-				promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_DISABLED, !allTabsData[tab.id].autoSave));
-				promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_TAB, allTabsData[tab.id].autoSave));
-				promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_UNPINNED, Boolean(allTabsData.autoSaveUnpinned)));
-				promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_ALL, Boolean(allTabsData.autoSaveAll)));
-			}
+			promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_DISABLED, !allTabsData[tab.id].autoSave));
+			promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_TAB, allTabsData[tab.id].autoSave));
+			promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_UNPINNED, Boolean(allTabsData.autoSaveUnpinned)));
+			promises.push(updateCheckedValue(MENU_ID_AUTO_SAVE_ALL, Boolean(allTabsData.autoSaveAll)));
 			if (tab && tab.url) {
 				const options = await config.getOptions(tab.url);
 				promises.push(updateVisibleValue(tab, options.contextMenuEnabled));
 				promises.push(updateTitleValue(MENU_ID_EDIT_AND_SAVE_PAGE, allTabsData[tab.id].savedPageDetected ? MENU_EDIT_PAGE_MESSAGE : MENU_EDIT_AND_SAVE_PAGE_MESSAGE));
-				if (config.SELECTABLE_TABS_SUPPORTED) {
-					promises.push(menus.update(MENU_ID_SAVE_SELECTED, { visible: !options.saveRawPage }));
-				}
+				promises.push(menus.update(MENU_ID_SAVE_SELECTED, { visible: !options.saveRawPage }));
 				promises.push(menus.update(MENU_ID_EDIT_AND_SAVE_PAGE, { visible: !options.openEditor || allTabsData[tab.id].savedPageDetected }));
 				let selectedEntryId = MENU_ID_ASSOCIATE_WITH_PROFILE_PREFIX + "default";
 				let title = MENU_CREATE_DOMAIN_RULE_MESSAGE;

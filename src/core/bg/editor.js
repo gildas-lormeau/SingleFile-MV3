@@ -39,13 +39,13 @@ export {
 	EDITOR_URL
 };
 
-async function open({ tabIndex, content, filename }) {
+async function open({ tabIndex, content, filename, compressContent }) {
 	const createTabProperties = { active: true, url: EDITOR_PAGE_URL };
 	if (tabIndex != null) {
 		createTabProperties.index = tabIndex;
 	}
 	const tab = await browser.tabs.create(createTabProperties);
-	tabsData.set(tab.id, { content, filename });
+	tabsData.set(tab.id, { content, filename, compressContent });
 }
 
 function onTabRemoved(tabId) {
@@ -66,10 +66,11 @@ async function onMessage(message, sender) {
 			for (let blockIndex = 0; blockIndex * MAX_CONTENT_SIZE < content.length; blockIndex++) {
 				const message = {
 					method: "editor.setTabData",
-					tabId: tab.id
+					compressContent: tabData.compressContent,
+					tabId: tab.id,
+					url: tabData.url
 				};
 				message.truncated = content.length > MAX_CONTENT_SIZE;
-				message.url = tabData.url;
 				if (message.truncated) {
 					message.finished = (blockIndex + 1) * MAX_CONTENT_SIZE > content.length;
 					message.content = content.substring(blockIndex * MAX_CONTENT_SIZE, (blockIndex + 1) * MAX_CONTENT_SIZE);
@@ -110,7 +111,16 @@ async function onMessage(message, sender) {
 		if (!message.truncated || message.finished) {
 			const updateTabProperties = { url: EDITOR_PAGE_URL };
 			await browser.tabs.update(tab.id, updateTabProperties);
-			tabsData.set(tab.id, { url: tab.url, content: contents.join(""), filename: message.filename });
+			const content = message.compressContent ? contents.flat() : contents.join("");
+			tabsData.set(tab.id, { 
+				url: tab.url, 
+				content, 
+				filename: message.filename, 
+				compressContent: message.compressContent,
+				selfExtractingArchive: message.selfExtractingArchive,
+				extractDataFromPageTags: message.extractDataFromPageTags,
+				insertTextBody: message.insertTextBody
+			});
 		}
 		return {};
 	}

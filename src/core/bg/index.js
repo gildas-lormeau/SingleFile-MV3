@@ -23,6 +23,7 @@
 
 /* global browser */
 
+import "./../../../lib/chrome-browser-polyfill.js";
 import "./../../lib/single-file/background.js";
 import * as config from "./config.js";
 import * as bootstrap from "./bootstrap.js";
@@ -72,6 +73,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 		return bootstrap.onMessage(message, sender);
 	}
 });
+
 if (browser.runtime.onMessageExternal) {
 	browser.runtime.onMessageExternal.addListener(externalMesssages.onMessage);
 }
