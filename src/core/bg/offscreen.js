@@ -54,7 +54,7 @@ async function createOffscreenDocument() {
 	if (creating) {
 		await creating;
 	} else if (!await browser.offscreen.hasDocument()) {
-		creating = await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER"] });
+		creating = await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER", "WORKERS"] });
 		creating = null;
 	}
 }
