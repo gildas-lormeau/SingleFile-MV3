@@ -29,8 +29,8 @@ import * as yabson from "./../../lib/yabson/yabson.js";
 browser.runtime.onMessage.addListener(async ({ method, pageData, url, options }) => {
 	if (method == "processPage") {
 		const result = await getPageData(options, null, null, { fetch });
-		const blob = new Blob([result.content], { type: "text/html" });
-		return { 
+		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: "text/html" });
+		return {
 			url: URL.createObjectURL(blob),
 			archiveTime: result.archiveTime,
 			doctype: result.doctype,
@@ -40,7 +40,7 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, options })
 	}
 	if (method == "compressPage") {
 		const blob = await compress(await yabson.parse(pageData), options);
-		return { 
+		return {
 			url: URL.createObjectURL(blob)
 		};
 	}
