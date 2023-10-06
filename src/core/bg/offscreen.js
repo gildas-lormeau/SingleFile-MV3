@@ -26,6 +26,7 @@
 import * as yabson from "./../../lib/yabson/yabson.js";
 
 const OFFSCREEN_DOCUMENT_URL = "/src/ui/pages/offscreen-document.html";
+let creating;
 
 export {
 	compressPage,
@@ -50,7 +51,10 @@ async function revokeObjectURL(url) {
 }
 
 async function createOffscreenDocument() {
-	if (!await browser.offscreen.hasDocument()) {
-		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER"] });
+	if (creating) {
+		await creating;
+	} else if (!await browser.offscreen.hasDocument()) {
+		creating = await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER"] });
+		creating = null;
 	}
 }
