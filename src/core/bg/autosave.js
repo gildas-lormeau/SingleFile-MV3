@@ -150,12 +150,12 @@ async function saveContent(message, tab) {
 		options.tabId = tabId;
 		options.tabIndex = tab.index;
 		options.keepFilename = options.saveToGDrive || options.saveToGitHub || options.saveWithWebDAV;
-		let pageData, result;
+		let pageData;
 		try {
 			if (options.autoSaveExternalSave) {
 				await companion.externalSave(options);
 			} else {
-				result = await offscreen.processPage(options);
+				pageData = await offscreen.processPage(options);
 				let skipped;
 				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveToGitHub && !options.saveWithCompanion) {
 					const testSkip = await downloads.testSkipSave(pageData.filename, options);
@@ -164,24 +164,24 @@ async function saveContent(message, tab) {
 				}
 				if (!skipped) {
 					if (options.saveToGDrive) {
-						const content = await (await fetch(result.url)).blob();
+						const content = await (await fetch(pageData.url)).blob();
 						await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options, {
 							forceWebAuthFlow: options.forceWebAuthFlow
 						}, {
 							filenameConflictAction: options.filenameConflictAction
 						});
 					} else if (options.saveWithWebDAV) {
-						const content = await (await fetch(result.url)).blob();
+						const content = await (await fetch(pageData.url)).blob();
 						await downloads.saveWithWebDAV(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options.webDAVURL, options.webDAVUser, options.webDAVPassword, {
 							filenameConflictAction: options.filenameConflictAction
 						});
 					} else if (options.saveToGitHub) {
-						const content = await (await fetch(result.url)).blob();
+						const content = await (await fetch(pageData.url)).blob();
 						await (await downloads.saveToGitHub(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options.githubToken, options.githubUser, options.githubRepository, options.githubBranch, {
 							filenameConflictAction: options.filenameConflictAction
 						})).pushPromise;
 					} else if (options.saveWithCompanion && !options.compressContent) {
-						const content = await (await fetch(result.url)).text();
+						const content = await (await fetch(pageData.url)).text();
 						await companion.save({
 							filename: pageData.filename,
 							content: content,
@@ -190,7 +190,7 @@ async function saveContent(message, tab) {
 					} else {
 						await downloads.downloadPage(pageData, options);
 						if (options.openSavedPage && !options.compressContent) {
-							const createTabProperties = { active: true, url: result.url, windowId: tab.windowId };
+							const createTabProperties = { active: true, url: pageData.url, windowId: tab.windowId };
 							const index = tab.index;
 							try {
 								await browser.tabs.get(tabId);
@@ -213,8 +213,8 @@ async function saveContent(message, tab) {
 				browser.tabs.remove(replacedTabIds[tabId] || tabId);
 				delete replacedTabIds[tabId];
 			}
-			if (result && result.url) {
-				offscreen.revokeObjectURL(result.url);
+			if (pageData && pageData.url) {
+				offscreen.revokeObjectURL(pageData.url);
 			}
 			ui.onEnd(tabId, true);
 		}
