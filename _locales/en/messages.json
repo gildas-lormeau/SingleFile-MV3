@@ -583,6 +583,10 @@
 		"message": "maximum download time (s)",
 		"description": "Options page label: 'maximum download time (s)'"
 	},
+	"optionPassReferrerOnError": {
+		"message": "pass \"Referer\" header after a cross-origin request error",
+		"description": "Options page label: 'pass \"Referer\" header after a cross-origin request error'"
+	},
 	"optionSaveRawPage": {
 		"message": "save raw page",
 		"description": "Options page label: 'save raw page'"

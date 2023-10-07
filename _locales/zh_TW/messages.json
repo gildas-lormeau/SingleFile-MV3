@@ -583,6 +583,10 @@
 		"message": "時間上限（秒）",
 		"description": "Options page label: 'maximum download time (s)'"
 	},
+	"optionPassReferrerOnError": {
+		"message": "跨域請求失敗時添加來源地址頭信息（Referer）",
+		"description": "Options page label: 'pass \"Referer\" header after a cross-origin request error'"
+	},
 	"optionSaveRawPage": {
 		"message": "保存原始頁面",
 		"description": "Options page label: 'save raw page'"

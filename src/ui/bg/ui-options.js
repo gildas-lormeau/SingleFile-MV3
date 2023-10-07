@@ -115,6 +115,7 @@ const removeAlternativeFontsLabel = document.getElementById("removeAlternativeFo
 const removeAlternativeImagesLabel = document.getElementById("removeAlternativeImagesLabel");
 const removeAlternativeMediasLabel = document.getElementById("removeAlternativeMediasLabel");
 const saveCreatedBookmarksLabel = document.getElementById("saveCreatedBookmarksLabel");
+const passReferrerOnErrorLabel = document.getElementById("passReferrerOnErrorLabel");
 const replaceBookmarkURLLabel = document.getElementById("replaceBookmarkURLLabel");
 const allowedBookmarkFoldersLabel = document.getElementById("allowedBookmarkFoldersLabel");
 const ignoredBookmarkFoldersLabel = document.getElementById("ignoredBookmarkFoldersLabel");
@@ -245,6 +246,7 @@ const removeAlternativeFontsInput = document.getElementById("removeAlternativeFo
 const removeAlternativeImagesInput = document.getElementById("removeAlternativeImagesInput");
 const removeAlternativeMediasInput = document.getElementById("removeAlternativeMediasInput");
 const saveCreatedBookmarksInput = document.getElementById("saveCreatedBookmarksInput");
+const passReferrerOnErrorInput = document.getElementById("passReferrerOnErrorInput");
 const replaceBookmarkURLInput = document.getElementById("replaceBookmarkURLInput");
 const allowedBookmarkFoldersInput = document.getElementById("allowedBookmarkFoldersInput");
 const ignoredBookmarkFoldersInput = document.getElementById("ignoredBookmarkFoldersInput");
@@ -629,6 +631,7 @@ removeAlternativeFontsLabel.textContent = browser.i18n.getMessage("optionRemoveA
 removeAlternativeImagesLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeImages");
 removeAlternativeMediasLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeMedias");
 saveCreatedBookmarksLabel.textContent = browser.i18n.getMessage("optionSaveCreatedBookmarks");
+passReferrerOnErrorLabel.textContent = browser.i18n.getMessage("optionPassReferrerOnError");
 replaceBookmarkURLLabel.textContent = browser.i18n.getMessage("optionReplaceBookmarkURL");
 allowedBookmarkFoldersLabel.textContent = browser.i18n.getMessage("optionAllowedBookmarkFolders");
 ignoredBookmarkFoldersLabel.textContent = browser.i18n.getMessage("optionIgnoredBookmarkFolders");
@@ -909,6 +912,7 @@ async function refresh(profileName) {
 	groupDuplicateImagesInput.checked = profileOptions.groupDuplicateImages;
 	removeAlternativeMediasInput.checked = profileOptions.removeAlternativeMedias;
 	saveCreatedBookmarksInput.checked = profileOptions.saveCreatedBookmarks;
+	passReferrerOnErrorInput.checked = profileOptions.passReferrerOnError;
 	replaceBookmarkURLInput.checked = profileOptions.replaceBookmarkURL;
 	replaceBookmarkURLInput.disabled = !profileOptions.saveCreatedBookmarks;
 	allowedBookmarkFoldersInput.value = profileOptions.allowedBookmarkFolders.map(folder => folder.replace(/,/g, "\\,")).join(",");
@@ -1025,6 +1029,7 @@ async function update() {
 			removeAlternativeImages: removeAlternativeImagesInput.checked,
 			removeAlternativeMedias: removeAlternativeMediasInput.checked,
 			saveCreatedBookmarks: saveCreatedBookmarksInput.checked,
+			passReferrerOnError: passReferrerOnErrorInput.checked,
 			replaceBookmarkURL: replaceBookmarkURLInput.checked,
 			allowedBookmarkFolders: allowedBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),
 			ignoredBookmarkFolders: ignoredBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),

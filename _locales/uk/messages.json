@@ -583,6 +583,10 @@
 		"message": "максимальний час завантаження (с)",
 		"description": "Options page label: 'maximum download time (s)'"
 	},
+	"optionPassReferrerOnError": {
+		"message": "передача заголовка \"Referer\" після помилки перехресного запиту",
+		"description": "Options page label: 'pass \"Referer\" header after a cross-origin request error'"
+	},
 	"optionSaveRawPage": {
 		"message": "зберегти вихідну сторінку",
 		"description": "Options page label: 'save raw page'"
