@@ -89,18 +89,18 @@ export {
 
 async function fetchResource(url, options = {}) {
 	try {
-		return await fetch(url, { cache: "force-cache", headers: options.headers });
+		return await fetch(url, { cache: "force-cache", referrer: options.referrer, headers: options.headers });
 	}
 	catch (error) {
 		requestId++;
 		const promise = new Promise((resolve, reject) => pendingResponses.set(requestId, { resolve, reject }));
-		await sendMessage({ method: "singlefile.fetch", url, requestId, headers: options.headers });
+		await sendMessage({ method: "singlefile.fetch", url, requestId, referrer: options.referrer, headers: options.headers });
 		return promise;
 	}
 }
 
 async function frameFetch(url, options) {
-	const response = await sendMessage({ method: "singlefile.fetchFrame", url, frameId: options.frameId, headers: options.headers });
+	const response = await sendMessage({ method: "singlefile.fetchFrame", url, frameId: options.frameId, referrer: options.referrer, headers: options.headers });
 	return {
 		status: response.status,
 		headers: new Map(response.headers),

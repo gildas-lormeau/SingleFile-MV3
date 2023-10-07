@@ -121,7 +121,8 @@
 		"activeTab",
 		"scripting",
 		"offscreen",
-		"sidePanel"
+		"sidePanel",
+		"declarativeNetRequest"
 	],
 	"optional_permissions": [
 		"identity",

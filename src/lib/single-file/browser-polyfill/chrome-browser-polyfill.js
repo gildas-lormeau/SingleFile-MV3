@@ -148,6 +148,7 @@ if (typeof globalThis == "undefined") {
 				remove: permissions => nativeAPI.permissions.remove(permissions)
 			},
 			runtime: {
+				id: nativeAPI.runtime.id,
 				sendNativeMessage: (application, message) => new Promise((resolve, reject) => {
 					nativeAPI.runtime.sendNativeMessage(application, message, result => {
 						if (nativeAPI.runtime.lastError) {
@@ -321,6 +322,9 @@ if (typeof globalThis == "undefined") {
 			offscreen: nativeAPI.offscreen && {
 				createDocument: parameters => nativeAPI.offscreen.createDocument(parameters),
 				hasDocument: () => nativeAPI.offscreen.hasDocument()
+			},
+			declarativeNetRequest: {
+				updateSessionRules: parameters => nativeAPI.declarativeNetRequest.updateSessionRules(parameters)
 			}
 		}));
 	}

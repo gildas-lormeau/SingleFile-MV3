@@ -33,12 +33,6 @@ https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
   > breaking the extension. With Manifest V3, it's no longer possible (cf.
   > https://crbug.com/1271154).
 
-- **no "Referrer" header injection**
-
-  > With Manifest V2, it was possible to inject a "Referrer" HTTP header if
-  > necessary. With Manifest V3, it's no longer possible (cf.
-  > https://crbug.com/1149619).
-
 ## Benefits of the Manifest V3
 
 - Ability to save frames with `src` using `blob:` or `data:` protocols via 

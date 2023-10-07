@@ -21,9 +21,12 @@
  *   Source.
  */
 
-/* global browser, fetch */
+/* global browser, fetch, setTimeout */
 
 const MAX_CONTENT_SIZE = 8 * (1024 * 1024);
+const REQUEST_WAIT_DELAY = 500;
+
+let requestId = 0;
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	if (message.method && message.method.startsWith("singlefile.fetch")) {
@@ -38,7 +41,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 async function onRequest(message, sender) {
 	if (message.method == "singlefile.fetch") {
 		try {
-			const response = await fetchResource(message.url, { headers: message.headers });
+			const response = await fetchResource(message.url, { referrer: message.referrer, headers: message.headers });
 			return sendResponse(sender.tab.id, message.requestId, response);
 		} catch (error) {
 			return sendResponse(sender.tab.id, message.requestId, { error: error.message, arrray: [] });
@@ -71,6 +74,24 @@ async function sendResponse(tabId, requestId, response) {
 
 async function fetchResource(url, options = {}) {
 	const response = await fetch(url, options);
+	if (options.referrer && response.status == 401 || response.status == 403 || response.status == 404) {
+		const requestId = await enableReferrerOnError(url, options.referrer);
+		await new Promise(resolve => setTimeout(resolve, REQUEST_WAIT_DELAY));
+		try {
+			const response = await fetch(url, options);
+			const array = Array.from(new Uint8Array(await response.arrayBuffer()));
+			const headers = { "content-type": response.headers.get("content-type") };
+			const status = response.status;
+			return {
+				array,
+				headers,
+				status
+			};
+		} finally {
+			await disableReferrerOnError(requestId);
+		}
+	}
+
 	const array = Array.from(new Uint8Array(await response.arrayBuffer()));
 	const headers = { "content-type": response.headers.get("content-type") };
 	const status = response.status;
@@ -79,4 +100,35 @@ async function fetchResource(url, options = {}) {
 		headers,
 		status
 	};
+}
+
+async function enableReferrerOnError(url, referrer) {
+	const id = requestId++;
+	await browser.declarativeNetRequest.updateSessionRules({
+		addRules: [{
+			action: {
+				type: "modifyHeaders",
+				requestHeaders: [
+					{
+						header: "Referer",
+						operation: "set",
+						value: referrer
+					}
+				]
+			},
+			condition: {
+				domains: [browser.runtime.id],
+				urlFilter: url,
+				resourceTypes: ["xmlhttprequest"]
+			},
+			id
+		}]
+	});
+	return id;
+}
+
+async function disableReferrerOnError(requestId) {
+	await browser.declarativeNetRequest.updateSessionRules({
+		removeRuleIds: [requestId]
+	});
 }
