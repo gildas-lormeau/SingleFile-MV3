@@ -23,10 +23,6 @@
 
 /* global globalThis, window, document, fetch, DOMParser, getComputedStyle, setTimeout, clearTimeout, NodeFilter, Readability, isProbablyReaderable, matchMedia, TextDecoder, Node, URL, prompt, MutationObserver, FileReader */
 
-import * as zip from "single-file-core/vendor/zip/zip.js";
-import { extract } from "single-file-core/processors/compression/compression-extract.js";
-import { display } from "single-file-core/processors/compression/compression-display.js";
-
 (globalThis => {
 
 	const singlefile = globalThis.singlefile;
@@ -980,7 +976,7 @@ pre code {
 	let selectedNote, anchorElement, maskNoteElement, maskPageElement, highlightSelectionMode, removeHighlightMode, resizingNoteMode, movingNoteMode, highlightColor, collapseNoteTimeout, cuttingOuterMode, cuttingMode, cuttingTouchTarget, cuttingPath, cuttingPathIndex, previousContent;
 	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar;
 
-	globalThis.zip = zip;
+	globalThis.zip = singlefile.helper.zip;
 	window.onmessage = async event => {
 		const message = JSON.parse(event.data);
 		if (message.method == "init") {
@@ -1121,7 +1117,7 @@ pre code {
 			const zipOptions = {
 				useWebWorkers: false
 			};
-			const { docContent, origDocContent, resources, url } = await extract(content, {
+			const { docContent, origDocContent, resources, url } = await singlefile.helper.extract(content, {
 				password,
 				prompt,
 				shadowRootScriptURL: new URL("/lib/single-file-extension-editor-init.js", document.baseURI).href,
@@ -1132,7 +1128,7 @@ pre code {
 			pageCompressContent = true;
 			const contentDocument = (new DOMParser()).parseFromString(docContent, "text/html");
 			if (detectSavedPage(contentDocument)) {
-				await display(document, docContent, { disableFramePointerEvents: true });
+				await singlefile.helper.display(document, docContent, { disableFramePointerEvents: true });
 				const infobarElement = document.querySelector(singlefile.helper.INFOBAR_TAGNAME);
 				if (infobarElement) {
 					infobarElement.remove();
