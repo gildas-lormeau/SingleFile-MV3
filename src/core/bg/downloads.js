@@ -247,7 +247,14 @@ async function downloadCompressedContent(message, tab) {
 		if (message.openEditor) {
 			ui.onEdit(tabId);
 			const content = Array.from(new Uint8Array(await (await fetch(result.url)).arrayBuffer()));
-			await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content, compressContent: true });
+			await editor.open({
+				tabIndex: tab.index + 1,
+				filename: message.filename,
+				content,
+				compressContent: message.compressContent,
+				selfExtractingArchive: message.selfExtractingArchive,
+				extractDataFromPage: message.extractDataFromPage
+			});
 		} else if (message.foregroundSave) {
 			const blob = (await fetch(result.url)).blob();
 			await downloadPageForeground(message.taskId, message.filename, blob, tabId, message.foregroundSave);
