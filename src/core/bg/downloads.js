@@ -248,6 +248,9 @@ async function downloadCompressedContent(message, tab) {
 			ui.onEdit(tabId);
 			const content = Array.from(new Uint8Array(await (await fetch(result.url)).arrayBuffer()));
 			await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content, compressContent: true });
+		} else if (message.foregroundSave) {
+			const blob = (await fetch(result.url)).blob();
+			await downloadPageForeground(message.taskId, message.filename, blob, tabId, message.foregroundSave);
 		} else {
 			try {
 				const prompt = filename => promptFilename(tabId, filename);
@@ -432,8 +435,8 @@ async function downloadPage(pageData, options) {
 	}
 }
 
-async function downloadPageForeground(taskId, filename, content, tabId) {
-	const serializer = yabson.getSerializer({ filename, taskId, content: await content.arrayBuffer() });
+async function downloadPageForeground(taskId, filename, content, tabId, foregroundSave) {
+	const serializer = yabson.getSerializer({ filename, taskId, foregroundSave, content: await content.arrayBuffer() });
 	for await (const data of serializer) {
 		await browser.tabs.sendMessage(tabId, {
 			method: "content.download",

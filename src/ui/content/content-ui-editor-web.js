@@ -1079,7 +1079,8 @@ pre code {
 					doctype: singlefile.helper.getDoctypeString(document),
 					url: pageUrl,
 					viewport: viewport ? viewport.content : null,
-					compressContent: true
+					compressContent: true,
+					foregroundSave: message.foregroundSave
 				}), "*");
 			} else {
 				window.parent.postMessage(JSON.stringify({
