@@ -253,7 +253,8 @@ async function downloadCompressedContent(message, tab) {
 				content,
 				compressContent: message.compressContent,
 				selfExtractingArchive: message.selfExtractingArchive,
-				extractDataFromPage: message.extractDataFromPage
+				extractDataFromPage: message.extractDataFromPage,
+				insertTextBody: message.insertTextBody
 			});
 		} else if (message.foregroundSave) {
 			const blob = (await fetch(result.url)).blob();
