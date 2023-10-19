@@ -189,17 +189,17 @@ async function saveContent(message, tab) {
 						});
 					} else {
 						await downloads.downloadPage(pageData, options);
-						if (options.openSavedPage && !options.compressContent) {
-							const createTabProperties = { active: true, url: pageData.url, windowId: tab.windowId };
-							const index = tab.index;
-							try {
-								await browser.tabs.get(tabId);
-								createTabProperties.index = index + 1;
-							} catch (error) {
-								createTabProperties.index = index;
-							}
-							browser.tabs.create(createTabProperties);
+					}
+					if (options.openSavedPage) {
+						const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?compressed=true&blobURI=" + pageData.url, windowId: tab.windowId };
+						const index = tab.index;
+						try {
+							await browser.tabs.get(tabId);
+							createTabProperties.index = index + 1;
+						} catch (error) {
+							createTabProperties.index = index;
 						}
+						browser.tabs.create(createTabProperties);
 					}
 					if (pageData.hash) {
 						await woleet.anchor(pageData.hash, options.woleetKey);
@@ -213,7 +213,7 @@ async function saveContent(message, tab) {
 				browser.tabs.remove(replacedTabIds[tabId] || tabId);
 				delete replacedTabIds[tabId];
 			}
-			if (pageData && pageData.url) {
+			if (pageData && pageData.url && !options.openSavedPage) {
 				offscreen.revokeObjectURL(pageData.url);
 			}
 			ui.onEnd(tabId, true);
