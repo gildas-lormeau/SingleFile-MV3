@@ -115,8 +115,7 @@
 					<li data-options-label="openSavedPageLabel" id="openSavedPageOption"> <span class="option">Option:
 							open saved pages in a new tab</span>
 						<p>Check this option to display the saved page in a new tab. This option can be useful, for
-							example, in order to check the page is properly saved. This option does not work with
-							archive formats based on ZIP files.</p>
+							example, in order to check the page is properly saved.</p>
 					</li>
 					<li data-options-label="autoCloseLabel"> <span class="option">Option: auto-close the tab after the
 							page is saved</span>
@@ -525,6 +524,15 @@
 					<li data-options-label="maxResourceDelayLabel"> <span class="option">Option: maximum download delay
 							(s)</span>
 						<p>Enter the maximum download delay in seconds.</p>
+					</li>
+					<li data-options-label="passReferrerOnErrorLabel" id="passReferrerOnErrorOption"> <span
+							class="option">Option: pass \"Referer\"
+							header on
+							cross-origin errors</span>
+						<p>Check this option to pass the HTTP header "Referer" with the "origin" policy after an 401,
+							403, or 404 HTTP error when downloading a cross-origin resource. You should enable this
+							option if you cannot download resources blocked by a hotlink protection.</p>
+						<p class="notice">It is recommended to <u>uncheck</u> this option</p>
 					</li>
 				</ul>
 				<p>Annotation editor</p>
@@ -935,7 +943,10 @@
 							<li>The last saved path cannot be remembered by default. To circumvent this limitation,
 								disable the option "Misc. &gt; Save pages in background".</li>
 							<li>The following characters are replaced with _ in filenames: ~, +, \, ?, %, *, :, |, ",
-								&lt;, &gt;</li>
+								&lt;, &gt;. This is done to maintain compatibility with various OSs and file systems. 
+								If you don't need that level of compatibility and know what you are doing, you can 
+								change the list of forbidden characters in 
+								<a href="https://github.com/gildas-lormeau/SingleFile/wiki/Hidden-options">Hidden options</a>.</li>
 						</ul>
 					</li>
 					<li>Chromium-based browsers
