@@ -39,7 +39,7 @@ import * as yabson from "./../../lib/yabson/yabson.js";
 import * as offscreen from "./offscreen.js";
 
 const partialContents = new Map();
-const parsers = new Map();
+const tabData = new Map();
 const MIMETYPE_HTML = "text/html";
 const GDRIVE_CLIENT_ID = "207618107333-7tjs1im1pighftpoepea2kvkubnfjj44.apps.googleusercontent.com";
 const GDRIVE_CLIENT_KEY = "VQJ8Gq8Vxx72QyxPyeLtWvUt";
@@ -116,15 +116,16 @@ async function downloadTabPage(message, tab) {
 			await offscreen.revokeObjectURL(message.blobURL);
 		}
 	} else if (message.compressContent) {
-		let parser = parsers.get(tabId);
-		if (!parser) {
-			parser = yabson.getParser();
-			parsers.set(tabId, parser);
+		let blobParts = tabData.get(tabId);
+		if (!blobParts) {
+			blobParts = [];
+			tabData.set(tabId, blobParts);
 		}
-		let result = await parser.next(message.data);
-		if (result.done) {
-			const message = result.value;
-			parsers.delete(tabId);
+		if (message.data) {
+			blobParts.push(new Uint8Array(message.data));
+		} else {
+			tabData.delete(tabId);
+			const message = await yabson.parse(new Uint8Array((await new Blob(blobParts).arrayBuffer())));
 			await downloadCompressedContent(message, tab);
 		}
 	} else {
