@@ -1,4 +1,4 @@
-# SingleFile Lite
+# SingleFile MV3
 
 This is the (future) new version of
 [SingleFile](https://github.com/gildas-lormeau/SingleFile) compatible with the
