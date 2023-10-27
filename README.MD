@@ -1,20 +1,8 @@
 # SingleFile Lite
 
-This is the new version of
+This is the (future) new version of
 [SingleFile](https://github.com/gildas-lormeau/SingleFile) compatible with the
-long-awaited Manifest V3!
-
-![Manifest V3 logo with a thug font](https://github.com/gildas-lormeau/SingleFile-Lite/blob/main/promo.png?raw=true)
-
-Don't have any idea what Manifest V3 is? You can find more information in this
-blog article: https://developer.chrome.com/blog/mv2-transition/
-
-The objective is summarized as follows:
-
-> Manifest V3 is more secure, performant, and privacy-preserving than its
-> predecessor. It is an evolution of the extension platform that takes into
-> consideration both the changing web landscape and the future of browser
-> extensions.
+Manifest V3.
 
 ## Install
 
@@ -25,13 +13,9 @@ of the project and install it manually by unzipping it somewhere on your disk
 and following these instructions:
 https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked.
 
-## Notable features of SingleFile Lite
+## Blocking Issues
 
-- **unreliable auto-updates**
-
-  > With Manifest V2, it was possible to auto-update the extension without
-  > breaking the extension. With Manifest V3, it's no longer possible (cf.
-  > https://crbug.com/1271154).
+- **unreliable auto-updates**, cf. https://crbug.com/1271154
 
 ## Benefits of the Manifest V3
 
