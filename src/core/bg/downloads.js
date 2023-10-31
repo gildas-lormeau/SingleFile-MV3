@@ -196,6 +196,8 @@ async function downloadContent(message, tab) {
 					incognito: tab.incognito,
 					filenameConflictAction: message.filenameConflictAction,
 					filenameReplacementCharacter: message.filenameReplacementCharacter,
+					bookmarkId: message.bookmarkId,
+					replaceBookmarkURL: message.replaceBookmarkURL,
 					includeInfobar: message.includeInfobar
 				});
 			}
@@ -291,7 +293,8 @@ async function downloadCompressedContent(message, tab) {
 						filenameConflictAction: message.filenameConflictAction,
 						filenameReplacementCharacter: message.filenameReplacementCharacter,
 						bookmarkId: message.bookmarkId,
-						replaceBookmarkURL: message.replaceBookmarkURL
+						replaceBookmarkURL: message.replaceBookmarkURL,
+						includeInfobar: message.includeInfobar
 					});
 				} else {
 					const blob = await (await fetch(result.url)).blob();
