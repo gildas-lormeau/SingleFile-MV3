@@ -201,7 +201,7 @@ async function downloadContent(message, tab) {
 					includeInfobar: message.includeInfobar
 				});
 			}
-			if (message.replaceBookmarkURL && response && response.url) {
+			if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
 				await bookmarks.update(message.bookmarkId, { url: response.url });
 			}
 			ui.onEnd(tabId);
