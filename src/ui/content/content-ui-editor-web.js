@@ -1094,6 +1094,14 @@ pre code {
 		}
 		if (message.method == "displayInfobar") {
 			singlefile.helper.displayIcon(document, true);
+			const infobarDoc = document.implementation.createHTMLDocument();
+			infobarDoc.body.appendChild(document.querySelector(singlefile.helper.INFOBAR_TAGNAME));
+			serializeShadowRoots(infobarDoc.body);
+			const content = singlefile.helper.serialize(infobarDoc, true);
+			window.parent.postMessage(JSON.stringify({
+				method: "displayInfobar",
+				content
+			}), "*");
 		}
 	};
 	window.onresize = reflowNotes;
