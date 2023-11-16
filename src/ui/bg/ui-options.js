@@ -28,13 +28,29 @@ const HELP_PAGE_PATH = "/src/ui/pages/help.html";
 let DEFAULT_PROFILE_NAME,
 	DISABLED_PROFILE_NAME,
 	CURRENT_PROFILE_NAME,
-	BACKGROUND_SAVE_SUPPORTED;
+	BACKGROUND_SAVE_SUPPORTED,
+	AUTO_SAVE_SUPPORTED,
+	AUTO_OPEN_EDITOR_SUPPORTED,
+	INFOBAR_SUPPORTED,
+	BOOKMARKS_API_SUPPORTED,
+	IDENTITY_API_SUPPORTED,
+	CLIPBOARD_API_SUPPORTED,
+	NATIVE_API_API_SUPPORTED,
+	WEB_BLOCKING_API_SUPPORTED;
 browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	({
 		DEFAULT_PROFILE_NAME,
 		DISABLED_PROFILE_NAME,
 		CURRENT_PROFILE_NAME,
-		BACKGROUND_SAVE_SUPPORTED
+		BACKGROUND_SAVE_SUPPORTED,
+		AUTO_SAVE_SUPPORTED,
+		AUTO_OPEN_EDITOR_SUPPORTED,
+		INFOBAR_SUPPORTED,
+		BOOKMARKS_API_SUPPORTED,
+		IDENTITY_API_SUPPORTED,
+		CLIPBOARD_API_SUPPORTED,
+		NATIVE_API_API_SUPPORTED,
+		WEB_BLOCKING_API_SUPPORTED
 	} = data);
 	init();
 });
@@ -496,6 +512,7 @@ saveWithCompanionInput.addEventListener("click", () => disableDestinationPermiss
 saveToGDriveInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"], false), false);
 saveWithWebDAVInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
+passReferrerOnErrorInput.addEventListener("click", passReferrerOnError, false);
 autoSaveExternalSaveInput.addEventListener("click", () => enableExternalSave(autoSaveExternalSaveInput), false);
 saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
 saveToClipboardInput.addEventListener("click", onClickSaveToClipboard, false);
@@ -529,7 +546,8 @@ document.body.onchange = async event => {
 		target != ruleEditProfileInput &&
 		target != ruleEditAutoSaveProfileInput &&
 		target != showAutoSaveProfileInput &&
-		target != saveCreatedBookmarksInput) {
+		target != saveCreatedBookmarksInput &&
+		target != passReferrerOnErrorInput) {
 		if (target != profileNamesInput && target != showAllProfilesInput) {
 			await update();
 		}
@@ -715,20 +733,35 @@ browser.runtime.sendMessage({ method: "tabsData.get" }).then(allTabsData => {
 getHelpContents();
 
 function init() {
-	document.getElementById("autoSaveSection").hidden = true;
-	document.getElementById("showAutoSaveProfileOption").hidden = true;
-	rulesContainerElement.classList.add("compact");
+	if (!AUTO_SAVE_SUPPORTED) {
+		document.getElementById("autoSaveSection").hidden = true;
+		document.getElementById("showAutoSaveProfileOption").hidden = true;
+		rulesContainerElement.classList.add("compact");
+	}
 	if (!BACKGROUND_SAVE_SUPPORTED) {
 		document.getElementById("backgroundSaveOptions").hidden = true;
 		document.getElementById("confirmFilenameOption").hidden = true;
 		document.getElementById("filenameConflictAction").hidden = true;
+	}
+	if (!BOOKMARKS_API_SUPPORTED) {
 		document.getElementById("bookmarksOptions").hidden = true;
-		document.getElementById("openSavedPageOption").hidden = true;
+	}
+	if (!AUTO_OPEN_EDITOR_SUPPORTED) {
 		document.getElementById("autoOpenEditorOption").hidden = true;
+	}
+	if (!INFOBAR_SUPPORTED) {
 		document.getElementById("displayInfobarOption").hidden = true;
+	}
+	if (!IDENTITY_API_SUPPORTED) {
 		document.getElementById("saveToGDriveOption").hidden = true;
+	}
+	if (!CLIPBOARD_API_SUPPORTED) {
 		document.getElementById("saveToClipboardOption").hidden = true;
+	}
+	if (!NATIVE_API_API_SUPPORTED) {
 		document.getElementById("saveWithCompanionOption").hidden = true;
+	}
+	if (!WEB_BLOCKING_API_SUPPORTED) {
 		document.getElementById("passReferrerOnErrorOption").hidden = true;
 	}
 }
@@ -1040,9 +1073,9 @@ async function update() {
 			ignoredBookmarkFolders: ignoredBookmarkFoldersInput.value.replace(/([^\\]),/g, "$1 ,").split(/[^\\],/).map(folder => folder.replace(/\\,/g, ",")),
 			compressContent: fileFormatSelectInput.value.includes("zip"),
 			createRootDirectory: createRootDirectoryInput.checked,
+			preventAppendedData: preventAppendedDataInput.checked,
 			selfExtractingArchive: fileFormatSelectInput.value.includes("self-extracting"),
 			extractDataFromPage: fileFormatSelectInput.value == "self-extracting-zip-universal",
-			preventAppendedData: preventAppendedDataInput.checked,
 			password: passwordInput.value,
 			groupDuplicateImages: groupDuplicateImagesInput.checked,
 			infobarTemplate: infobarTemplateInput.value,
@@ -1160,6 +1193,34 @@ async function disableDestinationPermissions(permissions, disableGDrive = true) 
 		await browser.permissions.remove({ permissions });
 	} catch (error) {
 		//ignored
+	}
+}
+
+async function passReferrerOnError() {
+	if (passReferrerOnErrorInput.checked) {
+		passReferrerOnErrorInput.checked = false;
+		try {
+			const permissionGranted = await browser.permissions.request({ permissions: ["webRequest", "webRequestBlocking"] });
+			if (permissionGranted) {
+				passReferrerOnErrorInput.checked = true;
+				await update();
+				await refresh();
+				await browser.runtime.sendMessage({ method: "requests.enableReferrerOnError" });
+			} else {
+				await disableOption();
+			}
+		} catch (error) {
+			await disableOption();
+		}
+	} else {
+		await disableOption();
+	}
+
+	async function disableOption() {
+		await update();
+		await refresh();
+		await browser.runtime.sendMessage({ method: "requests.disableReferrerOnError" });
+		await browser.permissions.remove({ permissions: ["webRequest", "webRequestBlocking"] });
 	}
 }
 
