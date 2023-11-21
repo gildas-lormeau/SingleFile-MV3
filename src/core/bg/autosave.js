@@ -157,7 +157,7 @@ async function saveContent(message, tab) {
 			} else {
 				pageData = await offscreen.processPage(options);
 				let skipped;
-				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveToGitHub && !options.saveWithCompanion) {
+				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion) {
 					const testSkip = await downloads.testSkipSave(pageData.filename, options);
 					skipped = testSkip.skipped;
 					options.filenameConflictAction = testSkip.filenameConflictAction;
@@ -168,6 +168,11 @@ async function saveContent(message, tab) {
 						await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options, {
 							forceWebAuthFlow: options.forceWebAuthFlow
 						}, {
+							filenameConflictAction: options.filenameConflictAction
+						});
+					} if (options.saveToDropbox) {
+						const content = await (await fetch(pageData.url)).blob();
+						await downloads.saveToDropbox(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, {
 							filenameConflictAction: options.filenameConflictAction
 						});
 					} else if (options.saveWithWebDAV) {

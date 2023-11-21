@@ -91,6 +91,7 @@ const DEFAULT_CONFIG = {
 	saveToClipboard: false,
 	addProof: false,
 	saveToGDrive: false,
+	saveToDropbox: false,
 	saveWithWebDAV: false,
 	webDAVURL: "",
 	webDAVUser: "",
@@ -200,8 +201,11 @@ export {
 	updateRule,
 	addRule,
 	getAuthInfo,
+	getDropboxAuthInfo,
 	setAuthInfo,
-	removeAuthInfo
+	setDropboxAuthInfo,
+	removeAuthInfo,
+	removeDropboxAuthInfo
 };
 
 async function upgrade() {
@@ -547,8 +551,16 @@ async function getAuthInfo() {
 	return (await configStorage.get()).authInfo;
 }
 
+async function getDropboxAuthInfo() {
+	return (await configStorage.get()).dropboxAuthInfo;
+}
+
 async function setAuthInfo(authInfo) {
 	await configStorage.set({ authInfo });
+}
+
+async function setDropboxAuthInfo(authInfo) {
+	await configStorage.set({ dropboxAuthInfo: authInfo });
 }
 
 async function removeAuthInfo() {
@@ -557,6 +569,15 @@ async function removeAuthInfo() {
 		setAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
 	} else {
 		await configStorage.remove(["authInfo"]);
+	}
+}
+
+async function removeDropboxAuthInfo() {
+	let authInfo = getDropboxAuthInfo();
+	if (authInfo.revokableAccessToken) {
+		setDropboxAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
+	} else {
+		await configStorage.remove(["dropboxAuthInfo"]);
 	}
 }
 
