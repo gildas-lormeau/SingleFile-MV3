@@ -272,7 +272,8 @@ async function downloadCompressedContent(message, tab) {
 				preventAppendedData: message.preventAppendedData,
 				insertCanonicalLink: message.insertCanonicalLink,
 				insertMetaNoIndex: message.insertMetaNoIndex,
-				password: message.password
+				password: message.password,
+				embeddedImage: message.embeddedImage
 			});
 			if (message.openEditor) {
 				ui.onEdit(tabId);
@@ -284,7 +285,8 @@ async function downloadCompressedContent(message, tab) {
 					compressContent: message.compressContent,
 					selfExtractingArchive: message.selfExtractingArchive,
 					extractDataFromPage: message.extractDataFromPage,
-					insertTextBody: message.insertTextBody
+					insertTextBody: message.insertTextBody,
+					embeddedImage: message.embeddedImage
 				});
 			} else if (message.foregroundSave) {
 				const blob = (await fetch(result.url)).blob();
