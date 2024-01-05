@@ -274,7 +274,7 @@ addEventListener("message", event => {
 	if (message.method == "setContent") {
 		tabData.options.openEditor = false;
 		tabData.options.openSavedPage = false;
-		if (message.compressContent) {	
+		if (message.compressContent) {
 			tabData.options.compressContent = true;
 			if (tabData.selfExtractingArchive !== undefined) {
 				tabData.options.selfExtractingArchive = tabData.selfExtractingArchive;
@@ -300,12 +300,12 @@ addEventListener("message", event => {
 						tabData.options.backgroundSave = false;
 						tabData.options.foregroundSave = true;
 					}
-					download.downloadPage(pageData, tabData.options);
+					return download.downloadPage(pageData, tabData.options);
 				});
 		} else {
 			const pageData = {
 				content: message.content,
-				filename:  message.filename || tabData.filename
+				filename: message.filename || tabData.filename
 			};
 			tabData.options.compressContent = false;
 			download.downloadPage(pageData, tabData.options);

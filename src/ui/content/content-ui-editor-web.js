@@ -977,7 +977,8 @@ pre code {
 	let selectedNote, anchorElement, maskNoteElement, maskPageElement, highlightSelectionMode, removeHighlightMode, resizingNoteMode, movingNoteMode, highlightColor, collapseNoteTimeout, cuttingOuterMode, cuttingMode, cuttingTouchTarget, cuttingPath, cuttingPathIndex, previousContent;
 	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar;
 
-	globalThis.zip = singlefile.helper.zip; initEventListeners();
+	globalThis.zip = singlefile.helper.zip;
+	initEventListeners();
 	new MutationObserver(initEventListeners).observe(document, { childList: true });
 
 	function initEventListeners() {
