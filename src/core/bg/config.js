@@ -150,6 +150,7 @@ const DEFAULT_CONFIG = {
 	blockScripts: true,
 	blockVideos: true,
 	blockAudios: true,
+	delayBeforeProcessing: 0,
 	_migratedTemplateFormat: true
 };
 
