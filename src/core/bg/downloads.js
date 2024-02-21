@@ -41,7 +41,6 @@ import * as offscreen from "./offscreen.js";
 
 const partialContents = new Map();
 const tabData = new Map();
-const MIMETYPE_HTML = "text/html";
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const CONFLICT_ACTION_SKIP = "skip";
 const CONFLICT_ACTION_UNIQUIFY = "uniquify";
@@ -134,6 +133,7 @@ async function downloadTabPage(message, tab) {
 		}
 	} else if (message.compressContent) {
 		let blobParts = tabData.get(tabId);
+		const type = message.mimeType;
 		if (!blobParts) {
 			blobParts = [];
 			tabData.set(tabId, blobParts);
@@ -142,7 +142,7 @@ async function downloadTabPage(message, tab) {
 			blobParts.push(new Uint8Array(message.data));
 		} else {
 			tabData.delete(tabId);
-			const message = await yabson.parse(new Uint8Array((await new Blob(blobParts).arrayBuffer())));
+			const message = await yabson.parse(new Uint8Array((await new Blob(blobParts, { type }).arrayBuffer())));
 			await downloadCompressedContent(message, tab);
 		}
 	} else {
@@ -188,7 +188,7 @@ async function downloadContent(message, tab) {
 			} else if (message.saveWithWebDAV) {
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), message.content, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
 			} else if (message.saveToGDrive) {
-				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: MIMETYPE_HTML }), {
+				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: message.mimeType }), {
 					forceWebAuthFlow: message.forceWebAuthFlow
 				}, {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
@@ -196,7 +196,7 @@ async function downloadContent(message, tab) {
 					prompt
 				});
 			} else if (message.saveToDropbox) {
-				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: MIMETYPE_HTML }), {
+				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: message.mimeType }), {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
@@ -292,7 +292,7 @@ async function downloadCompressedContent(message, tab) {
 				});
 			} else if (message.foregroundSave) {
 				const blob = (await fetch(result.url)).blob();
-				await downloadPageForeground(message.taskId, message.filename, blob, tabId, message.foregroundSave);
+				await downloadPageForeground(message.taskId, message.filename, blob, pageData.mimeType, tabId, message.foregroundSave);
 			} else if (message.saveWithWebDAV) {
 				const blob = await (await fetch(result.url)).blob();
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
@@ -539,8 +539,14 @@ async function downloadPage(pageData, options) {
 	}
 }
 
-async function downloadPageForeground(taskId, filename, content, tabId, foregroundSave) {
-	const serializer = yabson.getSerializer({ filename, taskId, foregroundSave, content: await content.arrayBuffer() });
+async function downloadPageForeground(taskId, filename, content, mimeType, tabId, foregroundSave) {
+	const serializer = yabson.getSerializer({
+		filename,
+		taskId,
+		foregroundSave,
+		content: await content.arrayBuffer(),
+		mimeType
+	});
 	for await (const data of serializer) {
 		await browser.tabs.sendMessage(tabId, {
 			method: "content.download",

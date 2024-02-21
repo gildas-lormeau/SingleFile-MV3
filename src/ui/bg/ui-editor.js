@@ -299,6 +299,7 @@ addEventListener("message", event => {
 					pageData.viewport = message.viewport;
 					pageData.url = message.url;
 					pageData.filename = message.filename || tabData.filename;
+					pageData.mimeType = "text/html";
 					if (message.foregroundSave) {
 						tabData.options.backgroundSave = false;
 						tabData.options.foregroundSave = true;
@@ -308,7 +309,8 @@ addEventListener("message", event => {
 		} else {
 			const pageData = {
 				content: message.content,
-				filename: message.filename || tabData.filename
+				filename: message.filename || tabData.filename,
+				mimeType: "text/html"
 			};
 			tabData.options.compressContent = false;
 			download.downloadPage(pageData, tabData.options);
@@ -429,12 +431,13 @@ async function downloadContent(message) {
 			editorElement.contentWindow.postMessage(JSON.stringify({
 				method: "download",
 				filename: result.value.filename,
-				content: Array.from(new Uint8Array(result.value.content))
+				content: Array.from(new Uint8Array(result.value.content)),
+				mimeType: result.value.mimeType
 			}), "*");
 		} else {
 			const link = document.createElement("a");
 			link.download = result.value.filename;
-			link.href = URL.createObjectURL(new Blob([result.value.content]), "text/html");
+			link.href = URL.createObjectURL(new Blob([result.value.content], { type: result.value.mimeType }));
 			link.dispatchEvent(new MouseEvent("click"));
 			URL.revokeObjectURL(link.href);
 		}

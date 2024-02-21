@@ -85,7 +85,7 @@ async function onMessage(message) {
 				downloadParser = null;
 				const link = document.createElement("a");
 				link.download = result.value.filename;
-				link.href = URL.createObjectURL(new Blob([result.value.content]), "text/html");
+				link.href = URL.createObjectURL(new Blob([result.value.content], { type: result.value.mimeType }));
 				link.dispatchEvent(new MouseEvent("click"));
 				URL.revokeObjectURL(link.href);
 				await browser.runtime.sendMessage({ method: "downloads.end", taskId: result.value.taskId });

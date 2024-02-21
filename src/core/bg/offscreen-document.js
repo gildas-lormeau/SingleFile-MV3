@@ -29,7 +29,7 @@ import * as yabson from "./../../lib/yabson/yabson.js";
 browser.runtime.onMessage.addListener(async ({ method, pageData, url, options }) => {
 	if (method == "processPage") {
 		const result = await getPageData(options, null, null, { fetch });
-		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: "text/html" });
+		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: pageData.mimeType });
 		return {
 			url: URL.createObjectURL(blob),
 			archiveTime: result.archiveTime,
