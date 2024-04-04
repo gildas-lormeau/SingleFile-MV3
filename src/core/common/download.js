@@ -146,6 +146,9 @@ async function downloadPage(pageData, options) {
 }
 
 async function downloadPageForeground(pageData) {
+	if (Array.isArray(pageData.content)) {
+		pageData.content = new Uint8Array(pageData.content);
+	}
 	if (pageData.filename && pageData.filename.length) {
 		const link = document.createElement("a");
 		link.download = pageData.filename;
