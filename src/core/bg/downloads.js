@@ -292,7 +292,7 @@ async function downloadCompressedContent(message, tab) {
 				});
 			} else if (message.foregroundSave) {
 				const blob = (await fetch(result.url)).blob();
-				await downloadPageForeground(message.taskId, message.filename, blob, pageData.mimeType, tabId, message.foregroundSave);
+				await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, message.foregroundSave);
 			} else if (message.saveWithWebDAV) {
 				const blob = await (await fetch(result.url)).blob();
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
