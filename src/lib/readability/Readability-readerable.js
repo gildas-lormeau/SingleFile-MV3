@@ -41,7 +41,7 @@ function isNodeVisible(node) {
  * @param {number} [options.minContentLength=140] The minimum node content length used to decide if the document is readerable.
  * @param {number} [options.minScore=20] The minimum cumulated 'score' used to determine if the document is readerable.
  * @param {Function} [options.visibilityChecker=isNodeVisible] The function used to determine if a node is visible.
- * @return {boolean} Whether or not we suspect Readability.parse() will suceeed at returning an article object.
+ * @return {boolean} Whether or not we suspect Readability.parse() will succeed at returning an article object.
  */
 function isProbablyReaderable(doc, options = {}) {
   // For backward compatibility reasons 'options' can either be a configuration object or the function used

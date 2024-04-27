@@ -21,12 +21,12 @@
  *   Source.
  */
 
-/* global browser, Blob, URL, XMLHttpRequest */
+/* global browser, Blob, URL, XMLHttpRequest, Image, document */
 
 import { getPageData, compress } from "./../../index.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
-browser.runtime.onMessage.addListener(async ({ method, pageData, url, options }) => {
+browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, options, width, height }) => {
 	if (method == "processPage") {
 		const result = await getPageData(options, null, null, { fetch });
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: pageData.mimeType });
@@ -44,9 +44,31 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, options })
 			url: URL.createObjectURL(blob)
 		};
 	}
+	if (method == "getBlobURL") {
+		return {
+			url: URL.createObjectURL(new Blob([new Uint8Array(data)]))
+		};
+	}
 	if (method == "revokeObjectURL") {
 		URL.revokeObjectURL(url);
 		return {};
+	}
+	if (method == "getImageData") {
+		const image = new Image();
+		await new Promise((resolve, reject) => {
+			image.onload = resolve;
+			image.onerror = event => reject(new Error(event.detail));
+			image.src = url;
+		});
+		const canvas = document.createElement("canvas");
+		canvas.width = width;
+		canvas.height = height;
+		const context = canvas.getContext("2d");
+		context.drawImage(image, 0, 0, width, height);
+		const { data } = await context.getImageData(0, 0, width, height);
+		return {
+			url: URL.createObjectURL(new Blob([data]))
+		};
 	}
 });
 

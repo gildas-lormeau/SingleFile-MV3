@@ -302,6 +302,15 @@ if (typeof globalThis == "undefined") {
 					addListener: listener => nativeAPI.tabs.onReplaced.addListener(listener),
 					removeListener: listener => nativeAPI.tabs.onReplaced.removeListener(listener)
 				},
+				captureVisibleTab: (windowId, options) => new Promise((resolve, reject) => {
+					nativeAPI.tabs.captureVisibleTab(windowId, options, dataUrl => {
+						if (nativeAPI.runtime.lastError) {
+							reject(nativeAPI.runtime.lastError);
+						} else {
+							resolve(dataUrl);
+						}
+					});
+				}),
 				sendMessage: (tabId, message, options = {}) => nativeAPI.tabs.sendMessage(tabId, message, options),
 				query: options => nativeAPI.tabs.query(options),
 				create: createProperties => nativeAPI.tabs.create(createProperties),

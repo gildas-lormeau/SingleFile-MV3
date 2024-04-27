@@ -31,7 +31,9 @@ let creating;
 export {
 	compressPage,
 	processPage,
-	revokeObjectURL
+	getBlobURL,
+	revokeObjectURL,
+	getImageData
 };
 
 async function compressPage(pageData, options) {
@@ -48,6 +50,16 @@ async function processPage(options) {
 async function revokeObjectURL(url) {
 	await createOffscreenDocument();
 	return browser.runtime.sendMessage({ method: "revokeObjectURL", url });
+}
+
+async function getBlobURL(data) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "getBlobURL", data });
+}
+
+async function getImageData(url, width, height) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "getImageData", url, width, height });
 }
 
 async function createOffscreenDocument() {

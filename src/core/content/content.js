@@ -34,12 +34,20 @@ const bootstrap = globalThis.singlefileBootstrap;
 
 const MOZ_EXTENSION_PROTOCOL = "moz-extension:";
 
-let processor, processing, downloadParser, openFileInfobar;
+let processor, processing, downloadParser, openFileInfobar, scrollY, transform, overflow;
 
 if (!bootstrap || !bootstrap.initializedSingleFile) {
 	singlefile.init({ fetch, frameFetch });
 	browser.runtime.onMessage.addListener(message => {
-		if (message.method == "content.save" || message.method == "content.cancelSave" || message.method == "content.download" || message.method == "content.getSelectedLinks" || message.method == "content.error" || message.method == "content.prompt") {
+		if (message.method == "content.save" ||
+			message.method == "content.cancelSave" ||
+			message.method == "content.download" ||
+			message.method == "content.getSelectedLinks" ||
+			message.method == "content.error" ||
+			message.method == "content.prompt" ||
+			message.method == "content.beginScrollTo" ||
+			message.method == "content.scrollTo" ||
+			message.method == "content.endScrollTo") {
 			return onMessage(message);
 		}
 	});
@@ -99,6 +107,26 @@ async function onMessage(message) {
 		if (message.method == "content.prompt") {
 			return ui.prompt(message.message, message.value);
 		}
+		if (message.method == "content.beginScrollTo") {
+			scrollY = globalThis.scrollY;
+			transform = document.documentElement.style.getPropertyValue("transform");
+			overflow = document.documentElement.style.getPropertyValue("overflow");
+			globalThis.scrollTo(0, 0);
+			document.documentElement.style.setProperty("transform", "translateY(0px)");
+			document.documentElement.style.setProperty("overflow", "hidden");
+			return {};
+		}
+		if (message.method == "content.scrollTo") {
+			document.documentElement.style.setProperty("transform", "translateY(-" + message.y + "px)");
+			await new Promise(resolve => setTimeout(resolve, 500));
+			return {};
+		}
+		if (message.method == "content.endScrollTo") {
+			globalThis.scrollTo(0, scrollY);
+			document.documentElement.style.setProperty("transform", transform);
+			document.documentElement.style.setProperty("overflow", overflow);
+			return {};
+		}
 	}
 }
 
@@ -155,9 +183,27 @@ async function processPage(options) {
 	processor = new singlefile.SingleFile(options);
 	const preInitializationPromises = [];
 	options.insertCanonicalLink = true;
-	let index = 0, maxIndex = 0;
-	options.onprogress = event => {
+	let index = 0, maxIndex = 0, initializing;
+	options.onprogress = async event => {
+		const { options } = event.detail;
 		if (!processor.cancelled) {
+			if (event.type == event.RESOURCES_INITIALIZING) {
+				if (!initializing && options.insertEmbeddedScreenshotImage && options.compressContent) {
+					initializing = true;
+					ui.setVisible(false);
+					const screenshotBlobURI = await browser.runtime.sendMessage({
+						method: "tabs.getScreenshot",
+						width: document.documentElement.scrollWidth,
+						height: document.documentElement.scrollHeight,
+						innerHeight: globalThis.innerHeight
+					});
+					ui.setVisible(true);
+					ui.onInsertingEmbeddedImage(options);
+					options.embeddedImage = new Uint8Array(await (await fetch(screenshotBlobURI)).arrayBuffer());
+					URL.revokeObjectURL(screenshotBlobURI);
+					ui.onInsertEmbeddedImage(options);
+				}
+			}
 			if (event.type == event.RESOURCES_INITIALIZED) {
 				maxIndex = event.detail.max;
 				if (options.loadDeferredImages) {
@@ -168,7 +214,7 @@ async function processPage(options) {
 				if (event.type == event.RESOURCE_LOADED) {
 					index++;
 				}
-				browser.runtime.sendMessage({ method: "ui.processProgress", index, maxIndex });
+				await browser.runtime.sendMessage({ method: "ui.processProgress", index, maxIndex });
 				ui.onLoadResource(index, maxIndex, options);
 			} else if (!event.detail.frame) {
 				if (event.type == event.PAGE_LOADING) {

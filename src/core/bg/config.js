@@ -122,6 +122,7 @@ const DEFAULT_CONFIG = {
 	extractDataFromPage: true,
 	preventAppendedData: false,
 	insertEmbeddedImage: false,
+	insertEmbeddedScreenshotImage: false,
 	insertTextBody: false,
 	autoSaveExternalSave: false,
 	insertMetaNoIndex: false,
