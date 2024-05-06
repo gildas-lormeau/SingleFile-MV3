@@ -114,40 +114,56 @@ function onTabRemoved(tabId) {
 }
 
 async function captureTab(tabId, options) {
-	const { width, height } = options;
-	const canvas = new OffscreenCanvas(width, height);
+	const { width, height, scale = 1 } = options;
+	const canvasWidth = Math.floor(width * scale);
+	const canvasHeight = Math.floor(height * scale);
+	const canvas = new OffscreenCanvas(canvasWidth, canvasHeight);
 	const context = canvas.getContext("2d");
-	let y = 0, scrollYStep, activeTabId;
+	let y = 0, canvasY = 0, scrollYStep, activeTabId;
 	if (browser.tabs.captureTab) {
 		scrollYStep = 4 * 1024;
 	} else {
 		scrollYStep = options.innerHeight;
 		activeTabId = (await browser.tabs.query({ active: true, currentWindow: true }))[0].id;
 	}
+	const canvasScrollStep = Math.floor(scrollYStep * scale);
 	await browser.tabs.sendMessage(tabId, { method: "content.beginScrollTo" });
-	while (y < height) {
-		let imageSrc;
-		if (browser.tabs.captureTab) {
-			imageSrc = await browser.tabs.captureTab(tabId, {
-				format: "png",
-				rect: { x: 0, y, width, height: Math.min(height - y, scrollYStep) }
-			});
-		} else {
-			await browser.tabs.sendMessage(tabId, { method: "content.scrollTo", y });
-			await browser.tabs.update(tabId, { active: true });
-			imageSrc = await browser.tabs.captureVisibleTab(null, {
-				format: "png"
-			});
+	try {
+		while (y < height) {
+			let imageSrc;
+			if (browser.tabs.captureTab) {
+				imageSrc = await browser.tabs.captureTab(tabId, {
+					format: "png",
+					rect: { x: 0, y, width, height: Math.min(height - y, scrollYStep) }
+				});
+			} else {
+				await browser.tabs.sendMessage(tabId, { method: "content.scrollTo", y });
+				await browser.tabs.update(tabId, { active: true });
+				imageSrc = await browser.tabs.captureVisibleTab(null, {
+					format: "png"
+				});
+			}
+			const imageHeight = Math.min(canvasHeight - canvasY, canvasScrollStep);
+			const imageBlobURI = (await offscreen.getImageData(imageSrc, canvasWidth, imageHeight)).url;
+			const imageRawData = await fetch(imageBlobURI).then(response => response.arrayBuffer());
+			await offscreen.revokeObjectURL(imageBlobURI);
+			const imageData = new ImageData(new Uint8ClampedArray(imageRawData), width);
+			context.putImageData(imageData, 0, y);
+			y += scrollYStep;
+			canvasY += canvasScrollStep;
 		}
-		const imageBlobURI = (await offscreen.getImageData(imageSrc, width, Math.min(height - y, scrollYStep))).url;
-		const imageRawData = await fetch(imageBlobURI).then(response => response.arrayBuffer());
-		await offscreen.revokeObjectURL(imageBlobURI);
-		const imageData = new ImageData(new Uint8ClampedArray(imageRawData), width);
-		context.putImageData(imageData, 0, y);
-		y += scrollYStep;
-	}
-	if (!browser.tabs.captureTab) {
-		await browser.tabs.update(activeTabId, { active: true });
+		if (!browser.tabs.captureTab) {
+			await browser.tabs.update(activeTabId, { active: true });
+		}
+	} catch (error) {
+		if (scale > .1) {
+			options.scale = scale * .75;
+			return captureTab(tabId, options);
+		} else {
+			throw error;
+		}
+	} finally {
+		await browser.tabs.sendMessage(tabId, { method: "content.endScrollTo" });
 	}
 	await browser.tabs.sendMessage(tabId, { method: "content.endScrollTo" });
 	const blob = await canvas.convertToBlob({ type: "image/png" });
