@@ -149,7 +149,7 @@ async function saveContent(message, tab) {
 		options.incognito = tab.incognito;
 		options.tabId = tabId;
 		options.tabIndex = tab.index;
-		options.keepFilename = options.saveToGDrive || options.saveToGitHub || options.saveWithWebDAV;
+		options.keepFilename = options.saveToGDrive || options.saveToGitHub || options.saveWithWebDAV || options.saveToDropbox || options.saveToRestFormApi;
 		let pageData;
 		try {
 			if (options.autoSaveExternalSave) {
@@ -157,7 +157,7 @@ async function saveContent(message, tab) {
 			} else {
 				pageData = await offscreen.processPage(options);
 				let skipped;
-				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion) {
+				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion && !options.saveToRestFormApi) {
 					const testSkip = await downloads.testSkipSave(pageData.filename, options);
 					skipped = testSkip.skipped;
 					options.filenameConflictAction = testSkip.filenameConflictAction;
@@ -192,6 +192,17 @@ async function saveContent(message, tab) {
 							content: content,
 							filenameConflictAction: options.filenameConflictAction
 						});
+					} else if (options.saveToRestFormApi) {
+						const content = await (await fetch(pageData.url)).text();
+						await downloads.saveToRestFormApi(
+							message.taskId,
+							content,
+							pageData.url,
+							options.restFormApiToken,
+							options.restFormApiUrl,
+							options.restFormApiFileFieldName,
+							options.restFormApiUrlFieldName
+						);
 					} else {
 						await downloads.downloadPage(pageData, options);
 					}

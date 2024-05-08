@@ -962,5 +962,25 @@
 	"batchSaveUrlsURLTitle": {
 		"message": "URL",
 		"description": "Title of the column in the table of the URLs"
+	},
+	"optionSaveToRestFormApi": {
+		"message": "Hochladen auf ein REST-Formular-API",
+		"description": "Options page label: 'upload to a REST Form API'"
+	},
+	"optionRestFormApiUrl": {
+		"message": "URL",
+		"description": "Options page label: 'URL'"
+	},
+	"optionRestFormApiToken": {
+		"message": "Authentifizierungstoken",
+		"description": "Options page label: 'authorization token'"
+	},
+	"optionRestFormApiFileFieldName": {
+		"message": "Feldname der Datei",
+		"description": "Options page label: 'archive data field name'"
+	},
+	"optionRestFormApiUrlFieldName": {
+		"message": "Feldname der URL",
+		"description": "Options page label: 'archive URL field name'"
 	}
 }

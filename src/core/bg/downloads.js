@@ -37,6 +37,7 @@ import { WebDAV } from "./../../lib/webdav/webdav.js";
 import { GitHub } from "./../../lib/github/github.js";
 import { download } from "./download-util.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
+import { RestFormApi } from "../../lib/../lib/rest-form-api/index.js";
 import * as offscreen from "./offscreen.js";
 
 const partialContents = new Map();
@@ -66,6 +67,7 @@ export {
 	saveToGitHub,
 	saveToDropbox,
 	saveWithWebDAV,
+	saveToRestFormApi,
 	encodeSharpCharacter
 };
 
@@ -170,7 +172,7 @@ async function downloadContent(message, tab) {
 	const tabId = tab.id;
 	try {
 		let skipped;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub) {
+		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi) {
 			const testSkip = await testSkipSave(message.filename, message);
 			message.filenameConflictAction = testSkip.filenameConflictAction;
 			skipped = testSkip.skipped;
@@ -213,6 +215,16 @@ async function downloadContent(message, tab) {
 					content: message.content,
 					filenameConflictAction: message.filenameConflictAction
 				});
+			} else if (message.saveToRestFormApi) {
+				response = await saveToRestFormApi(
+					message.taskId,
+					message.content,
+					tab.url,
+					message.saveToRestFormApiToken,
+					message.saveToRestFormApiUrl,
+					message.saveToRestFormApiFileFieldName,
+					message.saveToRestFormApiUrlFieldName
+				);
 			} else {
 				response = await downloadPage(message, {
 					confirmFilename: message.confirmFilename,
@@ -254,7 +266,7 @@ async function downloadCompressedContent(message, tab) {
 	try {
 		const prompt = filename => promptFilename(tabId, filename);
 		let skipped, response;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub) {
+		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi) {
 			const testSkip = await testSkipSave(message.filename, message);
 			message.filenameConflictAction = testSkip.filenameConflictAction;
 			skipped = testSkip.skipped;
@@ -319,6 +331,17 @@ async function downloadCompressedContent(message, tab) {
 					prompt
 				});
 				await response.pushPromise;
+			} else if (message.saveToRestFormApi) {
+				const blob = await (await fetch(result.url)).blob();
+				response = await saveToRestFormApi(
+					message.taskId,
+					blob,
+					tab.url,
+					message.saveToRestFormApiToken,
+					message.saveToRestFormApiUrl,
+					message.saveToRestFormApiFileFieldName,
+					message.saveToRestFormApiUrlFieldName
+				);
 			} else {
 				if (message.backgroundSave) {
 					message.url = result.url;
@@ -539,6 +562,19 @@ async function downloadPage(pageData, options) {
 	}
 }
 
+async function saveToRestFormApi(taskId, content, url, token, restApiUrl, fileFieldName, urlFieldName) {
+	try {
+		const taskInfo = business.getTaskInfo(taskId);
+		if (!taskInfo || !taskInfo.cancelled) {
+			const client = new RestFormApi(token, restApiUrl, fileFieldName, urlFieldName);
+			business.setCancelCallback(taskId, () => client.abort());
+			return await client.upload(content, url);
+		}
+	} catch (error) {
+		throw new Error(error.message + " (RestFormApi)");
+	}
+}
+
 async function downloadPageForeground(taskId, filename, content, mimeType, tabId, foregroundSave) {
 	const serializer = yabson.getSerializer({
 		filename,
@@ -553,5 +589,5 @@ async function downloadPageForeground(taskId, filename, content, mimeType, tabId
 			data: Array.from(data)
 		});
 	}
-	await browser.tabs.sendMessage(tabId, { method: "content.download" });
+	return browser.tabs.sendMessage(tabId, { method: "content.download" });
 }

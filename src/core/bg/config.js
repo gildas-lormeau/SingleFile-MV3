@@ -97,6 +97,7 @@ const DEFAULT_CONFIG = {
 	webDAVUser: "",
 	webDAVPassword: "",
 	saveToGitHub: false,
+	saveToRestFormApi: false,
 	githubToken: "",
 	githubUser: "",
 	githubRepository: "SingleFile-Archives",
@@ -152,7 +153,11 @@ const DEFAULT_CONFIG = {
 	blockVideos: true,
 	blockAudios: true,
 	delayBeforeProcessing: 0,
-	_migratedTemplateFormat: true
+	_migratedTemplateFormat: true,
+	saveToRestFormApiUrl: "",
+	saveToRestFormApiFileFieldName: "",
+	saveToRestFormApiUrlFieldName: "",
+	saveToRestFormApiToken: ""
 };
 
 const DEFAULT_RULES = [{
