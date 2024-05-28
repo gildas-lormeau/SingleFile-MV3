@@ -147,6 +147,7 @@ const DEFAULT_CONFIG = {
 	networkTimeout: 0,
 	woleetKey: "",
 	blockImages: false,
+	blockAlternativeImages: false,
 	blockStylesheets: false,
 	blockFonts: false,
 	blockScripts: true,
