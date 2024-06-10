@@ -1,521 +1,521 @@
 {
-	"extensionDescription":{
+	"extensionDescription": {
 		"message": "Sla een complete website op in één HTML-bestand",
 		"description": "Description of the extension."
 	},
-	"commandSaveSelectedTabs":{
+	"commandSaveSelectedTabs": {
 		"message": "Sla de geselecteerde tabbladen of hun geselecteerde inhoud op",
 		"description": "Command (Ctrl+Shift+Y): 'Save the selected tabs or their selected contents'"
 	},
-	"commandSaveAllTabs":{
+	"commandSaveAllTabs": {
 		"message": "Sla alle tabbladen op",
 		"description": "Command (Ctrl+Shift+U): 'Save all tabs'"
 	},
-	"menuSavePage":{
+	"menuSavePage": {
 		"message": "Sla pagina op met SingleFile",
 		"description": "Menu entry: 'Save page with SingleFile'"
 	},
-	"menuSaveSelectedLinks":{
+	"menuSaveSelectedLinks": {
 		"message": "Sla geselecteerde links op",
 		"description": "Menu entry: 'Save selected links'"
 	},
-	"menuEditPage":{
+	"menuEditPage": {
 		"message": "Annoteer de pagina...",
 		"description": "Menu entry: 'Annotate the page...'"
 	},
-	"menuEditAndSavePage":{
+	"menuEditAndSavePage": {
 		"message": "Annoteer en sla de pagina op...",
 		"description": "Menu entry: 'Annotate and save the page...'"
 	},
-	"menuSaveWithProfile":{
+	"menuSaveWithProfile": {
 		"message": "Sla pagina op met profiel",
 		"description": "Menu entry: 'Save with profile'"
 	},
-	"menuViewPendingSaves":{
+	"menuViewPendingSaves": {
 		"message": "Bekijk lopende opslagen...",
 		"description": "Menu entry: 'View pending saves...'"
 	},
-	"menuSelectProfile":{
+	"menuSelectProfile": {
 		"message": "Selecteer het standaardprofiel",
 		"description": "Menu entry: 'Select the default profile'"
 	},
-	"menuUpdateRule":{
+	"menuUpdateRule": {
 		"message": "Selecteer het profiel van de huidige regel",
 		"description": "Menu entry: 'Select the profile of the current rule'"
 	},
-	"menuCreateDomainRule":{
+	"menuCreateDomainRule": {
 		"message": "Selecteer het profiel van het huidige domein",
 		"description": "Menu entry: 'Select the profile of the current domain'"
 	},
-	"menuSaveSelection":{
+	"menuSaveSelection": {
 		"message": "Sla selectie op",
 		"description": "Menu entry: 'Save selection'"
 	},
-	"menuSaveFrame":{
+	"menuSaveFrame": {
 		"message": "Sla frame op",
 		"description": "Menu entry: 'Save frame'"
 	},
-	"menuSaveTabs":{
+	"menuSaveTabs": {
 		"message": "Sla tabbladen op",
 		"description": "Menu entry (SingleFile button only): 'Save tabs'"
 	},
-	"menuSaveSelectedTabs":{
+	"menuSaveSelectedTabs": {
 		"message": "Sla geselecteerde tabbladen op",
 		"description": "Menu entry: 'Save selected tabs'"
 	},
-	"menuSaveUnpinnedTabs":{
+	"menuSaveUnpinnedTabs": {
 		"message": "Sla niet vastgezette tabbladen op",
 		"description": "Menu entry: 'Save unpinned tabs'"
 	},
-	"menuSaveAllTabs":{
+	"menuSaveAllTabs": {
 		"message": "Sla alle tabbladen op",
 		"description": "Menu entry: 'Save all tabs'"
 	},
-	"menuBatchSaveUrls":{
+	"menuBatchSaveUrls": {
 		"message": "URL's in batches opslaan...",
 		"description": "Menu entry: 'Batch save URLs...'"
 	},
-	"menuAutoSave":{
+	"menuAutoSave": {
 		"message": "Automatisch opslaan",
 		"description": "Menu entry: 'Auto-save'"
 	},
-	"menuAutoSaveDisabled":{
+	"menuAutoSaveDisabled": {
 		"message": "Uitgeschakeld",
 		"description": "Menu entry: 'Auto-save' > Disabled'"
 	},
-	"menuAutoSaveTab":{
+	"menuAutoSaveTab": {
 		"message": "Sla dit tabblad automatisch op",
 		"description": "Menu entry: 'Auto-save' > Auto-save this tab'"
 	},
-	"menuAutoSaveUnpinnedTabs":{
+	"menuAutoSaveUnpinnedTabs": {
 		"message": "Sla niet vastgezette tabbladen automatisch op",
 		"description": "Menu entry: 'Auto-save' > Auto-save unpinned tabs'"
 	},
-	"menuAutoSaveAllTabs":{
+	"menuAutoSaveAllTabs": {
 		"message": "Sla alle tabbladen automatisch op",
 		"description": "Menu entry: 'Auto-save' > Auto-save all tabs'"
 	},
-	"buttonDefaultTooltip":{
+	"buttonDefaultTooltip": {
 		"message": "Sla pagina op met SingleFile",
 		"description": "Button title: 'Save page with SingleFile'"
 	},
-	"buttonBlockedBadge":{
+	"buttonBlockedBadge": {
 		"message": "🚫",
 		"description": "Button badge when the page is blocked: '🚫'"
 	},
-	"buttonBlockedTooltip":{
+	"buttonBlockedTooltip": {
 		"message": "Deze pagina kan niet worden opgeslagen met SingleFile",
 		"description": "Button title: 'This page cannot be saved with SingleFile'"
 	},
-	"buttonInitializingTooltip":{
+	"buttonInitializingTooltip": {
 		"message": "SingleFile initialiseren",
 		"description": "Button title during initialization: 'Initializing SingleFile (x/2)'"
 	},
-	"buttonInitializingBadge":{
+	"buttonInitializingBadge": {
 		"message": "•••",
 		"description": "Badge label during initialization: '•••'"
 	},
-	"buttonSaveProgressTooltip":{
+	"buttonSaveProgressTooltip": {
 		"message": "Opslagvoortgang: ",
 		"description": "Button title during save: 'Save progress: xx%'"
 	},
-	"buttonUploadProgressTooltip":{
+	"buttonUploadProgressTooltip": {
 		"message": "Uploadvoortgang: ",
 		"description": "Button title during save: 'Upload progress: xx%'"
 	},
-	"buttonOKBadge":{
+	"buttonOKBadge": {
 		"message": "OK",
 		"description": "Badge label: 'OK'"
 	},
-	"buttonErrorBadge":{
+	"buttonErrorBadge": {
 		"message": "ERR",
 		"description": "Badge label for unexpected errors"
 	},
-	"buttonAutoSaveActiveTooltip":{
+	"buttonAutoSaveActiveTooltip": {
 		"message": "Automatisch opslaan actief",
 		"description": "Button title: 'Auto-save active'"
 	},
-	"buttonAutoSaveActiveBadge":{
+	"buttonAutoSaveActiveBadge": {
 		"message": "[A]",
 		"description": "Badge label when auto-save is active"
 	},
-	"optionsTitle":{
+	"optionsTitle": {
 		"message": "Opties",
 		"description": "Options page title"
 	},
-	"optionsUserInterfaceSubTitle":{
+	"optionsUserInterfaceSubTitle": {
 		"message": "Gebruikersinterface",
 		"description": "Options sub-title: 'User interface'"
 	},
-	"optionAddMenuEntry":{
+	"optionAddMenuEntry": {
 		"message": "voeg een item toe aan het contextmenu van de webpagina",
 		"description": "Options page label: 'add entry in the context menu of the webpage'"
 	},
-	"optionDisplayShadow":{
+	"optionDisplayShadow": {
 		"message": "plaats een schaduw over de pagina tijdens het verwerken",
 		"description": "Options page label: 'overlay a shadow on the page during processing'"
 	},
-	"optionDisplayInfobar":{
+	"optionDisplayInfobar": {
 		"message": "toon een infobalk bij het bekijken van een opgeslagen pagina",
 		"description": "Options page label: 'display an infobar when viewing a saved page'"
 	},
-	"optionInfobarTemplate":{
+	"optionInfobarTemplate": {
 		"message": "sjabloon van de infobalkinhoud",
 		"description": "Options page label: 'template of the infobar content'"
 	},
-	"optionBlockMixedContent":{
+	"optionBlockMixedContent": {
 		"message": "blokkeer gemengde inhoud",
 		"description": "Options page label: 'block mixed content'"
 	},
-	"optionSaveOriginalURLs":{
+	"optionSaveOriginalURLs": {
 		"message": "sla originele URL's van ingesloten bronnen op",
 		"description": "Options page label: 'save original URLs of embedded resources'"
 	},
-	"optionIncludeInfobar":{
+	"optionIncludeInfobar": {
 		"message": "neem de infobalk op in de opgeslagen pagina",
 		"description": "Options page label: 'include the infobar in the saved page'"
 	},
-	"optionRemoveInfobarSavedDate":{
+	"optionRemoveInfobarSavedDate": {
 		"message": "sla de opgeslagen datum niet op",
 		"description": "Options page label: 'do not include the saved date'"
 	},
-	"optionConfirmInfobar":{
+	"optionConfirmInfobar": {
 		"message": "open een promptvenster om de inhoud van de infobalk te bewerken",
 		"description": "Options page label: 'open a prompt dialog to edit the infobar content'"
 	},
-	"optionAutoClose":{
+	"optionAutoClose": {
 		"message": "sluit het tabblad automatisch na het opslaan van de pagina",
 		"description": "Options page label: 'auto-close the tab after the page is saved'"
 	},
-	"optionsFileNameSubTitle":{
+	"optionsFileNameSubTitle": {
 		"message": "Bestandsnaam",
 		"description": "Options sub-title: 'File name'"
 	},
-	"optionFilenameTemplate":{
+	"optionFilenameTemplate": {
 		"message": "sjabloon",
 		"description": "Options page label: 'template'"
 	},
-	"optionFilenameMaxLength":{
+	"optionFilenameMaxLength": {
 		"message": "maximale lengte",
 		"description": "Options page label: 'max length'"
 	},
-	"optionFilenameMaxLengthBytesUnit":{
+	"optionFilenameMaxLengthBytesUnit": {
 		"message": "bytes",
 		"description": "Options page label: 'bytes'"
 	},
-	"optionFilenameMaxLengthCharsUnit":{
+	"optionFilenameMaxLengthCharsUnit": {
 		"message": "tekens",
 		"description": "Options page label: 'characters'"
 	},
-	"optionFilenameReplacementCharacter":{
+	"optionFilenameReplacementCharacter": {
 		"message": "vervangend teken",
 		"description": "Options page label: 'replacement character'"
 	},
-	"optionReplaceEmojisInFilename":{
+	"optionReplaceEmojisInFilename": {
 		"message": "vervang emoji's door tekst",
 		"description": "Options page label: 'replace emojis with text'"
 	},
-	"optionSaveFilenameTemplateData":{
+	"optionSaveFilenameTemplateData": {
 		"message": "sla de bestandsnaamsjabloongegevens op in de pagina",
 		"description": "Options page label: 'save the filename template data into the page'"
 	},
-	"optionConfirmFilename":{
+	"optionConfirmFilename": {
 		"message": "open het \"Opslaan als\"-venster om de bestandsnaam te bevestigen",
 		"description": "Options page label: 'open the \"Save as\" dialog to confirm the file name'"
 	},
-	"optionFilenameConflictAction":{
+	"optionFilenameConflictAction": {
 		"message": "gebruik een unieke bestandsnaam",
 		"description": "Options page label: 'filename conflict resolution'"
 	},
-	"optionFilenameConflictActionUniquify":{
+	"optionFilenameConflictActionUniquify": {
 		"message": "gebruik een unieke naam",
 		"description": "Value for 'filename conflict resolution' option: 'create a unique name'"
 	},
-	"optionFilenameConflictActionOverwrite":{
+	"optionFilenameConflictActionOverwrite": {
 		"message": "overschrijf het bestaande bestand",
 		"description": "Value for 'filename conflict resolution' option: 'overwrite the existing file'"
 	},
-	"optionFilenameConflictActionPrompt":{
+	"optionFilenameConflictActionPrompt": {
 		"message": "dialoogvenster voor het invoeren van een bestandsnaam",
 		"description": "Value for 'name conflict resolution' option: 'prompt for a name'"
 	},
-	"optionFilenameConflictActionSkip":{
+	"optionFilenameConflictActionSkip": {
 		"message": "sla dubbele bestanden over",
 		"description": "Value for 'filename conflict resolution' option: 'skip duplicate files'"
 	},
-	"optionsHTMLContentSubTitle":{
+	"optionsHTMLContentSubTitle": {
 		"message": "HTML-inhoud",
 		"description": "Options sub-title: 'HTML content'"
 	},
-	"optionCompressHTML":{
+	"optionCompressHTML": {
 		"message": "comprimeer HTML-inhoud",
 		"description": "Options page label: 'compress HTML content'"
 	},
-	"optionRemoveFrames":{
+	"optionRemoveFrames": {
 		"message": "verwijder frames",
 		"description": "Options page label: 'remove frames'"
 	},
-	"optionRemoveHiddenElements":{
+	"optionRemoveHiddenElements": {
 		"message": "verwijder verborgen elementen",
 		"description": "Options page label: 'remove hidden elements'"
 	},
-	"optionsFileFormatSubTitle":{
+	"optionsFileFormatSubTitle": {
 		"message": "Bestandsformaat",
 		"description": "Options sub-title: 'File format'"
 	},
-	"optionFileFormat":{
+	"optionFileFormat": {
 		"message": "formaat",
 		"description": "Options page label: 'format'"
 	},
-	"optionFileFormatSelectHTML":{
+	"optionFileFormatSelectHTML": {
 		"message": "HTML",
 		"description": "Options page label: 'HTML'"
 	},
-	"optionFileFormatSelectSelfExtractingUniversal":{
+	"optionFileFormatSelectSelfExtractingUniversal": {
 		"message": "zelfuitpakkend ZIP (universeel)",
 		"description": "Options page label: 'self-extracting ZIP (universal)'"
 	},
-	"optionFileFormatSelectSelfExtracting":{
+	"optionFileFormatSelectSelfExtracting": {
 		"message": "zelfuitpakkend ZIP",
 		"description": "Options page label: 'self-extracting ZIP'"
 	},
-	"optionFileFormatSelectZIP":{
+	"optionFileFormatSelectZIP": {
 		"message": "ZIP",
 		"description": "Options page label: 'ZIP'"
 	},
-	"optionPassword":{
+	"optionPassword": {
 		"message": "wachtwoord",
 		"description": "Options page label: 'password'"
 	},
-	"optionCreateRootDirectory":{
+	"optionCreateRootDirectory": {
 		"message": "maak een hoofdmap",
 		"description": "Options page label: 'create a root directory'"
 	},
-	"optionPreventAppendedData":{
+	"optionPreventAppendedData": {
 		"message": "voeg geen gegevens toe na de ZIP-gegevens",
 		"description": "Options page label: 'do not append data after the ZIP data'"
 	},
-	"optionInsertTextBody":{
+	"optionInsertTextBody": {
 		"message": "maak tekst doorzoekbaar",
 		"description": "Options page label: 'make text searchable'"
 	},
-	"optionInsertEmbeddedImage":{
+	"optionInsertEmbeddedImage": {
 		"message": "insluiten afbeelding",
 		"description": "Options page label: 'embed image'"
 	},
-	"optionInsertEmbeddedScreenshotImage":{
+	"optionInsertEmbeddedScreenshotImage": {
 		"message": "schermafbeelding",
 		"description": "Options page label: 'page screenshot'"
 	},
-	"optionInsertEmbeddedCustomImage":{
+	"optionInsertEmbeddedCustomImage": {
 		"message": "aangepaste afbeelding",
 		"description": "Options page label: 'custom image'"
 	},
-	"optionsInfobarSubTitle":{
+	"optionsInfobarSubTitle": {
 		"message": "Infobalk",
 		"description": "Options sub-title: 'Infobar'"
 	},
-	"optionsImagesSubTitle":{
+	"optionsImagesSubTitle": {
 		"message": "Afbeeldingen",
 		"description": "Options sub-title: 'Images'"
 	},
-	"optionGroupDuplicateImages":{
+	"optionGroupDuplicateImages": {
 		"message": "dubbele afbeeldingen samenvoegen",
 		"description": "Options page label: 'group duplicate images together'"
 	},
-	"optionLoadDeferredImages":{
+	"optionLoadDeferredImages": {
 		"message": "uitgestelde afbeeldingen opslaan",
 		"description": "Options page label: 'save deferred images'"
 	},
-	"optionLoadDeferredImagesMaxIdleTime":{
+	"optionLoadDeferredImagesMaxIdleTime": {
 		"message": "maximale wachttijd (ms)",
 		"description": "Options page label: 'maximum idle time (ms)'"
 	},
-	"optionLoadDeferredImagesKeepZoomLevel":{
+	"optionLoadDeferredImagesKeepZoomLevel": {
 		"message": "zoom uit op de pagina",
 		"description": "Options page label: 'zoom out the page'"
 	},
-	"optionLoadDeferredImagesDispatchScrollEvent":{
+	"optionLoadDeferredImagesDispatchScrollEvent": {
 		"message": "verzend \"scroll\"-gebeurtenis",
 		"description": "Options page label: 'dispatch \"scroll\" event'"
 	},
-	"optionLoadDeferredImagesBeforeFrames":{
+	"optionLoadDeferredImagesBeforeFrames": {
 		"message": "laad uitgestelde frames",
 		"description": "Options page label: 'load deferred frames'"
 	},
-	"optionRemoveAlternativeImages":{
+	"optionRemoveAlternativeImages": {
 		"message": "verwijder afbeeldingen voor alternatieve schermresoluties",
 		"description": "Options page label: 'remove images for alternative screen resolutions'"
 	},
-	"optionsFontsSubTitle":{
+	"optionsFontsSubTitle": {
 		"message": "Lettertypen",
 		"description": "Options sub-title: 'Fonts'"
 	},
-	"optionRemoveUnusedFonts":{
+	"optionRemoveUnusedFonts": {
 		"message": "verwijder ongebruikte lettertypen",
 		"description": "Options page label: 'remove unused fonts'"
 	},
-	"optionRemoveAlternativeFonts":{
+	"optionRemoveAlternativeFonts": {
 		"message": "verwijder alternatieve lettertypen",
 		"description": "Options page label: 'remove alternative fonts'"
 	},
-	"optionsStylesheetsSubTitle":{
+	"optionsStylesheetsSubTitle": {
 		"message": "Stijlbladen",
 		"description": "Options sub-title: 'Stylesheets'"
 	},
-	"optionCompressCSS":{
+	"optionCompressCSS": {
 		"message": "CSS-inhoud comprimeren",
 		"description": "Options page label: 'compress CSS content'"
 	},
-	"optionMoveStylesInHead":{
+	"optionMoveStylesInHead": {
 		"message": "verplaats de stijlen die zich buiten het head-element bevinden",
 		"description": "Options page label: 'move in the head element the styles found outside of it'"
 	},
-	"optionRemoveUnusedStyles":{
+	"optionRemoveUnusedStyles": {
 		"message": "verwijder ongebruikte stijlen",
 		"description": "Options page label: 'remove unused styles'"
 	},
-	"optionRemoveAlternativeMedias":{
+	"optionRemoveAlternativeMedias": {
 		"message": "verwijder stijlbladen voor alternatieve apparaten",
 		"description": "Options page label: 'remove stylesheets for alternative devices to screens'"
 	},
-	"optionsNetworkSubTitle":{
+	"optionsNetworkSubTitle": {
 		"message": "Netwerk",
 		"description": "Options sub-title: 'Network'"
 	},
-	"optionsBlockedResources":{
+	"optionsBlockedResources": {
 		"message": "geblokkeerde bronnen",
 		"description": "Options page label: 'blocked resources'"
 	},
-	"optionsAcceptHeaders":{
+	"optionsAcceptHeaders": {
 		"message": "\"Accept\"-koptekst",
 		"description": "Options page label: '\"Accept\" header'"
 	},
-	"optionResourceScript":{
+	"optionResourceScript": {
 		"message": "scripts",
 		"description": "Options page label: 'scripts'"
 	},
-	"optionResourceVideo":{
+	"optionResourceVideo": {
 		"message": "video's",
 		"description": "Options page label: 'videos'"
 	},
-	"optionResourceAudio":{
+	"optionResourceAudio": {
 		"message": "audio's",
 		"description": "Options page label: 'audios'"
 	},
-	"optionResourceDocument":{
+	"optionResourceDocument": {
 		"message": "documenten",
 		"description": "Options page label: 'documents'"
 	},
-	"optionResourceFont":{
+	"optionResourceFont": {
 		"message": "lettertypen",
 		"description": "Options page label: 'fonts'"
 	},
-	"optionResourceStylesheet":{
+	"optionResourceStylesheet": {
 		"message": "stijlbladen",
 		"description": "Options page label: 'stylesheets'"
 	},
-	"optionResourceImage":{
+	"optionResourceImage": {
 		"message": "afbeeldingen",
 		"description": "Options page label: 'images'"
 	},
-	"optionsDestinationSubTitle":{
+	"optionsDestinationSubTitle": {
 		"message": "Bestemming",
 		"description": "Options sub-title: 'Destination'"
 	},
-	"optionsBookmarkSubTitle":{
+	"optionsBookmarkSubTitle": {
 		"message": "Bladwijzers",
 		"description": "Options sub-title: 'Bookmarks'"
 	},
-	"optionsAutoSaveSubTitle":{
+	"optionsAutoSaveSubTitle": {
 		"message": "Automatisch opslaan",
 		"description": "Options sub-title: 'Auto-save'"
 	},
-	"optionsAutoSettingsSubTitle":{
+	"optionsAutoSettingsSubTitle": {
 		"message": "Regels voor automatische configuratie",
 		"description": "Options sub-title: 'Auto-settings rules'"
 	},
-	"optionsDeleteDisplayedRulesConfirm":{
+	"optionsDeleteDisplayedRulesConfirm": {
 		"message": "Bevestig het verwijderen van alle weergegeven regels",
 		"description": "Popup text 'Confirm the deletion of all displayed rules'"
 	},
-	"optionsDeleteRulesTooltip":{
+	"optionsDeleteRulesTooltip": {
 		"message": "Verwijder alle weergegeven regels",
 		"description": "Popup text 'Delete all displayed rules'"
 	},
-	"optionsAutoSettingsUrl":{
+	"optionsAutoSettingsUrl": {
 		"message": "URL",
 		"description": "Options label in the Auto-settings rules: 'URL'"
 	},
-	"optionsAutoSettingsUrlPlaceholder":{
+	"optionsAutoSettingsUrlPlaceholder": {
 		"message": "Typ een volledige of gedeeltelijke URL (bijv. voorbeeld.com)",
 		"description": "Placeholder in the Auto-settings rules: 'Type a complete or partial URL (e.g. example.com)'"
 	},
-	"optionsAutoSettingsProfile":{
+	"optionsAutoSettingsProfile": {
 		"message": "Profiel",
 		"description": "Options label in the Auto-settings rules: 'Profile'"
 	},
-	"optionsAutoSettingsAutoSaveProfile":{
+	"optionsAutoSettingsAutoSaveProfile": {
 		"message": "Profiel automatisch opslaan",
 		"description": "Options label in the Auto-settings rules: 'Auto-save profile'"
 	},
-	"optionsAutoSettingsShowAllProfiles":{
+	"optionsAutoSettingsShowAllProfiles": {
 		"message": "toon alle profielen",
 		"description": "Options label in the Auto-settings rules: 'display all profiles'"
 	},
-	"optionsAutoSettingsShowAutoSaveProfile":{
+	"optionsAutoSettingsShowAutoSaveProfile": {
 		"message": "toon 'profiel automatisch opslaan' kolom",
 		"description": "Options label in the Auto-settings rules: 'display 'Auto-save profile' column'"
 	},
-	"optionsUpdateRuleTooltip":{
+	"optionsUpdateRuleTooltip": {
 		"message": "Regel bijwerken",
 		"description": "Popup text 'Update the rule' in the options page"
 	},
-	"optionsDeleteRuleTooltip":{
+	"optionsDeleteRuleTooltip": {
 		"message": "Regel verwijderen",
 		"description": "Popup text 'Delete the rule' in the options page"
 	},
-	"optionsAddRuleTooltip":{
+	"optionsAddRuleTooltip": {
 		"message": "Regel toevoegen",
 		"description": "Popup text 'Add the rule' in the options page"
 	},
-	"optionsValidateChangesTooltip":{
+	"optionsValidateChangesTooltip": {
 		"message": "Wijzigingen bevestigen",
 		"description": "Popup text 'Validate changes' in the options page"
 	},
-	"optionsDeleteRuleConfirm":{
+	"optionsDeleteRuleConfirm": {
 		"message": "Bevestig de verwijdering van de geselecteerde regel",
 		"description": "Popup text 'Confirm the deletion of the selected rule' in the options page"
 	},
-	"optionAutoSaveLoadOrUnload":{
+	"optionAutoSaveLoadOrUnload": {
 		"message": "automatisch opslaan na het laden van de pagina of bij het verlaten van de pagina",
 		"description": "auto-save after page load or on page unload"
 	},
-	"optionAutoSaveLoad":{
+	"optionAutoSaveLoad": {
 		"message": "automatisch opslaan na het laden van de pagina",
 		"description": "Options page label: 'auto-save after page load'"
 	},
-	"optionAutoSaveUnload":{
+	"optionAutoSaveUnload": {
 		"message": "automatisch opslaan bij het verlaten van de pagina",
 		"description": "Options page label: 'auto-save on page unload'"
 	},
-	"optionAutoSaveDiscard":{
+	"optionAutoSaveDiscard": {
 		"message": "automatisch opslaan bij het sluiten van het tabblad",
 		"description": "Options page label: 'auto-save on tab discard'"
 	},
-	"optionAutoSaveRemove":{
+	"optionAutoSaveRemove": {
 		"message": "automatisch opslaan bij het verwijderen van het tabblad",
 		"description": "Options page label: 'auto-save on tab removal'"
 	},
-	"optionAutoSaveDelay":{
+	"optionAutoSaveDelay": {
 		"message": "wachttijd voor automatisch opslaan na het laden van de pagina (s)",
 		"description": "Options page label: 'auto-save waiting delay after page load (s)'"
 	},
-	"optionAutoSaveRepeat":{
+	"optionAutoSaveRepeat": {
 		"message": "periodiek automatisch opslaan",
 		"description": "Options page label: 'auto-save periodically'"
 	},
-	"optionAutoSaveRepeatDelay":{
+	"optionAutoSaveRepeatDelay": {
 		"message": "periode (s.)",
 		"description": "Options page label: 'period (s)'"
 	},
