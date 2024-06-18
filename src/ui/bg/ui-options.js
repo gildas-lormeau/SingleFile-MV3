@@ -28,29 +28,13 @@ const HELP_PAGE_PATH = "/src/ui/pages/help.html";
 let DEFAULT_PROFILE_NAME,
 	DISABLED_PROFILE_NAME,
 	CURRENT_PROFILE_NAME,
-	BACKGROUND_SAVE_SUPPORTED,
-	AUTO_SAVE_SUPPORTED,
-	AUTO_OPEN_EDITOR_SUPPORTED,
-	INFOBAR_SUPPORTED,
-	BOOKMARKS_API_SUPPORTED,
-	IDENTITY_API_SUPPORTED,
-	CLIPBOARD_API_SUPPORTED,
-	NATIVE_API_API_SUPPORTED,
-	WEB_BLOCKING_API_SUPPORTED;
+	BACKGROUND_SAVE_SUPPORTED;
 browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	({
 		DEFAULT_PROFILE_NAME,
 		DISABLED_PROFILE_NAME,
 		CURRENT_PROFILE_NAME,
-		BACKGROUND_SAVE_SUPPORTED,
-		AUTO_SAVE_SUPPORTED,
-		AUTO_OPEN_EDITOR_SUPPORTED,
-		INFOBAR_SUPPORTED,
-		BOOKMARKS_API_SUPPORTED,
-		IDENTITY_API_SUPPORTED,
-		CLIPBOARD_API_SUPPORTED,
-		NATIVE_API_API_SUPPORTED,
-		WEB_BLOCKING_API_SUPPORTED
+		BACKGROUND_SAVE_SUPPORTED
 	} = data);
 	init();
 });
@@ -789,37 +773,10 @@ browser.runtime.sendMessage({ method: "tabsData.get" }).then(allTabsData => {
 getHelpContents();
 
 function init() {
-	if (!AUTO_SAVE_SUPPORTED) {
-		document.getElementById("autoSaveSection").hidden = true;
-		document.getElementById("showAutoSaveProfileOption").hidden = true;
-		rulesContainerElement.classList.add("compact");
-	}
 	if (!BACKGROUND_SAVE_SUPPORTED) {
 		document.getElementById("backgroundSaveOptions").hidden = true;
 		document.getElementById("confirmFilenameOption").hidden = true;
 		document.getElementById("filenameConflictAction").hidden = true;
-	}
-	if (!BOOKMARKS_API_SUPPORTED) {
-		document.getElementById("bookmarksOptions").hidden = true;
-	}
-	if (!AUTO_OPEN_EDITOR_SUPPORTED) {
-		document.getElementById("autoOpenEditorOption").hidden = true;
-	}
-	if (!INFOBAR_SUPPORTED) {
-		document.getElementById("displayInfobarOption").hidden = true;
-	}
-	if (!IDENTITY_API_SUPPORTED) {
-		document.getElementById("saveToGDriveOption").hidden = true;
-		document.getElementById("saveToDropboxOption").hidden = true;
-	}
-	if (!CLIPBOARD_API_SUPPORTED) {
-		document.getElementById("saveToClipboardOption").hidden = true;
-	}
-	if (!NATIVE_API_API_SUPPORTED) {
-		document.getElementById("saveWithCompanionOption").hidden = true;
-	}
-	if (!WEB_BLOCKING_API_SUPPORTED) {
-		document.getElementById("passReferrerOnErrorOption").hidden = true;
 	}
 }
 
