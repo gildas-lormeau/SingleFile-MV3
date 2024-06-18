@@ -545,7 +545,6 @@ saveToDropboxInput.addEventListener("click", () => disableDestinationPermissions
 saveWithWebDAVInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveToRestFormApiInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
-passReferrerOnErrorInput.addEventListener("click", passReferrerOnError, false);
 autoSaveExternalSaveInput.addEventListener("click", () => enableExternalSave(autoSaveExternalSaveInput), false);
 saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
 saveToClipboardInput.addEventListener("click", onClickSaveToClipboard, false);
@@ -593,8 +592,7 @@ document.body.onchange = async event => {
 		target != ruleEditProfileInput &&
 		target != ruleEditAutoSaveProfileInput &&
 		target != showAutoSaveProfileInput &&
-		target != saveCreatedBookmarksInput &&
-		target != passReferrerOnErrorInput) {
+		target != saveCreatedBookmarksInput) {
 		if (target != profileNamesInput && target != showAllProfilesInput) {
 			await update();
 		}
@@ -1281,34 +1279,6 @@ async function disableDestinationPermissions(permissions, disableGDrive = true, 
 		await browser.permissions.remove({ permissions });
 	} catch (error) {
 		//ignored
-	}
-}
-
-async function passReferrerOnError() {
-	if (passReferrerOnErrorInput.checked) {
-		passReferrerOnErrorInput.checked = false;
-		try {
-			const permissionGranted = await browser.permissions.request({ permissions: ["webRequest", "webRequestBlocking"] });
-			if (permissionGranted) {
-				passReferrerOnErrorInput.checked = true;
-				await update();
-				await refresh();
-				await browser.runtime.sendMessage({ method: "requests.enableReferrerOnError" });
-			} else {
-				await disableOption();
-			}
-		} catch (error) {
-			await disableOption();
-		}
-	} else {
-		await disableOption();
-	}
-
-	async function disableOption() {
-		await update();
-		await refresh();
-		await browser.runtime.sendMessage({ method: "requests.disableReferrerOnError" });
-		await browser.permissions.remove({ permissions: ["webRequest", "webRequestBlocking"] });
 	}
 }
 
