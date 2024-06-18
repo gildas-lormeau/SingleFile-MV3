@@ -623,6 +623,10 @@
 		"message": "enregistrer dans le système de fichiers",
 		"description": "Options page label: 'save to filesystem'"
 	},
+	"optionSharePage": {
+		"message": "partager la page",
+		"description": "Options page label: 'share page'"
+	},
 	"optionAddProof": {
 		"message": "ajouter une preuve d'existence",
 		"description": "Options page label: 'add proof of existence'"
@@ -770,6 +774,14 @@
 	"topPanelEmbeddedImageButton": {
 		"message": "Ouvrir image...",
 		"description": "Top panel button 'Open image...' when embedding an image"
+	},
+	"topPanelSharePageButton": {
+		"message": "Partager la page...",
+		"description": "Top panel button 'Share page...' when sharing a page"
+	},
+	"topPanelShareSelectionButton": {
+		"message": "Partager la sélection...",
+		"description": "Top panel button 'Share selection...' when sharing selected content"
 	},
 	"profileDefaultSettings": {
 		"message": "Configuration par défaut",

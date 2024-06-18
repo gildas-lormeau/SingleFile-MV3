@@ -623,6 +623,10 @@
 		"message": "save to filesystem",
 		"description": "Options page label: 'save to filesystem'"
 	},
+	"optionSharePage": {
+		"message": "share page",
+		"description": "Options page label: 'share page'"
+	},
 	"optionAddProof": {
 		"message": "add proof of existence",
 		"description": "Options page label: 'add proof of existence'"
@@ -771,6 +775,14 @@
 		"message": "Open image...",
 		"description": "Top panel button 'Open image...' when embedding an image"
 	},
+	"topPanelSharePageButton": {
+		"message": "Share page...",
+		"description": "Top panel button 'Share page...' when sharing a page"
+	},
+	"topPanelShareSelectionButton": {
+		"message": "Share selection...",
+		"description": "Top panel button 'Share selection...' when sharing selected content"
+	},
 	"profileDefaultSettings": {
 		"message": "Default settings",
 		"description": "Label 'Default settings' of the default settings in the options page"
@@ -917,7 +929,7 @@
 	},
 	"pendingsNoPendings": {
 		"message": "No pending saves",
-		"description": "Label displayed when they are no pending saves"
+		"description": "Label displayed when there are no pending saves"
 	},
 	"pendingsAddUrlsButton": {
 		"message": "Add URLs",
@@ -941,7 +953,7 @@
 	},
 	"batchSaveUrlsNoURLs": {
 		"message": "No URLs",
-		"description": "Label displayed when they are no URLs"
+		"description": "Label displayed when there are no URLs"
 	},
 	"batchSaveUrlsAddUrlButton": {
 		"message": "Add URL",

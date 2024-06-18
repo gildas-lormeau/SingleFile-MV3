@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, window, document, CustomEvent, */
+/* global browser, window, document, CustomEvent */
 
 const FETCH_SUPPORTED_REQUEST_EVENT = "single-file-request-fetch-supported";
 const FETCH_SUPPORTED_RESPONSE_EVENT = "single-file-response-fetch-supported";

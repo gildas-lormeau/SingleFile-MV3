@@ -32,25 +32,9 @@ browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 });
 
 function init() {
-	document.getElementById("autoSaveSection").hidden = true;
-	document.getElementById("autoSaveOptions").hidden = true;
-	document.getElementById("autoSaveMenu").hidden = true;
-	document.getElementById("autoSaveHint").hidden = true;
 	if (!BACKGROUND_SAVE_SUPPORTED) {
 		document.getElementById("backgroundSaveOption").hidden = true;
 		document.getElementById("confirmFilenameOption").hidden = true;
 		document.getElementById("filenameConflictActionOption").hidden = true;
 	}
-	document.getElementById("bookmarksSection").hidden = true;
-	document.getElementById("bookmarksOptions").hidden = true;
-	document.getElementById("openSavedPageOption").hidden = true;
-	document.getElementById("autoOpenEditorOption").hidden = true;
-	document.getElementById("displayInfobarOption").hidden = true;
-	document.getElementById("saveToGDriveOption").hidden = true;
-	document.getElementById("saveToGDriveHint").hidden = true;
-	document.getElementById("saveToClipboardOption").hidden = true;
-	document.getElementById("saveWithCompanionOption").hidden = true;
-	document.getElementById("passReferrerOnErrorOption").hidden = true;
-	document.getElementById("selectableTabsMenu").hidden = true;
-	document.getElementById("shortcutsSection").hidden = true;
 }

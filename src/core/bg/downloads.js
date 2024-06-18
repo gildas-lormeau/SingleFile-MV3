@@ -266,7 +266,7 @@ async function downloadCompressedContent(message, tab) {
 	try {
 		const prompt = filename => promptFilename(tabId, filename);
 		let skipped, response;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi) {
+		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi && !message.sharePage) {
 			const testSkip = await testSkipSave(message.filename, message);
 			message.filenameConflictAction = testSkip.filenameConflictAction;
 			skipped = testSkip.skipped;
@@ -302,9 +302,12 @@ async function downloadCompressedContent(message, tab) {
 					insertMetaCSP: message.insertMetaCSP,
 					embeddedImage: message.embeddedImage
 				});
-			} else if (message.foregroundSave) {
+			} else if (message.foregroundSave || message.sharePage) {
 				const blob = (await fetch(result.url)).blob();
-				await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, message.foregroundSave);
+				await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
+					foregroundSave: message.foregroundSave,
+					sharePage: message.sharePage
+				});
 			} else if (message.saveWithWebDAV) {
 				const blob = await (await fetch(result.url)).blob();
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
@@ -575,11 +578,12 @@ async function saveToRestFormApi(taskId, content, url, token, restApiUrl, fileFi
 	}
 }
 
-async function downloadPageForeground(taskId, filename, content, mimeType, tabId, foregroundSave) {
+async function downloadPageForeground(taskId, filename, content, mimeType, tabId, { foregroundSave, sharePage }) {
 	const serializer = yabson.getSerializer({
 		filename,
 		taskId,
 		foregroundSave,
+		sharePage,
 		content: await content.arrayBuffer(),
 		mimeType
 	});

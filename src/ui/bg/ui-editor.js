@@ -28,6 +28,11 @@ import { onError } from "./../common/common-content-ui.js";
 import * as zip from "./../../../lib/single-file-zip.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
+const EMBEDDED_IMAGE_BUTTON_MESSAGE = browser.i18n.getMessage("topPanelEmbeddedImageButton");
+const SHARE_PAGE_BUTTON_MESSAGE = browser.i18n.getMessage("topPanelSharePageButton");
+const SHARE_SELECTION_BUTTON_MESSAGE = browser.i18n.getMessage("topPanelShareSelectionButton");
+const ERROR_TITLE_MESSAGE = browser.i18n.getMessage("topPanelError");
+
 const FS_SIZE = 100 * 1024 * 1024;
 const SHADOWROOT_ATTRIBUTE_NAME = "shadowrootmode";
 const INFOBAR_TAGNAME = "single-file-infobar";
@@ -350,6 +355,10 @@ addEventListener("message", event => {
 			}
 		}
 	}
+	if (message.method == "onError") {
+		browser.runtime.sendMessage({ method: "ui.processError", error: message.error });
+		onError(message.error);
+	}
 	if (message.method == "savePage") {
 		savePage();
 	}
@@ -427,12 +436,13 @@ async function downloadContent(message) {
 	const result = await downloadParser.next(message.data);
 	if (result.done) {
 		downloadParser = null;
-		if (result.value.foregroundSave) {
+		if (result.value.foregroundSave || result.value.sharePage) {
 			editorElement.contentWindow.postMessage(JSON.stringify({
 				method: "download",
 				filename: result.value.filename,
 				content: Array.from(new Uint8Array(result.value.content)),
-				mimeType: result.value.mimeType
+				mimeType: result.value.mimeType,
+				sharePage: result.value.sharePage
 			}), "*");
 		} else {
 			const link = document.createElement("a");
@@ -562,7 +572,14 @@ function savePage() {
 		includeInfobar: tabData.options.includeInfobar,
 		backgroundSave: tabData.options.backgroundSave,
 		updatedResources,
-		filename: tabData.filename
+		filename: tabData.filename,
+		sharePage: tabData.options.sharePage,
+		labels: {
+			EMBEDDED_IMAGE_BUTTON_MESSAGE,
+			SHARE_PAGE_BUTTON_MESSAGE,
+			SHARE_SELECTION_BUTTON_MESSAGE,
+			ERROR_TITLE_MESSAGE
+		}
 	}), "*");
 }
 

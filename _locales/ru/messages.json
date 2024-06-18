@@ -300,15 +300,15 @@
 		"description": "Options page label: 'make text searchable'"
 	},
 	"optionInsertEmbeddedImage": {
-		"message": "embed image",
+		"message": "встроенное изображение",
 		"description": "Options page label: 'embed image'"
 	},
 	"optionInsertEmbeddedScreenshotImage": {
-		"message": "page screenshot",
+		"message": "снимок страницы",
 		"description": "Options page label: 'page screenshot'"
 	},
 	"optionInsertEmbeddedCustomImage": {
-		"message": "custom image",
+		"message": "своё изображение",
 		"description": "Options page label: 'custom image'"
 	},
 	"optionsInfobarSubTitle": {
@@ -623,6 +623,10 @@
 		"message": "сохранить как файл",
 		"description": "Options page label: 'save to filesystem'"
 	},
+	"optionSharePage": {
+		"message": "поделиться страницей",
+		"description": "Options page label: 'share page'"
+	},
 	"optionAddProof": {
 		"message": "добавить доказательство существования",
 		"description": "Options page label: 'add proof of existence'"
@@ -656,11 +660,11 @@
 		"description": "Options page label: 'user name'"
 	},
 	"optionGitHubRepository": {
-		"message": "название репозитория",
+		"message": "имя репозитория",
 		"description": "Options page label: 'repository name'"
 	},
 	"optionGitHubBranch": {
-		"message": "название ветки",
+		"message": "имя ветки",
 		"description": "Options page label: 'branch name'"
 	},
 	"optionSaveWithWebDAV": {
@@ -770,6 +774,14 @@
 	"topPanelEmbeddedImageButton": {
 		"message": "Открыть изображение...",
 		"description": "Top panel button 'Open image...' when embedding an image"
+	},
+	"topPanelSharePageButton": {
+		"message": "Поделиться страницей...",
+		"description": "Top panel button 'Share page...' when sharing a page"
+	},
+	"topPanelShareSelectionButton": {
+		"message": "Поделиться выделенным...",
+		"description": "Top panel button 'Share selection...' when sharing selected content"
 	},
 	"profileDefaultSettings": {
 		"message": "Настройки по умолчанию",

@@ -23,6 +23,9 @@
 
 /* global globalThis, window, document, fetch, DOMParser, getComputedStyle, setTimeout, clearTimeout, NodeFilter, Readability, isProbablyReaderable, matchMedia, TextDecoder, Node, URL, prompt, MutationObserver, FileReader */
 
+import { setLabels } from "./../../ui/common/common-content-ui.js";
+import { downloadPageForeground } from "../../core/common/download.js";
+
 (globalThis => {
 
 	const singlefile = globalThis.singlefile;
@@ -1084,6 +1087,9 @@ pre code {
 					pageOptions.visitDate = new Date(pageOptions.visitDate);
 					filename = await singlefile.helper.formatFilename(content, document, pageOptions);
 				}
+				if (message.sharePage) {
+					setLabels(message.labels);
+				}
 				if (pageCompressContent) {
 					const viewport = document.head.querySelector("meta[name=viewport]");
 					window.parent.postMessage(JSON.stringify({
@@ -1095,14 +1101,28 @@ pre code {
 						url: pageUrl,
 						viewport: viewport ? viewport.content : null,
 						compressContent: true,
-						foregroundSave: message.foregroundSave
+						foregroundSave: message.foregroundSave,
+						sharePage: message.sharePage
 					}), "*");
 				} else {
-					window.parent.postMessage(JSON.stringify({
-						method: "setContent",
-						content,
-						filename
-					}), "*");
+					if (message.foregroundSave || message.sharePage) {
+						try {
+							await downloadPageForeground({
+								content,
+								filename: filename || message.filename,
+								mimeType: "text/html"
+							}, { sharePage: message.sharePage });
+						} catch (error) {
+							console.log(error); // eslint-disable-line no-console
+							window.parent.postMessage(JSON.stringify({ method: "onError", error: error.message }), "*");
+						}
+					} else {
+						window.parent.postMessage(JSON.stringify({
+							method: "setContent",
+							content,
+							filename
+						}), "*");
+					}
 				}
 			}
 			if (message.method == "printPage") {
@@ -1118,6 +1138,18 @@ pre code {
 					method: "displayInfobar",
 					content
 				}), "*");
+			}
+			if (message.method == "download") {
+				try {
+					await downloadPageForeground({
+						content: message.content,
+						filename: message.filename,
+						mimeType: message.mimeType
+					}, { sharePage: message.sharePage });
+				} catch (error) {
+					console.log(error); // eslint-disable-line no-console
+					window.parent.postMessage(JSON.stringify({ method: "onError", error: error.message }), "*");
+				}
 			}
 		};
 		window.onresize = reflowNotes;

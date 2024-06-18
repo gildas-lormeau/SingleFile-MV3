@@ -21,14 +21,35 @@
  *   Source.
  */
 
-/* global browser, document, URL, Blob, MouseEvent, setTimeout, open */
+/* global browser, document, URL, Blob, MouseEvent, setTimeout, open, navigator, File */
 
 import * as yabson from "./../../lib/yabson/yabson.js";
+import { getSharePageBar, setLabels } from "./../../ui/common/common-content-ui.js";
 
 const MAX_CONTENT_SIZE = 16 * (1024 * 1024);
 
+let EMBEDDED_IMAGE_BUTTON_MESSAGE, SHARE_PAGE_BUTTON_MESSAGE, SHARE_SELECTION_BUTTON_MESSAGE, ERROR_TITLE_MESSAGE;
+
+try {
+	EMBEDDED_IMAGE_BUTTON_MESSAGE = browser.i18n.getMessage("topPanelEmbeddedImageButton");
+	SHARE_PAGE_BUTTON_MESSAGE = browser.i18n.getMessage("topPanelSharePageButton");
+	SHARE_SELECTION_BUTTON_MESSAGE = browser.i18n.getMessage("topPanelShareSelectionButton");
+	ERROR_TITLE_MESSAGE = browser.i18n.getMessage("topPanelError");
+} catch (error) {
+	// ignored
+}
+
+let sharePageBar;
+setLabels({
+	EMBEDDED_IMAGE_BUTTON_MESSAGE,
+	SHARE_PAGE_BUTTON_MESSAGE,
+	SHARE_SELECTION_BUTTON_MESSAGE,
+	ERROR_TITLE_MESSAGE
+});
+
 export {
-	downloadPage
+	downloadPage,
+	downloadPageForeground
 };
 
 async function downloadPage(pageData, options) {
@@ -80,6 +101,7 @@ async function downloadPage(pageData, options) {
 		password: options.password,
 		compressContent: options.compressContent,
 		foregroundSave: options.foregroundSave,
+		sharePage: options.sharePage,
 		saveToRestFormApi: options.saveToRestFormApi,
 		saveToRestFormApiUrl: options.saveToRestFormApiUrl,
 		saveToRestFormApiFileFieldName: options.saveToRestFormApiFileFieldName,
@@ -117,7 +139,7 @@ async function downloadPage(pageData, options) {
 			await browser.runtime.sendMessage({ method: "downloads.end", taskId: options.taskId });
 		}
 	} else {
-		if (options.backgroundSave || options.openEditor || options.saveToGDrive || options.saveToGitHub || options.saveWithCompanion || options.saveWithWebDAV || options.saveToDropbox || options.saveToRestFormApi) {
+		if ((options.backgroundSave && !options.sharePage) || options.openEditor || options.saveToGDrive || options.saveToGitHub || options.saveWithCompanion || options.saveWithWebDAV || options.saveToDropbox || options.saveToRestFormApi) {
 			const blobURL = URL.createObjectURL(new Blob([pageData.content], { type: pageData.mimeType }));
 			message.blobURL = blobURL;
 			const result = await browser.runtime.sendMessage(message);
@@ -139,7 +161,7 @@ async function downloadPage(pageData, options) {
 			if (options.saveToClipboard) {
 				saveToClipboard(pageData);
 			} else {
-				await downloadPageForeground(pageData);
+				await downloadPageForeground(pageData, options);
 			}
 			if (options.openSavedPage) {
 				open(URL.createObjectURL(new Blob([pageData.content], { type: pageData.mimeType })));
@@ -150,18 +172,40 @@ async function downloadPage(pageData, options) {
 	}
 }
 
-async function downloadPageForeground(pageData) {
+async function downloadPageForeground(pageData, options) {
 	if (Array.isArray(pageData.content)) {
 		pageData.content = new Uint8Array(pageData.content);
 	}
-	if (pageData.filename && pageData.filename.length) {
-		const link = document.createElement("a");
-		link.download = pageData.filename;
-		link.href = URL.createObjectURL(new Blob([pageData.content], { type: pageData.mimeType }));
-		link.dispatchEvent(new MouseEvent("click"));
-		setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+	if (options.sharePage && navigator.share) {
+		await sharePage(pageData, options);
+	} else {
+		if (pageData.filename && pageData.filename.length) {
+			const link = document.createElement("a");
+			link.download = pageData.filename;
+			link.href = URL.createObjectURL(new Blob([pageData.content], { type: pageData.mimeType }));
+			link.dispatchEvent(new MouseEvent("click"));
+			return new Promise(resolve => setTimeout(() => { URL.revokeObjectURL(link.href); resolve(); }, 1000));
+		}
 	}
-	return new Promise(resolve => setTimeout(resolve, 1));
+}
+
+async function sharePage(pageData, options) {
+	sharePageBar = getSharePageBar();
+	const cancelled = await sharePageBar.display(options.selected);
+	if (!cancelled) {
+		const data = { files: [new File([pageData.content], pageData.filename, { type: pageData.mimeType })] };
+		try {
+			await navigator.share(data);
+			sharePageBar.hide();
+		} catch (error) {
+			sharePageBar.hide();
+			if (error.name === "AbortError") {
+				await sharePage(pageData, options);
+			} else {
+				throw error;
+			}
+		}
+	}
 }
 
 function saveToClipboard(pageData) {
