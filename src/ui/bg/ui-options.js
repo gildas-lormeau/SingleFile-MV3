@@ -28,13 +28,15 @@ const HELP_PAGE_PATH = "/src/ui/pages/help.html";
 let DEFAULT_PROFILE_NAME,
 	DISABLED_PROFILE_NAME,
 	CURRENT_PROFILE_NAME,
-	BACKGROUND_SAVE_SUPPORTED;
+	BACKGROUND_SAVE_SUPPORTED,
+	SHARE_API_SUPPORTED;
 browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	({
 		DEFAULT_PROFILE_NAME,
 		DISABLED_PROFILE_NAME,
 		CURRENT_PROFILE_NAME,
-		BACKGROUND_SAVE_SUPPORTED
+		BACKGROUND_SAVE_SUPPORTED,
+		SHARE_API_SUPPORTED
 	} = data);
 	init();
 });
@@ -780,6 +782,9 @@ function init() {
 		document.getElementById("backgroundSaveOptions").hidden = true;
 		document.getElementById("confirmFilenameOption").hidden = true;
 		document.getElementById("filenameConflictAction").hidden = true;
+	}
+	if (!SHARE_API_SUPPORTED) {
+		document.getElementById("sharePageOption").hidden = true;
 	}
 }
 

@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, navigator */
+/* global browser, navigator, Blob, File */
 
 import { download } from "./download-util.js";
 import * as tabsData from "./tabs-data.js";
@@ -33,6 +33,7 @@ const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
 
 const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
+const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });
 
 const DEFAULT_CONFIG = {
 	removeHiddenElements: true,
@@ -203,6 +204,7 @@ export {
 	DISABLED_PROFILE_NAME,
 	CURRENT_PROFILE_NAME,
 	BACKGROUND_SAVE_SUPPORTED,
+	SHARE_API_SUPPORTED,
 	getConfig as get,
 	getRule,
 	getOptions,
@@ -341,7 +343,8 @@ async function onMessage(message) {
 			DISABLED_PROFILE_NAME,
 			DEFAULT_PROFILE_NAME,
 			CURRENT_PROFILE_NAME,
-			BACKGROUND_SAVE_SUPPORTED
+			BACKGROUND_SAVE_SUPPORTED,
+			SHARE_API_SUPPORTED
 		};
 	}
 	if (message.method.endsWith(".getRules")) {

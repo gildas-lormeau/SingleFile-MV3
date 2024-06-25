@@ -23,10 +23,12 @@
 
 /* global browser, document */
 
-let BACKGROUND_SAVE_SUPPORTED;
+let BACKGROUND_SAVE_SUPPORTED,
+	SHARE_API_SUPPORTED;
 browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	({
-		BACKGROUND_SAVE_SUPPORTED
+		BACKGROUND_SAVE_SUPPORTED,
+		SHARE_API_SUPPORTED
 	} = data);
 	init();
 });
@@ -36,5 +38,8 @@ function init() {
 		document.getElementById("backgroundSaveOption").hidden = true;
 		document.getElementById("confirmFilenameOption").hidden = true;
 		document.getElementById("filenameConflictActionOption").hidden = true;
+	}
+	if (!SHARE_API_SUPPORTED) {
+		document.getElementById("sharePageOption").hidden = true;
 	}
 }
