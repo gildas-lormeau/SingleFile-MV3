@@ -117,9 +117,6 @@ async function onMessage(message, sender) {
 		business.saveUrls(message.urls);
 		return {};
 	}
-	if (message.method.endsWith(".ping")) {
-		return {};
-	}
 }
 
 async function downloadTabPage(message, tab) {
