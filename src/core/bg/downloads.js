@@ -35,6 +35,7 @@ import { GDrive } from "./../../lib/gdrive/gdrive.js";
 import { Dropbox } from "./../../lib/dropbox/dropbox.js";
 import { WebDAV } from "./../../lib/webdav/webdav.js";
 import { GitHub } from "./../../lib/github/github.js";
+import { S3 } from "./../../lib/s3/s3.js";
 import { download } from "./download-util.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 import { RestFormApi } from "../../lib/../lib/rest-form-api/index.js";
@@ -68,6 +69,7 @@ export {
 	saveToDropbox,
 	saveWithWebDAV,
 	saveToRestFormApi,
+	saveToS3,
 	encodeSharpCharacter
 };
 
@@ -176,7 +178,7 @@ async function downloadContent(message, tab) {
 	const tabId = tab.id;
 	try {
 		let skipped;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi) {
+		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi && !message.saveToS3) {
 			const testSkip = await testSkipSave(message.filename, message);
 			message.filenameConflictAction = testSkip.filenameConflictAction;
 			skipped = testSkip.skipped;
@@ -229,6 +231,11 @@ async function downloadContent(message, tab) {
 					message.saveToRestFormApiFileFieldName,
 					message.saveToRestFormApiUrlFieldName
 				);
+			} else if (message.saveToS3) {
+				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: message.mimeType }), message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
+					filenameConflictAction: message.filenameConflictAction,
+					prompt
+				});
 			} else {
 				response = await downloadPage(message, {
 					confirmFilename: message.confirmFilename,
@@ -352,6 +359,12 @@ async function downloadCompressedContent(message, tab) {
 					message.saveToRestFormApiFileFieldName,
 					message.saveToRestFormApiUrlFieldName
 				);
+			} else if (message.saveToS3) {
+				const blob = await (await fetch(result.url)).blob();
+				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
+					filenameConflictAction: message.filenameConflictAction,
+					prompt
+				});
 			} else {
 				if (message.backgroundSave) {
 					message.url = result.url;
@@ -449,6 +462,19 @@ async function saveToGitHub(taskId, filename, content, githubToken, githubUser, 
 		}
 	} catch (error) {
 		throw new Error(error.message + " (GitHub)");
+	}
+}
+
+async function saveToS3(taskId, filename, blob, domain, region, bucket, accessKey, secretKey, { filenameConflictAction, prompt }) {
+	try {
+		const taskInfo = business.getTaskInfo(taskId);
+		if (!taskInfo || !taskInfo.cancelled) {
+			const client = new S3(region, bucket, accessKey, secretKey, domain);
+			business.setCancelCallback(taskId, () => client.abort());
+			return await client.upload(filename, blob, { filenameConflictAction, prompt });
+		}
+	} catch (error) {
+		throw new Error(error.message + " (S3)");
 	}
 }
 
