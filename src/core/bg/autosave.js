@@ -145,6 +145,7 @@ async function saveContent(message, tab) {
 		options.adoptedStyleSheets = message.adoptedStyleSheets;
 		options.visitDate = new Date(message.visitDate);
 		options.backgroundTab = true;
+		options.worklets = message.worklets;
 		options.autoSave = true;
 		options.incognito = tab.incognito;
 		options.tabId = tabId;
