@@ -570,6 +570,7 @@ function savePage() {
 		method: "getContent",
 		compressHTML: tabData.options.compressHTML,
 		includeInfobar: tabData.options.includeInfobar,
+		openInfobar: tabData.options.openInfobar,
 		backgroundSave: tabData.options.backgroundSave,
 		updatedResources,
 		filename: tabData.filename,
@@ -585,7 +586,8 @@ function savePage() {
 
 function displayInfobar() {
 	editorElement.contentWindow.postMessage(JSON.stringify({
-		method: "displayInfobar"
+		method: "displayInfobar",
+		openInfobar: tabData.options.openInfobar
 	}), "*");
 }
 

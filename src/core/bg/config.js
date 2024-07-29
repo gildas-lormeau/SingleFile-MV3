@@ -52,6 +52,7 @@ const DEFAULT_CONFIG = {
 	filenameTemplate: "%if-empty<{page-title}|No title> ({date-locale} {time-locale}).{filename-extension}",
 	infobarTemplate: "",
 	includeInfobar: false,
+	openInfobar: false,
 	confirmInfobarContent: false,
 	autoClose: false,
 	confirmFilename: false,

@@ -177,6 +177,7 @@ const infobarTemplateLabel = document.getElementById("infobarTemplateLabel");
 const blockMixedContentLabel = document.getElementById("blockMixedContentLabel");
 const saveOriginalURLsLabel = document.getElementById("saveOriginalURLsLabel");
 const includeInfobarLabel = document.getElementById("includeInfobarLabel");
+const openInfobarLabel = document.getElementById("openInfobarLabel");
 const removeInfobarSavedDateLabel = document.getElementById("removeInfobarSavedDateLabel");
 const miscLabel = document.getElementById("miscLabel");
 const helpLabel = document.getElementById("helpLabel");
@@ -281,6 +282,7 @@ const infobarTemplateInput = document.getElementById("infobarTemplateInput");
 const blockMixedContentInput = document.getElementById("blockMixedContentInput");
 const saveOriginalURLsInput = document.getElementById("saveOriginalURLsInput");
 const includeInfobarInput = document.getElementById("includeInfobarInput");
+const openInfobarInput = document.getElementById("openInfobarInput");
 const removeInfobarSavedDateInput = document.getElementById("removeInfobarSavedDateInput");
 const confirmInfobarInput = document.getElementById("confirmInfobarInput");
 const autoCloseInput = document.getElementById("autoCloseInput");
@@ -742,6 +744,7 @@ infobarTemplateLabel.textContent = browser.i18n.getMessage("optionInfobarTemplat
 blockMixedContentLabel.textContent = browser.i18n.getMessage("optionBlockMixedContent");
 saveOriginalURLsLabel.textContent = browser.i18n.getMessage("optionSaveOriginalURLs");
 includeInfobarLabel.textContent = browser.i18n.getMessage("optionIncludeInfobar");
+openInfobarLabel.textContent = browser.i18n.getMessage("optionOpenInfobar");
 removeInfobarSavedDateLabel.textContent = browser.i18n.getMessage("optionRemoveInfobarSavedDate");
 confirmInfobarLabel.textContent = browser.i18n.getMessage("optionConfirmInfobar");
 autoCloseLabel.textContent = browser.i18n.getMessage("optionAutoClose");
@@ -1038,6 +1041,7 @@ async function refresh(profileName) {
 	blockMixedContentInput.checked = profileOptions.blockMixedContent;
 	saveOriginalURLsInput.checked = profileOptions.saveOriginalURLs;
 	includeInfobarInput.checked = profileOptions.includeInfobar;
+	openInfobarInput.checked = profileOptions.openInfobar;
 	removeInfobarSavedDateInput.checked = profileOptions.removeSavedDate;
 	confirmInfobarInput.checked = profileOptions.confirmInfobarContent;
 	autoCloseInput.checked = profileOptions.autoClose;
@@ -1156,6 +1160,7 @@ async function update() {
 			blockMixedContent: blockMixedContentInput.checked,
 			saveOriginalURLs: saveOriginalURLsInput.checked,
 			includeInfobar: includeInfobarInput.checked,
+			openInfobar: openInfobarInput.checked,
 			removeSavedDate: removeInfobarSavedDateInput.checked,
 			confirmInfobarContent: confirmInfobarInput.checked,
 			autoClose: autoCloseInput.checked,

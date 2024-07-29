@@ -979,7 +979,7 @@ pre code {
 
 	let NOTES_WEB_STYLESHEET, MASK_WEB_STYLESHEET, HIGHLIGHTS_WEB_STYLESHEET;
 	let selectedNote, anchorElement, maskNoteElement, maskPageElement, highlightSelectionMode, removeHighlightMode, resizingNoteMode, movingNoteMode, highlightColor, collapseNoteTimeout, cuttingOuterMode, cuttingMode, cuttingTouchTarget, cuttingPath, cuttingPathIndex, previousContent;
-	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar;
+	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar, openInfobar;
 
 	globalThis.zip = singlefile.helper.zip;
 	initEventListeners();
@@ -1075,6 +1075,7 @@ pre code {
 			if (message.method == "getContent") {
 				onUpdate(true);
 				includeInfobar = message.includeInfobar;
+				openInfobar = message.openInfobar;
 				let content = getContent(message.compressHTML, message.updatedResources);
 				if (initScriptContent) {
 					content = content.replace(/<script data-template-shadow-root src.*?<\/script>/g, initScriptContent);
@@ -1129,7 +1130,7 @@ pre code {
 				printPage();
 			}
 			if (message.method == "displayInfobar") {
-				singlefile.helper.displayIcon(document, true);
+				singlefile.helper.displayIcon(document, true, { openInfobar: message.openInfobar });
 				const infobarDoc = document.implementation.createHTMLDocument();
 				infobarDoc.body.appendChild(document.querySelector(singlefile.helper.INFOBAR_TAGNAME));
 				serializeShadowRoots(infobarDoc.body);
@@ -2079,7 +2080,9 @@ pre code {
 		});
 		doc.querySelectorAll("." + MASK_CLASS + ", " + singlefile.helper.INFOBAR_TAGNAME + ", ." + REMOVED_CONTENT_CLASS).forEach(element => element.remove());
 		if (includeInfobar) {
-			singlefile.helper.appendInfobar(doc, singlefile.helper.extractInfobarData(doc));
+			const options = singlefile.helper.extractInfobarData(doc);
+			options.openInfobar = openInfobar;
+			singlefile.helper.appendInfobar(doc, options);
 		}
 		doc.querySelectorAll("." + HIGHLIGHT_CLASS).forEach(noteElement => noteElement.classList.remove(HIGHLIGHT_HIDDEN_CLASS));
 		doc.querySelectorAll(`template[${SHADOWROOT_ATTRIBUTE_NAME}]`).forEach(templateElement => {
