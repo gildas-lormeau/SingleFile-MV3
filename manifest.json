@@ -113,7 +113,6 @@
 		]
 	},
 	"permissions": [
-		"identity",
 		"contextMenus",
 		"downloads",
 		"storage",
