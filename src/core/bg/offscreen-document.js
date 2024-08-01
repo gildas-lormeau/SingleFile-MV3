@@ -70,7 +70,24 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, opti
 			url: URL.createObjectURL(new Blob([data]))
 		};
 	}
+	if (method == "saveToClipboard") {
+		saveToClipboard(pageData);
+		return {};
+	}
 });
+
+function saveToClipboard(pageData) {
+	const command = "copy";
+	document.addEventListener(command, listener);
+	document.execCommand(command);
+	document.removeEventListener(command, listener);
+
+	function listener(event) {
+		event.clipboardData.setData(pageData.mimeType, pageData.content);
+		event.clipboardData.setData("text/plain", pageData.content);
+		event.preventDefault();
+	}
+}
 
 function fetch(url, options = {}) {
 	return new Promise((resolve, reject) => {

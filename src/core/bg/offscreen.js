@@ -33,7 +33,8 @@ export {
 	processPage,
 	getBlobURL,
 	revokeObjectURL,
-	getImageData
+	getImageData,
+	saveToClipboard
 };
 
 async function compressPage(pageData, options) {
@@ -60,6 +61,11 @@ async function getBlobURL(data) {
 async function getImageData(url, width, height) {
 	await createOffscreenDocument();
 	return browser.runtime.sendMessage({ method: "getImageData", url, width, height });
+}
+
+async function saveToClipboard(content, mimeType) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "saveToClipboard", pageData: { content, mimeType } });
 }
 
 async function createOffscreenDocument() {

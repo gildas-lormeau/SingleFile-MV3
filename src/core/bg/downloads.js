@@ -192,7 +192,7 @@ async function downloadContent(message, tab) {
 				ui.onEdit(tabId);
 				await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: message.content });
 			} else if (message.saveToClipboard) {
-				ui.onEnd(tabId);
+				await offscreen.saveToClipboard(message.content, message.mimeType);
 			} else if (message.saveWithWebDAV) {
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), message.content, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
 			} else if (message.saveToGDrive) {
