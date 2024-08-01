@@ -196,7 +196,7 @@ async function downloadContent(message, tab) {
 			} else if (message.saveWithWebDAV) {
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), message.content, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
 			} else if (message.saveToGDrive) {
-				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: message.mimeType }), {
+				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), new Blob([message.content], { type: message.mimeType }), {
 					forceWebAuthFlow: message.forceWebAuthFlow
 				}, {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
@@ -204,7 +204,7 @@ async function downloadContent(message, tab) {
 					prompt
 				});
 			} else if (message.saveToDropbox) {
-				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: message.mimeType }), {
+				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), new Blob([message.content], { type: message.mimeType }), {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
@@ -232,7 +232,7 @@ async function downloadContent(message, tab) {
 					message.saveToRestFormApiUrlFieldName
 				);
 			} else if (message.saveToS3) {
-				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), new Blob(message.content, { type: message.mimeType }), message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
+				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), new Blob([message.content], { type: message.mimeType }), message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
