@@ -126,6 +126,7 @@ async function downloadPage(pageData, options) {
 		if (pageData.filename) {
 			const blob = new Blob([await yabson.serialize(pageData)], { type: pageData.mimeType });
 			const blobURL = URL.createObjectURL(blob);
+			message.filename = pageData.filename;
 			message.blobURL = blobURL;
 			const result = await browser.runtime.sendMessage(message);
 			URL.revokeObjectURL(blobURL);
