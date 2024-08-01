@@ -381,7 +381,7 @@ async function downloadCompressedContent(message, tab) {
 					});
 				} else {
 					const blob = await (await fetch(result.url)).blob();
-					await downloadPageForeground(message.taskId, message.filename, blob, tabId);
+					await downloadPageForeground(message.taskId, message.filename, blob, message.mimeType, tabId);
 				}
 			}
 			if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
