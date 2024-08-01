@@ -19,13 +19,12 @@ npm update
 
 npx rollup -c rollup.config.js
 
-rm singlefile-lite-extension.zip
-cp manifest.json manifest.copy.json
-sed -i "" 's/7tjs1im1pighftpoepea2kvkubnfjj44/7tjs1im1pighftpoepea2kvkubnfjj44/g' manifest.json
-cp src/core/bg/downloads.js downloads.copy.js
-sed -i "" 's/7tjs1im1pighftpoepea2kvkubnfjj44/7tjs1im1pighftpoepea2kvkubnfjj44/g' src/core/bg/downloads.js
-sed -i "" 's/000000000000000000000000/VQJ8Gq8Vxx72QyxPyeLtWvUt/g' src/core/bg/downloads.js
-sed -i "" 's/7tjs1im1pighftpoepea2kvkubnfjj44/7tjs1im1pighftpoepea2kvkubnfjj44/g' manifest.json
-zip -r singlefile-lite-extension.zip manifest.json lib _locales src
-mv manifest.copy.json manifest.json
-mv downloads.copy.js src/core/bg/downloads.js
+rm singlefile-extension-chromium.zip singlefile-extension-edge.zip
+
+zip -r singlefile-extension-chromium.zip manifest.json lib _locales src
+
+cp src/core/bg/config.js config.copy.js
+sed -i "" 's/forceWebAuthFlow: false/forceWebAuthFlow: true/g' src/core/bg/config.js
+sed -i "" 's/image\/avif,//g' src/core/bg/config.js
+zip -r singlefile-extension-edge.zip manifest.json lib _locales src
+mv config.copy.js src/core/bg/config.js
