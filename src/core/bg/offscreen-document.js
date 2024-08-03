@@ -26,7 +26,7 @@
 import { getPageData, compress } from "./../../index.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
-browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, options, width, height }) => {
+browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mimeType, options, width, height }) => {
 	if (method == "processPage") {
 		const result = await getPageData(options, null, null, { fetch });
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
@@ -45,9 +45,11 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, opti
 		};
 	}
 	if (method == "getBlobURL") {
-		return {
-			url: URL.createObjectURL(new Blob([new Uint8Array(data)]))
-		};
+		const options = {};
+		if (mimeType) {
+			options.type = mimeType;
+		}
+		return URL.createObjectURL(new Blob([new Uint8Array(data)], options));
 	}
 	if (method == "revokeObjectURL") {
 		URL.revokeObjectURL(url);

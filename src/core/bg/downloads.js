@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, fetch, Blob */
+/* global browser, fetch, Blob, TextEncoder */
 
 import * as config from "./config.js";
 import * as bookmarks from "./bookmarks.js";
@@ -168,7 +168,13 @@ async function downloadTabPage(message, tab) {
 			contents = [message.content];
 		}
 		if (!message.truncated || message.finished) {
-			await downloadContent(message, tab);
+			const data = Array.from(new TextEncoder().encode(contents.join("")));
+			try {
+				message.url = await offscreen.getBlobURL(data, message.mimeType);
+				await downloadContent(message, tab);
+			} finally {
+				await offscreen.revokeObjectURL(message.url);
+			}
 		}
 	}
 	return {};

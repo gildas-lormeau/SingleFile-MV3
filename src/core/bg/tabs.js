@@ -168,6 +168,6 @@ async function captureTab(tabId, options) {
 	if (canvas) {
 		await browser.tabs.sendMessage(tabId, { method: "content.endScrollTo" });
 		const blob = await canvas.convertToBlob({ type: "image/png" });
-		return (await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())))).url;
+		return await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())));
 	}
 }

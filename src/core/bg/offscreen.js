@@ -53,9 +53,9 @@ async function revokeObjectURL(url) {
 	return browser.runtime.sendMessage({ method: "revokeObjectURL", url });
 }
 
-async function getBlobURL(data) {
+async function getBlobURL(data, mimeType) {
 	await createOffscreenDocument();
-	return browser.runtime.sendMessage({ method: "getBlobURL", data });
+	return browser.runtime.sendMessage({ method: "getBlobURL", data, mimeType });
 }
 
 async function getImageData(url, width, height) {
