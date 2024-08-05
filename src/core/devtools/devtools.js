@@ -23,6 +23,8 @@
 
 /* global browser */
 
+import "./../bg/page-orphan-hack.js";
+
 if (browser.devtools.inspectedWindow && browser.devtools.inspectedWindow.onResourceContentCommitted) {
 	browser.devtools.inspectedWindow.onResourceContentCommitted.addListener(resource => {
 		resource.getContent((content, encoding) => {

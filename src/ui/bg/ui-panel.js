@@ -23,6 +23,8 @@
 
 /* global browser, document */
 
+import "./../../core/bg/page-orphan-hack.js";
+
 const optionsTab = document.getElementById("tab-options");
 const pendingsTab = document.getElementById("tab-pendings");
 const batchSaveUrlsTab = document.getElementById("tab-batch-save-urls");
