@@ -121,7 +121,7 @@ async function createMenus(tab) {
 		const pageContextsEnabled = ["page", "frame", "image", "link", "video", "audio", "selection"];
 		const defaultContextsDisabled = [];
 		if (options.browserActionMenuEnabled) {
-			defaultContextsDisabled.push("browser_action");
+			defaultContextsDisabled.push("action");
 		}
 		if (options.tabMenuEnabled) {
 			try {
