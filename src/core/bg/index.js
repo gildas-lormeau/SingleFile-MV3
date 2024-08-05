@@ -23,6 +23,7 @@
 
 /* global browser */
 
+import "./sw-reload-hack.js";
 import "./../../../lib/chrome-browser-polyfill.js";
 import "./../../lib/single-file/background.js";
 import * as config from "./config.js";
