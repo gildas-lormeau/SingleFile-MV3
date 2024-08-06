@@ -198,6 +198,7 @@ if (typeof globalThis == "undefined") {
 				},
 				sendMessage: message => nativeAPI.runtime.sendMessage(message),
 				getURL: (path) => nativeAPI.runtime.getURL(path),
+				getContexts: (filter) => nativeAPI.runtime.getContexts(filter),
 				get lastError() {
 					return nativeAPI.runtime.lastError;
 				}
@@ -329,8 +330,7 @@ if (typeof globalThis == "undefined") {
 				}
 			},
 			offscreen: nativeAPI.offscreen && {
-				createDocument: parameters => nativeAPI.offscreen.createDocument(parameters),
-				hasDocument: () => nativeAPI.offscreen.hasDocument()
+				createDocument: parameters => nativeAPI.offscreen.createDocument(parameters)
 			},
 			declarativeNetRequest: {
 				updateSessionRules: parameters => nativeAPI.declarativeNetRequest.updateSessionRules(parameters)

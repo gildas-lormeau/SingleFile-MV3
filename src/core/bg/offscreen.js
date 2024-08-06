@@ -69,9 +69,18 @@ async function saveToClipboard(content, mimeType) {
 }
 
 async function createOffscreenDocument() {
+	const offscreenUrl = browser.runtime.getURL(OFFSCREEN_DOCUMENT_URL);
+	const existingContexts = await browser.runtime.getContexts({
+		contextTypes: ["OFFSCREEN_DOCUMENT"],
+		documentUrls: [offscreenUrl]
+	});
+	if (existingContexts.length > 0) {
+		return;
+	}
+
 	if (creating) {
 		await creating;
-	} else if (!await browser.offscreen.hasDocument()) {
+	} else {
 		creating = await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER", "WORKERS", "CLIPBOARD", "BLOBS"] });
 		creating = null;
 	}
