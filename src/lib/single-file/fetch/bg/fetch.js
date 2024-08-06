@@ -117,7 +117,7 @@ async function enableReferrerOnError(url, referrer) {
 				]
 			},
 			condition: {
-				domains: [browser.runtime.id],
+				initiatorDomains: [browser.runtime.id],
 				urlFilter: url,
 				resourceTypes: ["xmlhttprequest"]
 			},
