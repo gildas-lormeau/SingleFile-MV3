@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, fetch, setTimeout */
+/* global browser, fetch, setTimeout, URL */
 
 const MAX_CONTENT_SIZE = 8 * (1024 * 1024);
 const REQUEST_WAIT_DELAY = 1000;
