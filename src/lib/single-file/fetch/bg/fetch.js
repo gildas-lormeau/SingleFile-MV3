@@ -26,7 +26,7 @@
 const MAX_CONTENT_SIZE = 8 * (1024 * 1024);
 const REQUEST_WAIT_DELAY = 1000;
 
-let requestId = 0;
+let requestId = 1;
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	if (message.method && message.method.startsWith("singlefile.fetch")) {
