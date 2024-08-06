@@ -74,74 +74,18 @@ if (typeof globalThis == "undefined") {
 				getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions)
 			},
 			identity: {
-				getRedirectURL() {
-					return nativeAPI.identity.getRedirectURL();
-				},
-				get getAuthToken() {
-					return nativeAPI.identity && nativeAPI.identity.getAuthToken && (details => new Promise((resolve, reject) =>
-						nativeAPI.identity.getAuthToken(details, token => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve(token);
-							}
-						})
-					));
-				},
-				get launchWebAuthFlow() {
-					return nativeAPI.identity && nativeAPI.identity.launchWebAuthFlow && (options => new Promise((resolve, reject) => {
-						nativeAPI.identity.launchWebAuthFlow(options, responseUrl => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve(responseUrl);
-							}
-						});
-					}));
-				},
-				get removeCachedAuthToken() {
-					return nativeAPI.identity && nativeAPI.identity.removeCachedAuthToken && (details => new Promise((resolve, reject) =>
-						nativeAPI.identity.removeCachedAuthToken(details, () => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						})
-					));
-				}
+				getRedirectURL: () => nativeAPI.identity.getRedirectURL(),
+				getAuthToken: details => nativeAPI.identity.getAuthToken(details),
+				launchWebAuthFlow: details => nativeAPI.identity.launchWebAuthFlow(details),
+				removeCachedAuthToken: details => nativeAPI.identity.removeCachedAuthToken(details)
 			},
 			contextMenus: {
 				onClicked: {
 					addListener: listener => nativeAPI.contextMenus.onClicked.addListener(listener)
 				},
-				create: options => new Promise((resolve, reject) => {
-					nativeAPI.contextMenus.create(options, () => {
-						if (nativeAPI.runtime.lastError) {
-							reject(nativeAPI.runtime.lastError);
-						} else {
-							resolve();
-						}
-					});
-				}),
-				update: (menuItemId, options) => new Promise((resolve, reject) => {
-					nativeAPI.contextMenus.update(menuItemId, options, () => {
-						if (nativeAPI.runtime.lastError) {
-							reject(nativeAPI.runtime.lastError);
-						} else {
-							resolve();
-						}
-					});
-				}),
-				removeAll: () => new Promise((resolve, reject) => {
-					nativeAPI.contextMenus.removeAll(() => {
-						if (nativeAPI.runtime.lastError) {
-							reject(nativeAPI.runtime.lastError);
-						} else {
-							resolve();
-						}
-					});
-				})
+				create: options => nativeAPI.contextMenus.create(options),
+				update: (menuItemId, options) => nativeAPI.contextMenus.update(menuItemId, options),
+				removeAll: () => nativeAPI.contextMenus.removeAll()
 			},
 			permissions: {
 				request: permissions => nativeAPI.permissions.request(permissions),
@@ -208,80 +152,16 @@ if (typeof globalThis == "undefined") {
 			},
 			storage: {
 				local: {
-					set: value => new Promise((resolve, reject) => {
-						nativeAPI.storage.local.set(value, () => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						});
-					}),
-					get: keys => new Promise((resolve, reject) => {
-						nativeAPI.storage.local.get(keys, value => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve(value);
-							}
-						});
-					}),
-					clear: () => new Promise((resolve, reject) => {
-						nativeAPI.storage.local.clear(() => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						});
-					}),
-					remove: keys => new Promise((resolve, reject) => {
-						nativeAPI.storage.local.remove(keys, () => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						});
-					})
+					set: value => nativeAPI.storage.local.set(value),
+					get: keys => nativeAPI.storage.local.get(keys),
+					clear: () => nativeAPI.storage.local.clear(),
+					remove: keys => nativeAPI.storage.local.remove(keys)
 				},
 				sync: {
-					set: value => new Promise((resolve, reject) => {
-						nativeAPI.storage.sync.set(value, () => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						});
-					}),
-					get: keys => new Promise((resolve, reject) => {
-						nativeAPI.storage.sync.get(keys, value => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve(value);
-							}
-						});
-					}),
-					clear: () => new Promise((resolve, reject) => {
-						nativeAPI.storage.sync.clear(() => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						});
-					}),
-					remove: keys => new Promise((resolve, reject) => {
-						nativeAPI.storage.sync.remove(keys, () => {
-							if (nativeAPI.runtime.lastError) {
-								reject(nativeAPI.runtime.lastError);
-							} else {
-								resolve();
-							}
-						});
-					})
+					set: value => nativeAPI.storage.sync.set(value),
+					get: keys => nativeAPI.storage.sync.get(keys),
+					clear: () => nativeAPI.storage.sync.clear(),
+					remove: keys => nativeAPI.storage.sync.remove(keys)
 				}
 			},
 			tabs: {
@@ -303,15 +183,7 @@ if (typeof globalThis == "undefined") {
 					addListener: listener => nativeAPI.tabs.onReplaced.addListener(listener),
 					removeListener: listener => nativeAPI.tabs.onReplaced.removeListener(listener)
 				},
-				captureVisibleTab: (windowId, options) => new Promise((resolve, reject) => {
-					nativeAPI.tabs.captureVisibleTab(windowId, options, dataUrl => {
-						if (nativeAPI.runtime.lastError) {
-							reject(nativeAPI.runtime.lastError);
-						} else {
-							resolve(dataUrl);
-						}
-					});
-				}),
+				captureVisibleTab: (windowId, options) => nativeAPI.tabs.captureVisibleTab(windowId, options),
 				sendMessage: (tabId, message, options = {}) => nativeAPI.tabs.sendMessage(tabId, message, options),
 				query: options => nativeAPI.tabs.query(options),
 				create: createProperties => nativeAPI.tabs.create(createProperties),
@@ -319,9 +191,9 @@ if (typeof globalThis == "undefined") {
 				remove: tabId => nativeAPI.tabs.remove(tabId),
 				update: (tabId, updateProperties) => nativeAPI.tabs.update(tabId, updateProperties)
 			},
-			devtools: nativeAPI.devtools && {
-				inspectedWindow: nativeAPI.devtools.inspectedWindow && {
-					onResourceContentCommitted: nativeAPI.devtools.inspectedWindow.onResourceContentCommitted && {
+			devtools: {
+				inspectedWindow: {
+					onResourceContentCommitted: {
 						addListener: listener => nativeAPI.devtools.inspectedWindow.onResourceContentCommitted.addListener(listener)
 					},
 					get tabId() {
@@ -329,7 +201,7 @@ if (typeof globalThis == "undefined") {
 					}
 				}
 			},
-			offscreen: nativeAPI.offscreen && {
+			offscreen: {
 				createDocument: parameters => nativeAPI.offscreen.createDocument(parameters)
 			},
 			declarativeNetRequest: {
