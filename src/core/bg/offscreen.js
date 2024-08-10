@@ -38,9 +38,20 @@ export {
 };
 
 async function compressPage(pageData, options) {
-	pageData = Array.from(await yabson.serialize(pageData));
 	await createOffscreenDocument();
-	return browser.runtime.sendMessage({ method: "compressPage", pageData, options });
+	const serializer = yabson.getSerializer(pageData);
+	for await (const chunk of serializer) {
+		await browser.runtime.sendMessage({
+			method: "compressPage",
+			tabId: options.tabId,
+			data: Array.from(chunk)
+		});
+	}
+	return browser.runtime.sendMessage({
+		method: "compressPage",
+		tabId: options.tabId,
+		options
+	});
 }
 
 async function processPage(options) {

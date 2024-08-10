@@ -23,10 +23,13 @@
 
 /* global browser, Blob, URL, XMLHttpRequest, Image, document */
 
+import "./../../../lib/chrome-browser-polyfill.js";
 import { getPageData, compress } from "./../../index.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
-browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mimeType, options, width, height }) => {
+const parsers = new Map();
+
+browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mimeType, options, width, height, tabId }) => {
 	if (method == "processPage") {
 		const result = await getPageData(options, null, null, { fetch });
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
@@ -39,10 +42,22 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mime
 		};
 	}
 	if (method == "compressPage") {
-		const blob = await compress(await yabson.parse(pageData), options);
-		return {
-			url: URL.createObjectURL(blob)
-		};
+		let parser = parsers.get(tabId);
+		if (!parser) {
+			parser = yabson.getParser();
+			parsers.set(tabId, parser);
+		}
+		if (data) {
+			await parser.next(new Uint8Array(data));
+			return {};
+		} else {
+			const result = await parser.next();
+			parsers.delete(tabId);
+			const pageData = result.value;
+			debugger;
+			const blob = await compress(pageData, options);
+			return URL.createObjectURL(blob);
+		}
 	}
 	if (method == "getBlobURL") {
 		const options = {};

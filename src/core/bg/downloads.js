@@ -283,7 +283,7 @@ async function downloadContent(message, tab) {
 
 async function downloadCompressedContent(message, tab) {
 	const tabId = tab.id;
-	let result;
+	let blobURI;
 	try {
 		const prompt = filename => promptFilename(tabId, filename);
 		let skipped, response;
@@ -295,7 +295,7 @@ async function downloadCompressedContent(message, tab) {
 		if (skipped) {
 			ui.onEnd(tabId);
 		} else {
-			result = await offscreen.compressPage(message.pageData, {
+			blobURI = await offscreen.compressPage(message.pageData, {
 				insertTextBody: message.insertTextBody,
 				url: message.pageData.url || tab.url,
 				createRootDirectory: message.createRootDirectory,
@@ -311,7 +311,7 @@ async function downloadCompressedContent(message, tab) {
 			});
 			if (message.openEditor) {
 				ui.onEdit(tabId);
-				const content = Array.from(new Uint8Array(await (await fetch(result.url)).arrayBuffer()));
+				const content = Array.from(new Uint8Array(await (await fetch(blobURI)).arrayBuffer()));
 				await editor.open({
 					tabIndex: tab.index + 1,
 					filename: message.filename,
@@ -324,16 +324,16 @@ async function downloadCompressedContent(message, tab) {
 					embeddedImage: message.embeddedImage
 				});
 			} else if (message.foregroundSave || message.sharePage) {
-				const blob = (await fetch(result.url)).blob();
+				const blob = (await fetch(blobURI)).blob();
 				await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
 					foregroundSave: message.foregroundSave,
 					sharePage: message.sharePage
 				});
 			} else if (message.saveWithWebDAV) {
-				const blob = await (await fetch(result.url)).blob();
+				const blob = await (await fetch(blobURI)).blob();
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
 			} else if (message.saveToGDrive) {
-				const blob = await (await fetch(result.url)).blob();
+				const blob = await (await fetch(blobURI)).blob();
 				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), blob, {
 					forceWebAuthFlow: message.forceWebAuthFlow
 				}, {
@@ -342,21 +342,21 @@ async function downloadCompressedContent(message, tab) {
 					prompt
 				});
 			} else if (message.saveToDropbox) {
-				const blob = await (await fetch(result.url)).blob();
+				const blob = await (await fetch(blobURI)).blob();
 				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), blob, {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
 			} else if (message.saveToGitHub) {
-				const blob = await (await fetch(result.url)).blob();
+				const blob = await (await fetch(blobURI)).blob();
 				response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), blob, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
 				await response.pushPromise;
 			} else if (message.saveToRestFormApi) {
-				const blob = await (await fetch(result.url)).blob();
+				const blob = await (await fetch(blobURI)).blob();
 				response = await saveToRestFormApi(
 					message.taskId,
 					blob,
@@ -367,14 +367,14 @@ async function downloadCompressedContent(message, tab) {
 					message.saveToRestFormApiUrlFieldName
 				);
 			} else if (message.saveToS3) {
-				const blob = await (await fetch(result.url)).blob();
+				const blob = await (await fetch(blobURI)).blob();
 				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
 			} else {
 				if (message.backgroundSave) {
-					message.url = result.url;
+					message.url = blobURI;
 					response = await downloadPage(message, {
 						confirmFilename: message.confirmFilename,
 						incognito: tab.incognito,
@@ -386,7 +386,7 @@ async function downloadCompressedContent(message, tab) {
 						openInfobar: message.openInfobar
 					});
 				} else {
-					const blob = await (await fetch(result.url)).blob();
+					const blob = await (await fetch(blobURI)).blob();
 					await downloadPageForeground(message.taskId, message.filename, blob, message.mimeType, tabId);
 				}
 			}
@@ -395,7 +395,7 @@ async function downloadCompressedContent(message, tab) {
 			}
 			ui.onEnd(tabId);
 			if (message.openSavedPage && !message.openEditor) {
-				const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?compressed&blobURI=" + result.url, windowId: tab.windowId };
+				const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?compressed&blobURI=" + blobURI, windowId: tab.windowId };
 				if (tab.index != null) {
 					createTabProperties.index = tab.index + 1;
 				}
@@ -408,8 +408,8 @@ async function downloadCompressedContent(message, tab) {
 			ui.onError(tabId, error.message, error.link);
 		}
 	} finally {
-		if (!message.openSavedPage && result.url) {
-			await offscreen.revokeObjectURL(result.url);
+		if (!message.openSavedPage && blobURI) {
+			await offscreen.revokeObjectURL(blobURI);
 		}
 	}
 }
