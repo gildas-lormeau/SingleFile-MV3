@@ -271,7 +271,7 @@ function onSaveEnd(taskId) {
 	}
 }
 
-async function injectScript(tabId, options = {}) {
+async function injectScript(tabId, options = {}, retry = true) {
 	let scriptsInjected;
 	const resultData = (await browser.scripting.executeScript({
 		target: { tabId },
@@ -293,7 +293,9 @@ async function injectScript(tabId, options = {}) {
 				files: BOOTSTRAP_SCRIPTS_ALL_FRAMES_MAIN_WORLD,
 				world: "MAIN"
 			});
-			return injectScript(tabId, options);
+			if (retry) {
+				return injectScript(tabId, options, false);
+			}
 		} catch (error) {
 			// ignored
 		}
