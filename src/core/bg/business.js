@@ -41,6 +41,20 @@ const CONTENT_SCRIPTS = [
 	"lib/single-file.js",
 	"lib/single-file-extension.js"
 ];
+const BOOTSTRAP_SCRIPTS_ALL_FRAMES = [
+	"lib/chrome-browser-polyfill.js",
+	"lib/single-file-frames.js",
+	"lib/single-file-extension-frames.js"
+];
+const BOOTSTRAP_SCRIPTS_ALL_FRAMES_MAIN_WORLD = [
+	"lib/single-file-hooks-frames.js"
+];
+const BOOTSTRAP_SCRIPTS = [
+	"lib/chrome-browser-polyfill.js",
+	"lib/single-file-bootstrap.js",
+	"lib/single-file-extension-bootstrap.js",
+	"lib/single-file-infobar.js"
+];
 
 const tasks = [];
 let currentTaskId = 0, maxParallelWorkers, processInForeground;
@@ -264,13 +278,31 @@ async function injectScript(tabId, options = {}) {
 		func: () => Boolean(window.singlefile)
 	}))[0];
 	scriptsInjected = resultData && resultData.result;
-	if (scriptsInjected) {
+	if (!scriptsInjected) {
+		try {
+			await browser.scripting.executeScript({
+				target: { tabId, allFrames: true },
+				files: BOOTSTRAP_SCRIPTS_ALL_FRAMES
+			});
+			await browser.scripting.executeScript({
+				target: { tabId },
+				files: BOOTSTRAP_SCRIPTS
+			});
+			await browser.scripting.executeScript({
+				target: { tabId, allFrames: true },
+				files: BOOTSTRAP_SCRIPTS_ALL_FRAMES_MAIN_WORLD,
+				world: "MAIN"
+			});
+			return injectScript(tabId, options);
+		} catch (error) {
+			// ignored
+		}
+	} else {
 		try {
 			await browser.scripting.executeScript({
 				target: { tabId },
 				files: CONTENT_SCRIPTS
 			});
-			scriptsInjected = true;
 		} catch (error) {
 			// ignored
 		}
