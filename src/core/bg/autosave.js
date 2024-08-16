@@ -194,9 +194,10 @@ async function saveContent(message, tab) {
 							filenameConflictAction: options.filenameConflictAction
 						});
 					} else if (options.saveToRestFormApi) {
-						const content = await (await fetch(pageData.url)).text();
+						const content = await (await fetch(pageData.url)).blob();
 						await downloads.saveToRestFormApi(
 							message.taskId,
+							pageData.filename,
 							content,
 							options.url,
 							options.saveToRestFormApiToken,
