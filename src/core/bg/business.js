@@ -76,7 +76,12 @@ export {
 };
 
 async function saveSelectedLinks(tab) {
-	const scriptsInjected = await injectScript(tab.id);
+	let scriptsInjected;
+	try {
+		scriptsInjected = await injectScript(tab.id);
+	} catch (error) {
+		// ignored
+	}
 	if (scriptsInjected) {
 		const response = await browser.tabs.sendMessage(tab.id, { method: "content.getSelectedLinks" });
 		if (response.urls && response.urls.length) {
@@ -102,14 +107,16 @@ async function saveUrls(urls, options = {}) {
 	await initMaxParallelWorkers();
 	await Promise.all(urls.map(async url => {
 		const tabOptions = await config.getOptions(url);
-		Object.keys(options).forEach(key => tabOptions[key] = options[key]);
-		tabOptions.autoClose = true;
-		addTask({
-			tab: { url },
-			status: TASK_PENDING_STATE,
-			options: tabOptions,
-			method: "content.save"
-		});
+		if (tabOptions.profileName != config.DISABLED_PROFILE_NAME) {
+			Object.keys(options).forEach(key => tabOptions[key] = options[key]);
+			tabOptions.autoClose = true;
+			addTask({
+				tab: { url },
+				status: TASK_PENDING_STATE,
+				options: tabOptions,
+				method: "content.save"
+			});
+		}
 	}));
 	runTasks();
 }
@@ -119,39 +126,48 @@ async function saveTabs(tabs, options = {}) {
 	await Promise.all(tabs.map(async tab => {
 		const tabId = tab.id;
 		const tabOptions = await config.getOptions(tab.url);
-		Object.keys(options).forEach(key => tabOptions[key] = options[key]);
-		tabOptions.tabId = tabId;
-		tabOptions.tabIndex = tab.index;
-		const tabData = {
-			id: tab.id,
-			index: tab.index,
-			url: tab.url,
-			title: tab.title
-		};
-		if (options.autoSave) {
-			if (autoSaveIsEnabled(tab)) {
-				const taskInfo = addTask({
-					status: TASK_PROCESSING_STATE,
-					tab: tabData,
-					options: tabOptions,
-					method: "content.autosave"
-				});
-				runTask(taskInfo);
+		if (tabOptions.profileName != config.DISABLED_PROFILE_NAME) {
+			Object.keys(options).forEach(key => tabOptions[key] = options[key]);
+			tabOptions.tabId = tabId;
+			tabOptions.tabIndex = tab.index;
+			const tabData = {
+				id: tab.id,
+				index: tab.index,
+				url: tab.url,
+				title: tab.title
+			};
+			if (options.autoSave) {
+				if (autoSaveIsEnabled(tab)) {
+					const taskInfo = addTask({
+						status: TASK_PROCESSING_STATE,
+						tab: tabData,
+						options: tabOptions,
+						method: "content.autosave"
+					});
+					runTask(taskInfo);
+				}
+			} else {
+				ui.onStart(tabId, INJECT_SCRIPTS_STEP);
+				let scriptsInjected;
+				try {
+					scriptsInjected = await injectScript(tabId, tabOptions);
+				} catch (error) {
+					// ignored
+				}
+				if (scriptsInjected || editor.isEditor(tab)) {
+					ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
+					addTask({
+						status: TASK_PENDING_STATE,
+						tab: tabData,
+						options: tabOptions,
+						method: "content.save"
+					});
+				} else {
+					ui.onForbiddenDomain(tab);
+				}
 			}
 		} else {
-			ui.onStart(tabId, INJECT_SCRIPTS_STEP);
-			const scriptsInjected = await injectScript(tabId, tabOptions);
-			if (scriptsInjected || editor.isEditor(tab)) {
-				ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
-				addTask({
-					status: TASK_PENDING_STATE,
-					tab: tabData,
-					options: tabOptions,
-					method: "content.save"
-				});
-			} else {
-				ui.onForbiddenDomain(tab);
-			}
+			ui.onForbiddenDomain(tab);
 		}
 	}));
 	runTasks();
@@ -211,7 +227,11 @@ async function runTask(taskInfo) {
 			taskInfo.tab.id = taskInfo.options.tabId = tab.id;
 			taskInfo.tab.index = taskInfo.options.tabIndex = tab.index;
 			ui.onStart(taskInfo.tab.id, INJECT_SCRIPTS_STEP);
-			scriptsInjected = await injectScript(taskInfo.tab.id, taskInfo.options);
+			try {
+				scriptsInjected = await injectScript(taskInfo.tab.id, taskInfo.options);
+			} catch (error) {
+				// ignored
+			}
 		} catch (tabId) {
 			taskInfo.tab.id = tabId;
 		}
@@ -294,7 +314,7 @@ async function injectScript(tabId, options = {}, retry = true) {
 				world: "MAIN"
 			});
 			if (retry) {
-				return injectScript(tabId, options, false);
+				return await injectScript(tabId, options, false);
 			}
 		} catch (error) {
 			// ignored
