@@ -112,7 +112,7 @@ async function enableReferrerOnError(url, referrer) {
 					{
 						header: "Referer",
 						operation: "set",
-						value: referrer
+						value: "|" + referrer
 					}
 				]
 			},
