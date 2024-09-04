@@ -54,7 +54,6 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mime
 			const result = await parser.next();
 			parsers.delete(tabId);
 			const pageData = result.value;
-			debugger;
 			const blob = await compress(pageData, options);
 			return URL.createObjectURL(blob);
 		}
