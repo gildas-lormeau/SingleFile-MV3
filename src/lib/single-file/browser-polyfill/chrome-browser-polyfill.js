@@ -140,7 +140,18 @@ if (typeof globalThis == "undefined") {
 						}
 					})
 				},
-				sendMessage: message => nativeAPI.runtime.sendMessage(message),
+				sendMessage: message => new Promise((resolve, reject) => {
+					nativeAPI.runtime.sendMessage(message, response => {
+						if (nativeAPI.runtime.lastError) {
+							reject(nativeAPI.runtime.lastError);
+						} else {
+							resolve(response);
+						}
+					});
+					if (nativeAPI.runtime.lastError) {
+						reject(nativeAPI.runtime.lastError);
+					}
+				}),
 				getURL: (path) => nativeAPI.runtime.getURL(path),
 				getContexts: (filter) => nativeAPI.runtime.getContexts(filter),
 				get lastError() {
@@ -184,7 +195,18 @@ if (typeof globalThis == "undefined") {
 					removeListener: listener => nativeAPI.tabs.onReplaced.removeListener(listener)
 				},
 				captureVisibleTab: (windowId, options) => nativeAPI.tabs.captureVisibleTab(windowId, options),
-				sendMessage: (tabId, message, options = {}) => nativeAPI.tabs.sendMessage(tabId, message, options),
+				sendMessage: (tabId, message, options = {}) => new Promise((resolve, reject) => {
+					nativeAPI.tabs.sendMessage(tabId, message, options, response => {
+						if (nativeAPI.runtime.lastError) {
+							reject(nativeAPI.runtime.lastError);
+						} else {
+							resolve(response);
+						}
+					});
+					if (nativeAPI.runtime.lastError) {
+						reject(nativeAPI.runtime.lastError);
+					}
+				}),
 				query: options => nativeAPI.tabs.query(options),
 				create: createProperties => nativeAPI.tabs.create(createProperties),
 				get: options => nativeAPI.tabs.get(options),
