@@ -27,9 +27,9 @@ import "./../../../lib/chrome-browser-polyfill.js";
 import { getPageData, compress } from "./../../index.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
-const parsers = new Map();
+const parsers = new Map(), pendingData = new Map();
 
-browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mimeType, options, width, height, tabId }) => {
+browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, pageData, url, data, mimeType, options, width, height, tabId }) => {
 	if (method == "processPage") {
 		const result = await getPageData(options, null, null, { fetch });
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
@@ -63,7 +63,12 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mime
 		if (mimeType) {
 			options.type = mimeType;
 		}
-		return URL.createObjectURL(new Blob([new Uint8Array(data)], options));
+		const dataArray = handleDataRequest({ requestId, truncated, finished, data });
+		if (dataArray) {
+			return URL.createObjectURL(new Blob(dataArray, options));
+		} else {
+			return {};
+		}
 	}
 	if (method == "revokeObjectURL") {
 		URL.revokeObjectURL(url);
@@ -87,7 +92,15 @@ browser.runtime.onMessage.addListener(async ({ method, pageData, url, data, mime
 		};
 	}
 	if (method == "saveToClipboard") {
-		saveToClipboard(pageData);
+		const dataArray = handleDataRequest({ requestId, truncated, finished, data });
+		if (dataArray) {
+			const data = new Uint8Array(dataArray.map(data => data.length).reduce((total, length) => total + length));
+			for (let i = 0, offset = 0; i < dataArray.length; i++) {
+				data.set(dataArray[i], offset);
+				offset += dataArray[i].length;
+			}
+			saveToClipboard({ content: new TextDecoder().decode(data), mimeType });
+		}
 		return {};
 	}
 });
@@ -130,4 +143,24 @@ function fetch(url, options = {}) {
 		}
 		xhrRequest.send();
 	});
+}
+
+function handleDataRequest({ requestId, truncated, finished, data }) {
+	let dataArray;
+	if (truncated) {
+		dataArray = pendingData.get(requestId);
+		if (!dataArray) {
+			dataArray = [];
+			pendingData.set(requestId, dataArray);
+		}
+		dataArray.push(new Uint8Array(data));
+		if (finished) {
+			pendingData.delete(requestId);
+		}
+	} else if (data) {
+		dataArray = [new Uint8Array(data)];
+	}
+	if (!truncated || finished) {
+		return dataArray;
+	}
 }
