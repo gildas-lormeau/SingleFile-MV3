@@ -168,9 +168,9 @@ async function downloadTabPage(message, tab) {
 			contents = [message.content];
 		}
 		if (!message.truncated || message.finished) {
-			const data = Array.from(new TextEncoder().encode(contents.join("")));
+			message.content = contents.join("");
 			try {
-				message.url = await offscreen.getBlobURL(data, message.mimeType);
+				message.url = await offscreen.getBlobURL(Array.from(new TextEncoder().encode(message.content)), message.mimeType);
 				await downloadContent(message, tab);
 			} finally {
 				await offscreen.revokeObjectURL(message.url);
