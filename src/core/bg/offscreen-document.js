@@ -24,14 +24,14 @@
 /* global browser, Blob, URL, XMLHttpRequest, Image, document */
 
 import "./../../../lib/chrome-browser-polyfill.js";
-import { getPageData, compress } from "./../../index.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
+const singlefile = globalThis.singlefile;
 const parsers = new Map(), pendingData = new Map();
 
-browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, pageData, url, data, mimeType, options, width, height, tabId }) => {
+browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, url, data, mimeType, options, width, height, tabId }) => {
 	if (method == "processPage") {
-		const result = await getPageData(options, null, null, { fetch });
+		const result = await singlefile.getPageData(options, { fetch });
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
 		return {
 			url: URL.createObjectURL(blob),
@@ -54,7 +54,7 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 			const result = await parser.next();
 			parsers.delete(tabId);
 			const pageData = result.value;
-			const blob = await compress(pageData, options);
+			const blob = await singlefile.processors.compression.process(pageData, options);
 			return URL.createObjectURL(blob);
 		}
 	}
