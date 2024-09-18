@@ -2305,7 +2305,7 @@ pre code {
 			processNode(document);
 			reflowNotes();
 			document.querySelectorAll(${JSON.stringify(NOTE_TAGNAME)}).forEach(noteElement => attachNoteListeners(noteElement));
-			if (document.documentElement.dataset.sfz !== undefined) {
+			if (document.documentElement.dataset && document.documentElement.dataset.sfz !== undefined) {
 				waitResourcesLoad().then(reflowNotes);
 			}
 		})()`);
