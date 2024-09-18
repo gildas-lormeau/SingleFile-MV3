@@ -101,7 +101,7 @@ export default [{
 	input: ["src/index.js"],
 	output: [{
 		file: "lib/single-file-extension-core.js",
-		format: "umd",
+		format: "iife",
 		name: "extension",
 		plugins: [terser()]
 	}]
