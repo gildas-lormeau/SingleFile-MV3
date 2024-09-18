@@ -25,15 +25,10 @@
 
 import { fetch, frameFetch } from "./lib/single-file/fetch/content/content-fetch.js";
 
-export {
-	getPageData,
-	compress
+const core = {
+	getPageData: globalThis.singlefile.getPageData
 };
 
-function getPageData(options, doc, win, initOptions = { fetch, frameFetch }) {
-	return globalThis.singlefile.getPageData(options, initOptions, doc, win);
-}
-
-function compress(pageData, options) {
-	return globalThis.singlefile.processors.compression.process(pageData, options);
-}
+globalThis.singlefile.getPageData = function (options, initOptions = { fetch, frameFetch }, doc, win) {
+	return core.getPageData(options, initOptions, doc, win);
+};
