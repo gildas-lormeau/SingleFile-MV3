@@ -31,7 +31,7 @@ const parsers = new Map(), pendingData = new Map();
 
 browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, url, data, mimeType, options, width, height, tabId }) => {
 	if (method == "processPage") {
-		const result = await singlefile.getPageData(options, { fetch });
+		const result = await singlefile.getPageData(options, { fetch }, null, null);
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
 		return {
 			url: URL.createObjectURL(blob),
