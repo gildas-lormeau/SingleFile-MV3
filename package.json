@@ -5,7 +5,7 @@
 	"author": "Gildas Lormeau",
 	"license": "AGPL-3.0-or-later",
 	"scripts": {
-		"dev": "npx rollup -c rollup.config.dev.js",
+		"dev": "./build-dev.sh",
 		"build": "./build-extension.sh"
 	},
 	"type": "module",

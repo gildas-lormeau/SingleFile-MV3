@@ -17,7 +17,7 @@ fi
 npm install
 npm update
 
-npx rollup -c rollup.config.js
+./build.sh
 
 rm singlefile-extension-chromium.zip singlefile-extension-edge.zip
 
