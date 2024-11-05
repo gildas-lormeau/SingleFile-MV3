@@ -71,6 +71,7 @@ if (typeof globalThis == "undefined") {
 				search: query => nativeAPI.downloads.search(query)
 			},
 			i18n: {
+				getUILanguage: () => nativeAPI.i18n.getUILanguage(),
 				getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions)
 			},
 			identity: {
