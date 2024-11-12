@@ -62,7 +62,7 @@ const savePageButton = document.querySelector(".save-page-button");
 const printPageButton = document.querySelector(".print-page-button");
 const lastButton = toolbarElement.querySelector(".buttons:last-of-type [type=button]:last-of-type");
 
-let tabData, tabDataContents = [], downloadParser;
+let tabData, tabDataContents = [], downloadParser, scrollY, transform, overflow;
 
 addYellowNoteButton.title = browser.i18n.getMessage("editorAddYellowNote");
 addPinkNoteButton.title = browser.i18n.getMessage("editorAddPinkNote");
@@ -290,8 +290,31 @@ addEventListener("message", async event => {
 			if (tabData.insertTextBody !== undefined) {
 				tabData.options.insertTextBody = tabData.insertTextBody;
 			}
-			if (tabData.embeddedImage !== undefined) {
-				tabData.options.embeddedImage = tabData.embeddedImage;
+			if (tabData.embeddedImage !== undefined || tabData.options.insertEmbeddedScreenshotImage) {
+				if (tabData.options.insertEmbeddedScreenshotImage) {
+					toolbarElement.style.display = "none";
+					editorElement.style.height = message.documentHeight + "px";
+					document.documentElement.style.height = message.documentHeight + "px";
+					const infobarElement = document.querySelector(INFOBAR_TAGNAME);
+					if (infobarElement) {
+						infobarElement.style.display = "none";
+					}
+					const screenshotBlobURI = await browser.runtime.sendMessage({
+						method: "tabs.getScreenshot",
+						width: document.documentElement.scrollWidth,
+						height: document.documentElement.scrollHeight,
+						innerHeight: globalThis.innerHeight
+					});
+					tabData.options.embeddedImage = new Uint8Array(await (await fetch(screenshotBlobURI)).arrayBuffer());
+					editorElement.style.height = "";
+					document.documentElement.style.height = "";
+					toolbarElement.style.display = "";
+					if (infobarElement) {
+						infobarElement.style.display = "";
+					}
+				} else {
+					tabData.options.embeddedImage = tabData.embeddedImage;
+				}
 			}
 			if (tabData.insertMetaCSP !== undefined) {
 				tabData.options.insertMetaCSP = tabData.insertMetaCSP;
@@ -370,15 +393,40 @@ addEventListener("message", async event => {
 });
 
 browser.runtime.onMessage.addListener(message => {
+	if (message.method == "devtools.resourceCommitted" ||
+		message.method == "content.save" ||
+		message.method == "editor.setTabData" ||
+		message.method == "options.refresh" ||
+		message.method == "content.error" ||
+		message.method == "content.download" ||
+		message.method == "content.beginScrollTo" ||
+		message.method == "content.scrollTo" ||
+		message.method == "content.endScrollTo") {
+		return onMessage(message);
+	}
+});
+
+addEventListener("load", () => {
+	browser.runtime.sendMessage({ method: "editor.getTabData" });
+});
+
+addEventListener("beforeunload", event => {
+	if (tabData.options.warnUnsavedPage && !tabData.docSaved) {
+		event.preventDefault();
+		event.returnValue = "";
+	}
+});
+
+async function onMessage(message) {
 	if (message.method == "devtools.resourceCommitted") {
 		updatedResources[message.url] = { content: message.content, type: message.type, encoding: message.encoding };
-		return Promise.resolve({});
+		return {};
 	}
 	if (message.method == "content.save") {
 		tabData.options = message.options;
 		savePage();
-		browser.runtime.sendMessage({ method: "ui.processInit" });
-		return Promise.resolve({});
+		await browser.runtime.sendMessage({ method: "ui.processInit" });
+		return {};
 	}
 	if (message.method == "editor.setTabData") {
 		if (message.truncated) {
@@ -403,29 +451,41 @@ browser.runtime.onMessage.addListener(message => {
 				});
 			}
 		}
-		return Promise.resolve({});
+		return {};
 	}
 	if (message.method == "options.refresh") {
-		return refreshOptions(message.profileName);
+		await refreshOptions(message.profileName);
+		return {};
 	}
 	if (message.method == "content.error") {
 		onError(message.error, message.link);
+		return {};
 	}
 	if (message.method == "content.download") {
-		return downloadContent(message);
+		await downloadContent(message);
+		return {};
 	}
-});
-
-addEventListener("load", () => {
-	browser.runtime.sendMessage({ method: "editor.getTabData" });
-});
-
-addEventListener("beforeunload", event => {
-	if (tabData.options.warnUnsavedPage && !tabData.docSaved) {
-		event.preventDefault();
-		event.returnValue = "";
+	if (message.method == "content.beginScrollTo") {
+		scrollY = globalThis.scrollY;
+		transform = document.documentElement.style.getPropertyValue("transform");
+		overflow = document.documentElement.style.getPropertyValue("overflow");
+		globalThis.scrollTo(0, 0);
+		document.documentElement.style.setProperty("transform", "translateY(0px)");
+		document.documentElement.style.setProperty("overflow", "hidden");
+		return {};
 	}
-});
+	if (message.method == "content.scrollTo") {
+		document.documentElement.style.setProperty("transform", "translateY(-" + message.y + "px)");
+		await new Promise(resolve => setTimeout(resolve, 500));
+		return {};
+	}
+	if (message.method == "content.endScrollTo") {
+		globalThis.scrollTo(0, scrollY);
+		document.documentElement.style.setProperty("transform", transform);
+		document.documentElement.style.setProperty("overflow", overflow);
+		return {};
+	}
+}
 
 async function downloadContent(message) {
 	if (!downloadParser) {
