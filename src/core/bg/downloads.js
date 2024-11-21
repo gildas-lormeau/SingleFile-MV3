@@ -137,7 +137,11 @@ async function downloadTabPage(message, tab) {
 		} catch (error) {
 			return { error: true };
 		} finally {
-			await offscreen.revokeObjectURL(message.blobURL);
+			try {
+				await offscreen.revokeObjectURL(message.blobURL);
+			} catch (error) {
+				// ignored
+			}
 		}
 	} else if (message.compressContent) {
 		let parser = tabData.get(tabId);
@@ -173,7 +177,11 @@ async function downloadTabPage(message, tab) {
 				message.url = await offscreen.getBlobURL(Array.from(new TextEncoder().encode(message.content)), message.mimeType);
 				await downloadContent(message, tab);
 			} finally {
-				await offscreen.revokeObjectURL(message.url);
+				try {
+					await offscreen.revokeObjectURL(message.url);
+				} catch (error) {
+					// ignored
+				}
 			}
 		}
 	}
@@ -277,7 +285,11 @@ async function downloadContent(message, tab) {
 		}
 	} finally {
 		if (!message.openSavedPage && message.url) {
-			await offscreen.revokeObjectURL(message.url);
+			try {
+				await offscreen.revokeObjectURL(message.url);
+			} catch (error) {
+				// ignored
+			}
 		}
 	}
 }
@@ -411,7 +423,11 @@ async function downloadCompressedContent(message, tab) {
 		}
 	} finally {
 		if (!message.openSavedPage && blobURI) {
-			await offscreen.revokeObjectURL(blobURI);
+			try {
+				await offscreen.revokeObjectURL(blobURI);
+			} catch (error) {
+				// ignored
+			}
 		}
 	}
 }
