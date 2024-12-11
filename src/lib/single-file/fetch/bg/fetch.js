@@ -116,6 +116,16 @@ async function enableReferrerOnError(url, referrer) {
 					}
 				]
 			},
+			action: {
+				type: "modifyHeaders",
+				responseHeaders: [
+					{
+						header: "Access-Control-Allow-Origin",
+						operation: "set",
+						value: "*"
+					}
+				]
+			},
 			condition: {
 				initiatorDomains: [browser.runtime.id],
 				urlFilter: url,
