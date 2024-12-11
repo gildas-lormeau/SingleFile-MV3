@@ -34,6 +34,9 @@ const PROFILE_NAME_PREFIX = "profile_";
 
 const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
 const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });
+const LEGACY_FILENAME_REPLACED_CHARACTERS = ["~", "+", "\\\\\\\\", "?", "%", "*", ":", "|", "\"", "<", ">", "\u0000-\u001f", "\u007f"];
+const DEFAULT_FILENAME_REPLACED_CHARACTERS = ["~", "+", "?", "%", "*", ":", "|", "\"", "<", ">", "\\\\", "\x00-\x1f", "\x7F"];
+const DEFAULT_FILENAME_REPLACEMENT_CHARACTERS = ["～", "＋", "？", "％", "＊", "：", "｜", "＂", "＜", "＞", "＼"];
 
 const DEFAULT_CONFIG = {
 	removeHiddenElements: true,
@@ -59,9 +62,9 @@ const DEFAULT_CONFIG = {
 	filenameConflictAction: "uniquify",
 	filenameMaxLength: 192,
 	filenameMaxLengthUnit: "bytes",
-	filenameReplacedCharacters: ["~", "+", "?", "%", "*", ":", "|", "\"", "<", ">", "\\\\", "\x00-\x1f", "\x7F"],
+	filenameReplacedCharacters: DEFAULT_FILENAME_REPLACED_CHARACTERS,
 	filenameReplacementCharacter: "_",
-	filenameReplacementCharacters: ["～", "＋", "？", "％", "＊", "：", "｜", "＂", "＜", "＞", "＼"],
+	filenameReplacementCharacters: DEFAULT_FILENAME_REPLACEMENT_CHARACTERS,
 	replaceEmojisInFilename: false,
 	saveFilenameTemplateData: false,
 	contextMenuEnabled: true,
@@ -270,6 +273,10 @@ async function upgrade() {
 			if (profile[key] === undefined) {
 				profile[key] = DEFAULT_CONFIG[key];
 			}
+		}
+		if (isSameArray(profile.filenameReplacedCharacters, LEGACY_FILENAME_REPLACED_CHARACTERS)
+			&& isSameArray(profile.filenameReplacementCharacters, DEFAULT_FILENAME_REPLACEMENT_CHARACTERS)) {
+			profile.filenameReplacedCharacters = DEFAULT_FILENAME_REPLACED_CHARACTERS;
 		}
 		await setProfile(profileName, profile);
 	});
@@ -647,4 +654,8 @@ async function importConfig(config) {
 	Object.keys(config.profiles).forEach(profileName => newConfig[PROFILE_NAME_PREFIX + profileName] = config.profiles[profileName]);
 	await configStorage.set(newConfig);
 	await upgrade();
+}
+
+function isSameArray(arrayLeft, arrayRight) {
+	return arrayLeft.length == arrayRight.length && arrayLeft.every((value, index) => value == arrayRight[index]);
 }
