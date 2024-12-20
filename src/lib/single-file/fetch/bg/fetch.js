@@ -115,13 +115,6 @@ async function enableReferrerOnError(url, referrer) {
 						operation: "set",
 						value: referrer
 					}
-				],
-				responseHeaders: [
-					{
-						header: "Access-Control-Allow-Origin",
-						operation: "set",
-						value: "*"
-					}
 				]
 			},
 			condition: {
