@@ -979,7 +979,7 @@ pre code {
 
 	let NOTES_WEB_STYLESHEET, MASK_WEB_STYLESHEET, HIGHLIGHTS_WEB_STYLESHEET;
 	let selectedNote, anchorElement, maskNoteElement, maskPageElement, highlightSelectionMode, removeHighlightMode, resizingNoteMode, movingNoteMode, highlightColor, collapseNoteTimeout, cuttingOuterMode, cuttingMode, cuttingTouchTarget, cuttingPath, cuttingPathIndex, previousContent;
-	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar, openInfobar;
+	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar, openInfobar, infobarPositionAbsolute, infobarPositionTop, infobarPositionBottom, infobarPositionLeft, infobarPositionRight;
 
 	globalThis.zip = singlefile.helper.zip;
 	initEventListeners();
@@ -1076,6 +1076,11 @@ pre code {
 				onUpdate(true);
 				includeInfobar = message.includeInfobar;
 				openInfobar = message.openInfobar;
+				infobarPositionAbsolute = message.infobarPositionAbsolute;
+				infobarPositionTop = message.infobarPositionTop;
+				infobarPositionBottom = message.infobarPositionBottom;
+				infobarPositionLeft = message.infobarPositionLeft;
+				infobarPositionRight = message.infobarPositionRight;
 				let content = getContent(message.compressHTML, message.updatedResources);
 				if (initScriptContent) {
 					content = content.replace(/<script data-template-shadow-root src.*?<\/script>/g, initScriptContent);
@@ -1131,7 +1136,14 @@ pre code {
 				printPage();
 			}
 			if (message.method == "displayInfobar") {
-				singlefile.helper.displayIcon(document, true, { openInfobar: message.openInfobar });
+				singlefile.helper.displayIcon(document, true, {
+					openInfobar: message.openInfobar,
+					infobarPositionAbsolute: message.infobarPositionAbsolute,
+					infobarPositionTop: message.infobarPositionTop,
+					infobarPositionBottom: message.infobarPositionBottom,
+					infobarPositionLeft: message.infobarPositionLeft,
+					infobarPositionRight: message.infobarPositionRight
+				});
 				const infobarDoc = document.implementation.createHTMLDocument();
 				infobarDoc.body.appendChild(document.querySelector(singlefile.helper.INFOBAR_TAGNAME));
 				serializeShadowRoots(infobarDoc.body);
@@ -2104,6 +2116,11 @@ pre code {
 		if (includeInfobar) {
 			const options = singlefile.helper.extractInfobarData(doc);
 			options.openInfobar = openInfobar;
+			options.infobarPositionAbsolute = infobarPositionAbsolute;
+			options.infobarPositionTop = infobarPositionTop;
+			options.infobarPositionRight = infobarPositionRight;
+			options.infobarPositionBottom = infobarPositionBottom;
+			options.infobarPositionLeft = infobarPositionLeft;
 			singlefile.helper.appendInfobar(doc, options);
 		}
 		doc.querySelectorAll("." + HIGHLIGHT_CLASS).forEach(noteElement => noteElement.classList.remove(HIGHLIGHT_HIDDEN_CLASS));

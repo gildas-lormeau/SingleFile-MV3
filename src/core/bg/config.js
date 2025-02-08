@@ -173,7 +173,12 @@ const DEFAULT_CONFIG = {
 	S3AccessKey: "",
 	S3SecretKey: "",
 	resolveLinks: true,
-	groupDuplicateStylesheets: false
+	groupDuplicateStylesheets: false,
+	infobarPositionAbsolute: false,
+	infobarPositionTop: "16px",
+	infobarPositionRight: "16px",
+	infobarPositionBottom: "",
+	infobarPositionLeft: ""
 };
 
 const DEFAULT_RULES = [{
