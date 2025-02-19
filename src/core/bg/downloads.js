@@ -134,11 +134,13 @@ async function downloadTabPage(message, tab) {
 				message.content = await (await fetch(message.blobURL)).text();
 				await downloadContent(message, tab);
 			}
+			// eslint-disable-next-line no-unused-vars
 		} catch (error) {
 			return { error: true };
 		} finally {
 			try {
 				await offscreen.revokeObjectURL(message.blobURL);
+				// eslint-disable-next-line no-unused-vars
 			} catch (error) {
 				// ignored
 			}
@@ -179,6 +181,7 @@ async function downloadTabPage(message, tab) {
 			} finally {
 				try {
 					await offscreen.revokeObjectURL(message.url);
+					// eslint-disable-next-line no-unused-vars
 				} catch (error) {
 					// ignored
 				}
@@ -292,6 +295,7 @@ async function downloadContent(message, tab) {
 		if (!message.openSavedPage && message.url) {
 			try {
 				await offscreen.revokeObjectURL(message.url);
+				// eslint-disable-next-line no-unused-vars
 			} catch (error) {
 				// ignored
 			}
@@ -435,6 +439,7 @@ async function downloadCompressedContent(message, tab) {
 		if (!message.openSavedPage && blobURI) {
 			try {
 				await offscreen.revokeObjectURL(blobURI);
+				// eslint-disable-next-line no-unused-vars
 			} catch (error) {
 				// ignored
 			}

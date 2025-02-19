@@ -135,6 +135,7 @@ async function createMenus(tab) {
 					title: "title"
 				});
 				defaultContextsDisabled.push("tab");
+				// eslint-disable-next-line no-unused-vars
 			} catch (error) {
 				options.tabMenuEnabled = false;
 			}
@@ -527,6 +528,7 @@ async function refreshExternalComponents(tab) {
 	await button.refreshTab(tab);
 	try {
 		await browser.runtime.sendMessage({ method: "options.refresh", profileName: allTabsData.profileName });
+		// eslint-disable-next-line no-unused-vars
 	} catch (error) {
 		// ignored
 	}
@@ -584,6 +586,7 @@ async function updateAllVisibleValues(visible) {
 		try {
 			MENU_TOP_VISIBLE_ENTRIES.forEach(id => promises.push(menus.update(id, { visible })));
 			await Promise.all(promises);
+			// eslint-disable-next-line no-unused-vars
 		} catch (error) {
 			// ignored
 		}

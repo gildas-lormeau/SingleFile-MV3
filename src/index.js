@@ -21,8 +21,6 @@
  *   Source.
  */
 
-/* global globalThis */
-
 import { fetch, frameFetch } from "./lib/single-file/fetch/content/content-fetch.js";
 
 const core = {

@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, navigator, Blob, File */
+/* global browser, navigator, Blob, File, btoa */
 
 import { download } from "./download-util.js";
 import * as tabsData from "./tabs-data.js";
@@ -294,7 +294,8 @@ function updateFilenameTemplate(template) {
 			template = template.replaceAll(`{${variable}}`, `%if-empty<{${variable}}|${value}>`);
 		});
 		return template;
-	} catch (_error) {
+		// eslint-disable-next-line no-unused-vars
+	} catch (error) {
 		// ignored
 	}
 }

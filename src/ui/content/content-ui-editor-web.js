@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global globalThis, window, document, fetch, DOMParser, getComputedStyle, setTimeout, clearTimeout, NodeFilter, Readability, isProbablyReaderable, matchMedia, TextDecoder, Node, URL, prompt, MutationObserver, FileReader */
+/* global window, document, fetch, DOMParser, getComputedStyle, setTimeout, clearTimeout, NodeFilter, Readability, isProbablyReaderable, matchMedia, TextDecoder, Node, URL, prompt, MutationObserver, FileReader */
 
 import { setLabels } from "./../../ui/common/common-content-ui.js";
 import { downloadPageForeground } from "../../core/common/download.js";
@@ -2255,6 +2255,7 @@ pre code {
 						const contentDocument = (new DOMParser()).parseFromString(element.innerHTML, "text/html");
 						Array.from(contentDocument.head.childNodes).forEach(node => shadowRoot.appendChild(node));
 						Array.from(contentDocument.body.childNodes).forEach(node => shadowRoot.appendChild(node));
+						// eslint-disable-next-line no-unused-vars
 					} catch (error) {
 						// ignored
 					}
@@ -2399,6 +2400,7 @@ pre code {
 		} else if (chrome && chrome.dom && chrome.dom.openOrClosedShadowRoot) {
 			try {
 				return chrome.dom.openOrClosedShadowRoot(element);
+				// eslint-disable-next-line no-unused-vars
 			} catch (error) {
 				return element.shadowRoot;
 			}

@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser */
+/* global browser, TextEncoder */
 
 import * as yabson from "./../../lib/yabson/yabson.js";
 

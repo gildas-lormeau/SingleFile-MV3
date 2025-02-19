@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, Blob, URL, XMLHttpRequest, Image, document */
+/* global browser, Blob, URL, XMLHttpRequest, Image, document, TextDecoder */
 
 import "./../../../lib/chrome-browser-polyfill.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
