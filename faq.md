@@ -26,10 +26,13 @@ The self-extracting ZIP files created by SingleFile are essentially regular ZIP 
 
 ## What are the permissions requested by SingleFile for?
 The permissions requested by SingleFile are defined in the [manifest.json](https://github.com/gildas-lormeau/SingleFile/blob/master/manifest.json) file. Below are the reasons why they are necessary.
+ - `identity`: allows SingleFile to connect to your Google Drive account.
  - `storage`: allows SingleFile to store your settings.
  - `contextMenus`: allows SingleFile to display an entry in the context menu of web pages.
  - `tabs` (all_urls): allows SingleFile to inject the code needed to process a page in any tab. This permission is needed for saving several tabs in one click, for example.
  - `downloads`: allows SingleFile to save pages as if they were downloaded from the web.
+ - `clipboardWrite`: allows SingleFile to copy the content of a page into the clipboard instead of saving it.
+ - `nativeMessaging`: allows you to use [SingleFile Companion](https://github.com/gildas-lormeau/single-file-companion) to save pages.
 
 ## SingleFile is slow on my computer/tablet/phone, can it run faster?
 The default configuration of SingleFile is optimized to produce small pages. This can sometimes slow down the save process considerably. Below are the options you can disable to save time and CPU.
@@ -39,11 +42,6 @@ The default configuration of SingleFile is optimized to produce small pages. Thi
 You can also disable the options below. Some resources (e.g. images, frames) on the page may be missing though.
  - HTML content > remove frames
  - Images > save deferred images
-
-## Why pages saved with SingleFile weight more than uncompressed MAFF files?
-To integrate them into the HTML file, all binary resources such as images or fonts are transformed into [data URIs](https://en.wikipedia.org/wiki/Data_URI_scheme). These URIs allow the binary content to be encoded in [base64](https://en.wikipedia.org/wiki/Base64) and to be stored as text in the HTML file. When encoded in base64, a binary resource will weigh about 33% more. This overload also has an impact on the size of the saved page.
-
-You may consider using [SingleFileZ](https://github.com/gildas-lormeau/SingleFileZ) which is able to compress saved pages and their assets into a self extracting HTML/ZIP hybrid file. 
 
 ## How to convert MHTML files to single HTML files?
 See https://github.com/gildas-lormeau/mhtml-to-html.
