@@ -130,7 +130,7 @@
 		"<all_urls>"
 	],
 	"devtools_page": "src/core/devtools/devtools.html",
-	"incognito": "split",
+	"incognito": "spanning",
 	"manifest_version": 3,
 	"default_locale": "en"
 }
