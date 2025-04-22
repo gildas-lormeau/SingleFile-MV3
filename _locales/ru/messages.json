@@ -453,7 +453,7 @@
 	},
 	"optionsAutoSettingsUrl": {
 		"message": "URL",
-		"description": "Options label in the auto-settings rules: 'URL'"
+		"description": "Options label in the Auto-settings rules: 'URL'"
 	},
 	"optionsAutoSettingsUrlPlaceholder": {
 		"message": "Введите полный или частичный URL (например, example.com)",
@@ -578,6 +578,10 @@
 	"optionApplySystemTheme": {
 		"message": "использовать системную тему при форматировании страницы",
 		"description": "Title of the button 'apply the system theme when formatting a page'"
+	},
+	"optionContentWidth": {
+		"message": "content width when formatting a page (em)",
+		"description": "Options page label: 'content width when formatting a page (em)'"
 	},
 	"optionWarnUnsavedPage": {
 		"message": "предупреждать при закрытии страницы с несохранёнными изменениями",
