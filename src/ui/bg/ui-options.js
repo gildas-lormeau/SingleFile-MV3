@@ -173,6 +173,7 @@ const openSavedPageLabel = document.getElementById("openSavedPageLabel");
 const autoOpenEditorLabel = document.getElementById("autoOpenEditorLabel");
 const defaultEditorModeLabel = document.getElementById("defaultEditorModeLabel");
 const applySystemThemeLabel = document.getElementById("applySystemThemeLabel");
+const contentWidthLabel = document.getElementById("contentWidthLabel");
 const warnUnsavedPageLabel = document.getElementById("warnUnsavedPageLabel");
 const displayInfobarInEditorLabel = document.getElementById("displayInfobarInEditorLabel");
 const infobarTemplateLabel = document.getElementById("infobarTemplateLabel");
@@ -299,6 +300,7 @@ const defaultEditorModeFormatLabel = document.getElementById("defaultEditorModeF
 const defaultEditorModeCutLabel = document.getElementById("defaultEditorModeCutLabel");
 const defaultEditorModeCutExternalLabel = document.getElementById("defaultEditorModeCutExternalLabel");
 const applySystemThemeInput = document.getElementById("applySystemThemeInput");
+const contentWidthInput = document.getElementById("contentWidthInput");
 const warnUnsavedPageInput = document.getElementById("warnUnsavedPageInput");
 const displayInfobarInEditorInput = document.getElementById("displayInfobarInEditorInput");
 const expandAllButton = document.getElementById("expandAllButton");
@@ -776,6 +778,7 @@ defaultEditorModeFormatLabel.textContent = browser.i18n.getMessage("optionDefaul
 defaultEditorModeCutLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeCut");
 defaultEditorModeCutExternalLabel.textContent = browser.i18n.getMessage("optionDefaultEditorModeCutExternal");
 applySystemThemeLabel.textContent = browser.i18n.getMessage("optionApplySystemTheme");
+contentWidthLabel.textContent = browser.i18n.getMessage("optionContentWidth");
 warnUnsavedPageLabel.textContent = browser.i18n.getMessage("optionWarnUnsavedPage");
 displayInfobarInEditorLabel.textContent = browser.i18n.getMessage("optiondisplayInfobarInEditor");
 resetButton.textContent = browser.i18n.getMessage("optionsResetButton");
@@ -1076,6 +1079,7 @@ async function refresh(profileName) {
 	autoOpenEditorInput.checked = profileOptions.autoOpenEditor;
 	defaultEditorModeInput.value = profileOptions.defaultEditorMode;
 	applySystemThemeInput.checked = profileOptions.applySystemTheme;
+	contentWidthInput.value = profileOptions.contentWidth;
 	warnUnsavedPageInput.checked = profileOptions.warnUnsavedPage;
 	displayInfobarInEditorInput.checked = profileOptions.displayInfobarInEditor;
 }
@@ -1197,6 +1201,7 @@ async function update() {
 			autoOpenEditor: autoOpenEditorInput.checked,
 			defaultEditorMode: defaultEditorModeInput.value,
 			applySystemTheme: applySystemThemeInput.checked,
+			contentWidth: contentWidthInput.value,
 			warnUnsavedPage: warnUnsavedPageInput.checked,
 			displayInfobarInEditor: displayInfobarInEditorInput.checked,
 			saveToRestFormApi: saveToRestFormApiInput.checked,

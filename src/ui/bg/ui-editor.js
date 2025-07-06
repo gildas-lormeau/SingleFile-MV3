@@ -597,7 +597,8 @@ function formatPage() {
 	updatedResources = {};
 	editorElement.contentWindow.postMessage(JSON.stringify({
 		method: "formatPage",
-		applySystemTheme: tabData.options.applySystemTheme
+		applySystemTheme: tabData.options.applySystemTheme,
+		contentWidth: tabData.options.contentWidth
 	}), "*");
 }
 
