@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, document, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node */
+/* global browser, document, prompt, getComputedStyle, addEventListener, removeEventListener, requestAnimationFrame, setTimeout, getSelection, Node, URL */
 
 const singlefile = globalThis.singlefile;
 
@@ -172,7 +172,9 @@ function getSelectedLinks() {
 					if (range.startContainer != range.endContainer || range.startOffset != range.endOffset) {
 						selectionFound = true;
 						if (treeWalker.currentNode.tagName == "A" && treeWalker.currentNode.href) {
-							links.push(treeWalker.currentNode.href);
+							const url = new URL(treeWalker.currentNode.href);
+							url.hash = "";
+							links.push(url.href);
 						}
 					}
 				}
@@ -185,7 +187,9 @@ function getSelectedLinks() {
 			if (selectionFound && treeWalker.currentNode == range.endContainer && treeWalker.currentNode.querySelectorAll) {
 				treeWalker.currentNode.querySelectorAll("*").forEach(descendantElement => {
 					if (descendantElement.tagName == "A" && descendantElement.href) {
-						links.push(treeWalker.currentNode.href);
+						const url = new URL(descendantElement.href);
+						url.hash = "";
+						links.push(url.href);
 					}
 				});
 			}
@@ -221,6 +225,12 @@ function markSelectedContent() {
 					if (range.startContainer != range.endContainer || range.startOffset != range.endOffset) {
 						selectionFound = true;
 						markSelectedNode(treeWalker.currentNode);
+					}
+					if (range.startContainer === range.endContainer && selection.rangeCount == 1 && range.startOffset == 0 && range.endOffset == 0) {
+						if (range.startContainer.tagName === "IMG" || range.startContainer.tagName === "VIDEO") {
+							selectionFound = true;
+							markSelectedNode(treeWalker.currentNode);
+						}
 					}
 				}
 				if (selectionFound && treeWalker.currentNode == range.startContainer) {

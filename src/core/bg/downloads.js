@@ -207,7 +207,7 @@ async function downloadContent(message, tab) {
 			let response;
 			if (message.openEditor) {
 				ui.onEdit(tabId);
-				await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: message.content });
+				await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: message.content, url: message.originalUrl });
 			} else if (message.saveToClipboard) {
 				await offscreen.saveToClipboard(message.content, message.mimeType);
 			} else if (message.saveWithWebDAV) {
@@ -343,7 +343,8 @@ async function downloadCompressedContent(message, tab) {
 					extractDataFromPage: message.extractDataFromPage,
 					insertTextBody: message.insertTextBody,
 					insertMetaCSP: message.insertMetaCSP,
-					embeddedImage: message.embeddedImage
+					embeddedImage: message.embeddedImage,
+					url: message.originalUrl
 				});
 			} else if (message.foregroundSave || message.sharePage) {
 				const blob = (await fetch(blobURI)).blob();
