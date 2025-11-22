@@ -514,6 +514,25 @@
 					<li data-options-label="webDAVPasswordLabel"> <span class="option">Option: password</span>
 						<p>Enter your password.</p>
 					</li>
+					<li data-options-label="saveWithMCPLabel"> <span class="option">Option: save with MCP server</span>
+						<p>Check this option to save the page via a Model Context Protocol (MCP) server.</p>
+						<p>MCP is an open protocol that standardizes how applications provide context to AI models.
+							When enabled, SingleFile will send saved pages to an MCP server that implements the
+							filesystem tools (write_file, get_file_info).</p>
+						<p class="notice">It is recommended to <u>uncheck</u> this option unless you have an MCP server
+							running</p>
+					</li>
+					<li data-options-label="mcpServerUrlLabel"> <span class="option">Option: server URL</span>
+						<p>Enter the URL of your MCP server (e.g. <code>http://localhost:3000/mcp</code>).</p>
+						<p>The server must implement the HTTP transport as specified in the MCP protocol and provide
+							the <code>write_file</code> and <code>get_file_info</code> tools.</p>
+					</li>
+					<li data-options-label="mcpAuthTokenLabel"> <span class="option">Option: authentication token</span>
+						<p>Enter the Bearer authentication token for your MCP server (optional).</p>
+						<p>If your MCP server requires authentication, the token will be sent in the
+							<code>Authorization: Bearer &lt;token&gt;</code> header with each request.
+						</p>
+					</li>
 					<li data-options-label="saveToGDriveLabel" id="saveToGDriveOption"> <span class="option">Option:
 							upload to Google Drive</span>
 						<p>Check this option to save the page on Google Drive.</p>
