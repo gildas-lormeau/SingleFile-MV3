@@ -140,7 +140,9 @@ async function downloadPage(pageData, options) {
 			message.filename = pageData.filename;
 			message.blobURL = blobURL;
 			const result = await browser.runtime.sendMessage(message);
-			URL.revokeObjectURL(blobURL);
+			if (!message.openSavedPage) {
+				URL.revokeObjectURL(blobURL);
+			}
 			if (result.error) {
 				message.embeddedImage = embeddedImage;
 				message.blobURL = null;
@@ -178,7 +180,9 @@ async function downloadPage(pageData, options) {
 				const blobURL = URL.createObjectURL(new Blob([pageData.content], { type: pageData.mimeType }));
 				message.blobURL = blobURL;
 				const result = await browser.runtime.sendMessage(message);
-				URL.revokeObjectURL(blobURL);
+				if (!message.openSavedPage) {
+					URL.revokeObjectURL(blobURL);
+				}
 				if (result.error) {
 					message.blobURL = null;
 					for (let blockIndex = 0; blockIndex * MAX_CONTENT_SIZE < pageData.content.length; blockIndex++) {
