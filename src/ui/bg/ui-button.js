@@ -113,10 +113,14 @@ let business;
 
 browser.action.onClicked.addListener(async tab => {
 	const highlightedTabs = await queryTabs({ currentWindow: true, highlighted: true });
-	if (highlightedTabs.length <= 1) {
+	const sameWorkspaceTabs = highlightedTabs.filter(highlightedTab =>
+		highlightedTab.windowId === tab.windowId &&
+		(tab.workspaceId === undefined || highlightedTab.workspaceId === tab.workspaceId)
+	);
+	if (sameWorkspaceTabs.length <= 1) {
 		toggleSaveTab(tab);
 	} else {
-		business.saveTabs(highlightedTabs);
+		business.saveTabs(sameWorkspaceTabs);
 	}
 
 	function toggleSaveTab(tab) {
