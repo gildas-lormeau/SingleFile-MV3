@@ -42,6 +42,7 @@ browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	init();
 });
 const removeHiddenElementsLabel = document.getElementById("removeHiddenElementsLabel");
+const removedElementsSelectorLabel = document.getElementById("removedElementsSelectorLabel");
 const removeUnusedStylesLabel = document.getElementById("removeUnusedStylesLabel");
 const removeUnusedFontsLabel = document.getElementById("removeUnusedFontsLabel");
 const removeFramesLabel = document.getElementById("removeFramesLabel");
@@ -210,6 +211,7 @@ const fileInput = document.getElementById("fileInput");
 const profileNamesInput = document.getElementById("profileNamesInput");
 const customShortcutInput = document.getElementById("customShortcutInput");
 const removeHiddenElementsInput = document.getElementById("removeHiddenElementsInput");
+const removedElementsSelectorInput = document.getElementById("removedElementsSelectorInput");
 const removeUnusedStylesInput = document.getElementById("removeUnusedStylesInput");
 const removeUnusedFontsInput = document.getElementById("removeUnusedFontsInput");
 const removeFramesInput = document.getElementById("removeFramesInput");
@@ -660,6 +662,7 @@ addProfileButton.title = browser.i18n.getMessage("profileAddButtonTooltip");
 deleteProfileButton.title = browser.i18n.getMessage("profileDeleteButtonTooltip");
 renameProfileButton.title = browser.i18n.getMessage("profileRenameButtonTooltip");
 removeHiddenElementsLabel.textContent = browser.i18n.getMessage("optionRemoveHiddenElements");
+removedElementsSelectorLabel.textContent = browser.i18n.getMessage("optionRemovedElementsSelector");
 removeUnusedStylesLabel.textContent = browser.i18n.getMessage("optionRemoveUnusedStyles");
 removeUnusedFontsLabel.textContent = browser.i18n.getMessage("optionRemoveUnusedFonts");
 removeFramesLabel.textContent = browser.i18n.getMessage("optionRemoveFrames");
@@ -965,6 +968,7 @@ async function refresh(profileName) {
 	renameProfileButton.disabled = deleteProfileButton.disabled = profileNamesInput.value == DEFAULT_PROFILE_NAME;
 	const profileOptions = profiles[selectedProfileName];
 	removeHiddenElementsInput.checked = profileOptions.removeHiddenElements;
+	removedElementsSelectorInput.value = profileOptions.removedElementsSelector;
 	removeUnusedStylesInput.checked = profileOptions.removeUnusedStyles;
 	removeUnusedFontsInput.checked = profileOptions.removeUnusedFonts;
 	removeFramesInput.checked = profileOptions.removeFrames;
@@ -1162,6 +1166,7 @@ async function update() {
 		profileName: selectedProfileName,
 		profile: {
 			removeHiddenElements: removeHiddenElementsInput.checked,
+			removedElementsSelector: removedElementsSelectorInput.value,
 			removeUnusedStyles: removeUnusedStylesInput.checked,
 			removeUnusedFonts: removeUnusedFontsInput.checked,
 			removeFrames: removeFramesInput.checked,
