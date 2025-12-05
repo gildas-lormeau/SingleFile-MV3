@@ -154,11 +154,11 @@ async function saveContent(message, tab) {
 		try {
 			if (options.autoSaveExternalSave) {
 				await companion.externalSave(options);
-		} else {
-			pageData = await offscreen.processPage(options);
-			let skipped;
-			if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveWithMCP && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion && !options.saveToRestFormApi && !options.saveToS3) {
-				const testSkip = await downloads.testSkipSave(pageData.filename, options);
+			} else {
+				pageData = await offscreen.processPage(options);
+				let skipped;
+				if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveWithMCP && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion && !options.saveToRestFormApi && !options.saveToS3) {
+					const testSkip = await downloads.testSkipSave(pageData.filename, options);
 					skipped = testSkip.skipped;
 					options.filenameConflictAction = testSkip.filenameConflictAction;
 				}
@@ -195,6 +195,8 @@ async function saveContent(message, tab) {
 						await companion.save({
 							filename: pageData.filename,
 							content: content,
+							title: pageData.title,
+							url: options.url,
 							filenameConflictAction: options.filenameConflictAction
 						});
 					} else if (options.saveToRestFormApi) {

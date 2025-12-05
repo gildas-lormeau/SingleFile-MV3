@@ -216,7 +216,9 @@ import { downloadPageForeground } from "../../core/common/download.js";
 						window.parent.postMessage(JSON.stringify({
 							method: "setContent",
 							content,
-							filename
+							filename,
+							title: document.title,
+							url: pageUrl
 						}), "*");
 					}
 				}
@@ -322,9 +324,9 @@ import { downloadPageForeground } from "../../core/common/download.js";
 			}
 		} else {
 			const contentDocument = (new DOMParser()).parseFromString(content, "text/html");
-			const { saveUrl } = singlefile.helper.extractInfobarData(contentDocument);
-			pageUrl = saveUrl;
 			if (detectSavedPage(contentDocument)) {
+				const { saveUrl } = singlefile.helper.extractInfobarData(contentDocument);
+				pageUrl = saveUrl;
 				if (contentDocument.doctype) {
 					if (document.doctype) {
 						document.replaceChild(contentDocument.doctype, document.doctype);
