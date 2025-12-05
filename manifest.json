@@ -119,7 +119,6 @@
 			],
 			"resources": [
 				"lib/single-file-infobar.js",
-				"lib/single-file-extension-editor-init.js",
 				"lib/single-file-extension-editor.js",
 				"lib/single-file-extension-editor-helper.js",
 				"lib/single-file-zip.min.js",
