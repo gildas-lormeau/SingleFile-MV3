@@ -68,7 +68,7 @@ import { downloadPageForeground } from "../../core/common/download.js";
 
 	let NOTES_WEB_STYLESHEET, MASK_WEB_STYLESHEET, HIGHLIGHTS_WEB_STYLESHEET;
 	let selectedNote, anchorElement, maskNoteElement, maskPageElement, highlightSelectionMode, removeHighlightMode, resizingNoteMode, movingNoteMode, highlightColor, collapseNoteTimeout, cuttingOuterMode, cuttingMode, cuttingTouchTarget, cuttingPath, cuttingPathIndex, previousContent;
-	let removedElements = [], removedElementIndex = 0, initScriptContent, pageResources, pageUrl, pageCompressContent, includeInfobar, openInfobar, infobarPositionAbsolute, infobarPositionTop, infobarPositionBottom, infobarPositionLeft, infobarPositionRight;
+	let removedElements = [], removedElementIndex = 0, pageResources, pageUrl, pageCompressContent, includeInfobar, openInfobar, infobarPositionAbsolute, infobarPositionTop, infobarPositionBottom, infobarPositionLeft, infobarPositionRight;
 
 	globalThis.zip = singlefile.helper.zip;
 	initEventListeners();
@@ -171,9 +171,6 @@ import { downloadPageForeground } from "../../core/common/download.js";
 				infobarPositionLeft = message.infobarPositionLeft;
 				infobarPositionRight = message.infobarPositionRight;
 				let content = getContent(message.compressHTML, message.updatedResources);
-				if (initScriptContent) {
-					content = content.replace(/<script data-template-shadow-root src.*?<\/script>/g, initScriptContent);
-				}
 				let filename;
 				const pageOptions = loadOptionsFromPage(document);
 				if (pageOptions) {
@@ -290,6 +287,8 @@ import { downloadPageForeground } from "../../core/common/download.js";
 			pageCompressContent = true;
 			const contentDocument = (new DOMParser()).parseFromString(docContent, "text/html");
 			if (detectSavedPage(contentDocument)) {
+				const { saveUrl } = singlefile.helper.extractInfobarData(contentDocument);
+				pageUrl = saveUrl;
 				await singlefile.helper.display(document, docContent, { disableFramePointerEvents: true });
 				singlefile.helper.fixInvalidNesting(document);
 				const infobarElement = document.querySelector(singlefile.helper.INFOBAR_TAGNAME);
