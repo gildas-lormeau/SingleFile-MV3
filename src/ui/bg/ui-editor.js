@@ -666,7 +666,7 @@ function displayInfobar() {
 		infobarPositionTop: tabData.options.infobarPositionTop,
 		infobarPositionBottom: tabData.options.infobarPositionBottom,
 		infobarPositionLeft: tabData.options.infobarPositionLeft,
-		infobarPositionRight: tabData.options.infobarPositionRight,
+		infobarPositionRight: tabData.options.infobarPositionRight
 	}), "*");
 }
 
