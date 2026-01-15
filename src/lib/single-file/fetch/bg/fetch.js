@@ -75,7 +75,7 @@ async function sendResponse(tabId, requestId, response) {
 async function fetchResource(url, options = {}) {
 	options.cache = "no-store";
 	const response = await fetch(url, options);
-	if (options.referrer && response.status == 401 || response.status == 403 || response.status == 404) {
+	if (options.referrer && (response.status == 401 || response.status == 403 || response.status == 404)) {
 		const requestId = await enableReferrerOnError(url, options.referrer);
 		await new Promise(resolve => setTimeout(resolve, REQUEST_WAIT_DELAY));
 		try {
