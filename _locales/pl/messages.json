@@ -347,6 +347,10 @@
 		"message": "utwórz katalog główny",
 		"description": "Options page label: 'create a root directory'"
 	},
+	"optionDisableCompression": {
+		"message": "disable compression",
+		"description": "Options page label: 'disable compression'"
+	},
 	"optionPreventAppendedData": {
 		"message": "nie dołączaj danych po danych ZIP",
 		"description": "Options page label: 'do not append data after the ZIP data'"
@@ -1092,7 +1096,7 @@
 		"description": "Title of the column in the table of the URLs"
 	},
 	"optionSaveToRestFormApi": {
-		"message": "prześlij do API formularza REST",
+		"message": "przesyłaj do API formularza REST",
 		"description": "Options page label: 'upload to a REST Form API'"
 	},
 	"optionRestFormApiUrl": {
