@@ -10,13 +10,13 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"single-file-core": "1.5.83"
+		"single-file-core": "1.5.84"
 	},
 	"devDependencies": {
-		"eslint": "^9.39.2",
+		"eslint": "^10.0.0",
 		"@rollup/plugin-node-resolve": "16.0.3",
 		"@rollup/plugin-terser": "0.4.4",
-		"rollup": "^4.55.2"
+		"rollup": "^4.57.1"
 	},
 	"overrides": {
 		"terser": "^5.15.0"
