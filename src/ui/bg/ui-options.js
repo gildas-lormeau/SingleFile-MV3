@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement, MouseEvent, btoa */
+/* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement, MouseEvent, btoa, URLSearchParams */
 
 const HELP_ICON_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABIUlEQVQ4y+2TsarCMBSGvxTBRdqiUZAWOrhJB9EXcPKFfCvfQYfulUKHDqXg4CYUJSioYO4mSDX3ttzt3n87fMlHTpIjlsulxpDZbEYYhgghSNOUOI5Ny2mZYBAELBYLer0eAJ7ncTweKYri4x7LJJRS0u12n7XrukgpjSc0CpVSXK/XZ32/31FKNW85z3PW6zXT6RSAJEnIsqy5UGvNZrNhu90CcDqd+C6tT6J+v//2Th+PB2VZ1hN2Oh3G4zGTyQTbtl/YbrdjtVpxu91+Ljyfz0RRhG3bzOfzF+Y4TvNXvlwuaK2pE4tfzr/wzwsty0IIURlL0998KxRCMBqN8H2/wlzXJQxD2u12vVkeDoeUZUkURRU+GAw4HA7s9/sK+wK6CWHasQ/S/wAAAABJRU5ErkJggg==";
 const HELP_PAGE_PATH_PREFIX = "/src/ui/pages/help";
@@ -189,6 +189,8 @@ const includeInfobarLabel = document.getElementById("includeInfobarLabel");
 const openInfobarLabel = document.getElementById("openInfobarLabel");
 const removeInfobarSavedDateLabel = document.getElementById("removeInfobarSavedDateLabel");
 const miscLabel = document.getElementById("miscLabel");
+const externalCapturePermissionsLabel = document.getElementById("externalCapturePermissionsLabel");
+const externalCaptureAllowedIdsLabel = document.getElementById("externalCaptureAllowedIdsLabel");
 const helpLabel = document.getElementById("helpLabel");
 const synchronizeLabel = document.getElementById("synchronizeLabel");
 const customShortcutLabel = document.getElementById("customShortcutLabel");
@@ -283,6 +285,12 @@ const confirmFilenameInput = document.getElementById("confirmFilenameInput");
 const filenameConflictActionInput = document.getElementById("filenameConflictActionInput");
 const displayInfobarInput = document.getElementById("displayInfobarInput");
 const displayStatsInput = document.getElementById("displayStatsInput");
+const externalCapturePermissionsSection = document.getElementById("externalCapturePermissionsSection");
+const externalCapturePendingRequest = document.getElementById("externalCapturePendingRequest");
+const externalCapturePendingRequestLabel = document.getElementById("externalCapturePendingRequestLabel");
+const externalCaptureApproveButton = document.getElementById("externalCaptureApproveButton");
+const externalCaptureDenyButton = document.getElementById("externalCaptureDenyButton");
+const externalCaptureAllowedIdsInput = document.getElementById("externalCaptureAllowedIdsInput");
 const backgroundSaveInput = document.getElementById("backgroundSaveInput");
 const autoSaveDelayInput = document.getElementById("autoSaveDelayInput");
 const autoSaveLoadInput = document.getElementById("autoSaveLoadInput");
@@ -605,6 +613,9 @@ addProofInput.addEventListener("click", async event => {
 		await update();
 	}
 });
+externalCaptureAllowedIdsInput.addEventListener("change", updateExternalCapturePermissions, false);
+externalCaptureApproveButton.addEventListener("click", () => respondExternalCaptureRequest(true), false);
+externalCaptureDenyButton.addEventListener("click", () => respondExternalCaptureRequest(false), false);
 browser.runtime.sendMessage({ method: "config.isSync" }).then(data => synchronizeInput.checked = data.sync);
 synchronizeInput.addEventListener("click", async () => {
 	if (synchronizeInput.checked) {
@@ -638,7 +649,8 @@ document.body.onchange = async event => {
 		target != ruleEditProfileInput &&
 		target != ruleEditAutoSaveProfileInput &&
 		target != showAutoSaveProfileInput &&
-		target != saveCreatedBookmarksInput) {
+		target != saveCreatedBookmarksInput &&
+		target != externalCaptureAllowedIdsInput) {
 		if (target != profileNamesInput && target != showAllProfilesInput) {
 			await update();
 		}
@@ -790,6 +802,8 @@ destinationLabel.textContent = browser.i18n.getMessage("optionsDestinationSubTit
 bookmarksLabel.textContent = browser.i18n.getMessage("optionsBookmarkSubTitle");
 autoSaveLabel.textContent = browser.i18n.getMessage("optionsAutoSaveSubTitle");
 miscLabel.textContent = browser.i18n.getMessage("optionsMiscSubTitle");
+externalCapturePermissionsLabel.textContent = browser.i18n.getMessage("optionsExternalCapturePermissionsSubTitle");
+externalCaptureAllowedIdsLabel.textContent = browser.i18n.getMessage("optionExternalCaptureAllowedIds");
 helpLabel.textContent = browser.i18n.getMessage("optionsHelpLink");
 infobarTemplateLabel.textContent = browser.i18n.getMessage("optionInfobarTemplate");
 blockMixedContentLabel.textContent = browser.i18n.getMessage("optionBlockMixedContent");
@@ -845,6 +859,8 @@ resetAllButton.textContent = browser.i18n.getMessage("optionsResetAllButton");
 resetCurrentButton.textContent = browser.i18n.getMessage("optionsResetCurrentButton");
 resetCancelButton.textContent = promptCancelButton.textContent = cancelButton.textContent = browser.i18n.getMessage("optionsCancelButton");
 confirmButton.textContent = promptConfirmButton.textContent = browser.i18n.getMessage("optionsOKButton");
+externalCaptureApproveButton.textContent = browser.i18n.getMessage("optionsExternalCaptureApproveButton");
+externalCaptureDenyButton.textContent = browser.i18n.getMessage("optionsExternalCaptureDenyButton");
 document.getElementById("resetConfirmLabel").textContent = browser.i18n.getMessage("optionsResetConfirm");
 saveToRestFormApiLabel.textContent = browser.i18n.getMessage("optionSaveToRestFormApi");
 saveToRestFormApiUrlLabel.textContent = browser.i18n.getMessage("optionRestFormApiUrl");
@@ -862,6 +878,7 @@ browser.runtime.sendMessage({ method: "tabsData.get" }).then(allTabsData => {
 	return refresh(tabsData.profileName);
 });
 getHelpContents();
+initExternalCapturePermissions();
 
 function init() {
 	if (!BACKGROUND_SAVE_SUPPORTED) {
@@ -1372,6 +1389,69 @@ async function onClickSaveToClipboard() {
 	}
 	await update();
 	await refresh();
+}
+
+async function initExternalCapturePermissions() {
+	await refreshExternalCapturePermissions();
+	const requestId = new URLSearchParams(location.search).get("externalCaptureRequestId");
+	if (requestId) {
+		const request = await browser.runtime.sendMessage({ method: "externalCapture.getPendingRequest", requestId });
+		if (request) {
+			const requestLabel = request.displayName
+				? `${request.displayName} (${request.extensionId})`
+				: request.extensionId;
+			externalCapturePendingRequest.dataset.requestId = request.id;
+			externalCapturePendingRequestLabel.textContent = browser.i18n.getMessage("optionsExternalCapturePendingRequest", requestLabel);
+			externalCapturePendingRequest.hidden = false;
+			externalCapturePermissionsSection.classList.add("external-capture-permissions--pending");
+			externalCapturePermissionsSection.open = true;
+			externalCapturePermissionsSection.scrollIntoView({ block: "center" });
+			externalCaptureApproveButton.focus();
+		}
+	}
+}
+
+async function refreshExternalCapturePermissions() {
+	const permissions = await browser.runtime.sendMessage({ method: "externalCapture.getPermissions" });
+	externalCaptureAllowedIdsInput.value = formatExtensionEntries(permissions.allowedExtensions);
+}
+
+async function updateExternalCapturePermissions() {
+	await browser.runtime.sendMessage({
+		method: "externalCapture.setPermissions",
+		permissions: {
+			allowedExtensions: parseExtensionEntries(externalCaptureAllowedIdsInput.value)
+		}
+	});
+	await refreshExternalCapturePermissions();
+}
+
+async function respondExternalCaptureRequest(approved) {
+	const requestId = externalCapturePendingRequest.dataset.requestId;
+	if (requestId) {
+		await browser.runtime.sendMessage({ method: "externalCapture.respondPendingRequest", requestId, approved });
+		externalCapturePendingRequest.hidden = true;
+		externalCapturePermissionsSection.classList.remove("external-capture-permissions--pending");
+		delete externalCapturePendingRequest.dataset.requestId;
+		await refreshExternalCapturePermissions();
+	}
+}
+
+function formatExtensionEntries(extensionEntries = []) {
+	return extensionEntries.map(entry => entry.name ? `${entry.id}\t${entry.name}` : entry.id).join("\n");
+}
+
+function parseExtensionEntries(value) {
+	const entries = [];
+	const knownIds = new Set();
+	value.split(/\n+/).forEach(line => {
+		const [id, ...nameParts] = line.trim().split(/\s+/);
+		if (id && !knownIds.has(id)) {
+			knownIds.add(id);
+			entries.push({ id, name: nameParts.join(" ") });
+		}
+	});
+	return entries;
 }
 
 async function onClickSaveToGDrive() {

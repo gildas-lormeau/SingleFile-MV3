@@ -62,6 +62,7 @@ ui.init({ isSavingTab, saveTabs, saveUrls, cancelTab, openEditor, saveSelectedLi
 
 export {
 	saveTabs,
+	captureTab,
 	saveUrls,
 	saveSelectedLinks,
 	cancelTask,
@@ -174,6 +175,50 @@ async function saveTabs(tabs, options = {}) {
 		}
 	}));
 	runTasks();
+}
+
+async function captureTab(tab, options = {}) {
+	const tabId = tab.id;
+	const tabOptions = await config.getOptions(tab.url);
+	if (tabOptions.profileName == config.DISABLED_PROFILE_NAME) {
+		throw new Error("SingleFile is disabled for this URL");
+	}
+	Object.assign(tabOptions, {
+		silent: true,
+		logsEnabled: false,
+		progressBarEnabled: false,
+		confirmFilename: false,
+		confirmInfobarContent: false,
+		openEditor: false,
+		autoOpenEditor: false,
+		openSavedPage: false,
+		backgroundSave: false,
+		saveToClipboard: false,
+		saveToGDrive: false,
+		saveToDropbox: false,
+		saveWithWebDAV: false,
+		saveWithMCP: false,
+		saveToGitHub: false,
+		saveWithCompanion: false,
+		saveToRestFormApi: false,
+		saveToS3: false,
+		sharePage: false
+	}, options, {
+		tabId,
+		tabIndex: tab.index,
+		extensionScriptFiles: CONTENT_SCRIPTS
+	});
+	let scriptsInjected;
+	try {
+		scriptsInjected = await injectScript(tabId, tabOptions);
+		// eslint-disable-next-line no-unused-vars
+	} catch (error) {
+		// ignored
+	}
+	if (scriptsInjected || editor.isEditor(tab)) {
+		return browser.tabs.sendMessage(tabId, { method: "content.capture", options: tabOptions });
+	}
+	throw new Error("Cannot access the tab contents");
 }
 
 function addTask(info) {

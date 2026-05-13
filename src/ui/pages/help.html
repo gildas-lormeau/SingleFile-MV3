@@ -1262,7 +1262,10 @@
 			<li>
 				<a id="external-messages">Integration with other extensions</a>
 				<p>SingleFile can receive messages from other extensions. The messages must be sent to the extension ID
-					of SingleFile and must be a string containing one of the following values:
+					of SingleFile. This allows other extensions to integrate with SingleFile and request HTML captures
+					without triggering browser downloads.
+				</p>
+				<p>To run one of the built-in save actions, send a string containing one of the following values:</p>
 				<ul>
 					<li>
 						<code>"save-page"</code>: save the current page
@@ -1286,6 +1289,15 @@
 						<code>"save-all-tabs"</code>: save all the tabs
 					</li>
 				</ul>
+				<p>To capture the current page and receive the saved HTML, send an object message with
+					<code>{ method: "capture-page" }</code>. The promise resolves with the captured page data, including
+					<code>content</code>, without starting a browser download. Include <code>tabId</code> to capture a
+					specific tab. Include <code>config</code> to pass SingleFile options for that capture request, for
+					example <code>{ method: "capture-page", config: { removeFrames: true } }</code>.
+				</p>
+				<p>The first capture request from a caller extension opens the options page so the user can approve
+					future capture requests from that extension. Approved entries are stored with the extension ID and
+					display name.
 				</p>
 			</li>
 			<li><a id="notes">Technical notes</a>
