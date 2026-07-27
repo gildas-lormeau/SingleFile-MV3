@@ -165,12 +165,12 @@ async function saveContent(message, tab) {
 				if (!skipped) {
 					if (options.saveToGDrive) {
 						const content = await (await fetch(pageData.url)).blob();
-						await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, options, {
+						await downloads.saveToGDrive(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, {
 							forceWebAuthFlow: options.forceWebAuthFlow
 						}, {
 							filenameConflictAction: options.filenameConflictAction
 						});
-					} if (options.saveToDropbox) {
+					} else if (options.saveToDropbox) {
 						const content = await (await fetch(pageData.url)).blob();
 						await downloads.saveToDropbox(message.taskId, downloads.encodeSharpCharacter(pageData.filename), content, {
 							filenameConflictAction: options.filenameConflictAction
