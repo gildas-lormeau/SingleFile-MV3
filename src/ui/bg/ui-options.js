@@ -595,6 +595,7 @@ autoSaveExternalSaveInput.addEventListener("click", () => enableExternalSave(aut
 saveWithCompanionInput.addEventListener("click", () => enableExternalSave(saveWithCompanionInput), false);
 saveToClipboardInput.addEventListener("click", onClickSaveToClipboard, false);
 saveToGDriveInput.addEventListener("click", onClickSaveToGDrive, false);
+saveToDropboxInput.addEventListener("click", onClickSaveToDropbox, false);
 addProofInput.addEventListener("click", async event => {
 	if (addProofInput.checked) {
 		addProofInput.checked = false;
@@ -1390,6 +1391,28 @@ async function onClickSaveToGDrive() {
 		} catch (error) {
 			saveToGDriveInput.checked = false;
 			await browser.runtime.sendMessage({ method: "downloads.disableGDrive" });
+		}
+	}
+	await update();
+	await refresh();
+}
+
+async function onClickSaveToDropbox() {
+	if (saveToDropboxInput.checked) {
+		saveToDropboxInput.checked = false;
+		try {
+			if (requestPermissionIdentity) {
+				const permissionGranted = await browser.permissions.request({ permissions: ["identity"] });
+				if (permissionGranted) {
+					saveToDropboxInput.checked = true;
+				}
+			} else {
+				saveToDropboxInput.checked = true;
+			}
+			// eslint-disable-next-line no-unused-vars
+		} catch (error) {
+			saveToDropboxInput.checked = false;
+			await browser.runtime.sendMessage({ method: "downloads.disableDropbox" });
 		}
 	}
 	await update();
