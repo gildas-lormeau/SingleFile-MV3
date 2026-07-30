@@ -1293,7 +1293,10 @@
 					<code>{ method: "capture-page" }</code>. The promise resolves with the captured page data, including
 					<code>content</code>, without starting a browser download. Include <code>tabId</code> to capture a
 					specific tab. Include <code>config</code> to pass SingleFile options for that capture request, for
-					example <code>{ method: "capture-page", config: { removeFrames: true } }</code>.
+					example <code>{ method: "capture-page", config: { removeFrames: true } }</code>. Only the options
+					defining the content of the captured page are taken into account, the other options are ignored:
+					the destination, the filename confirmation, the delays and the credentials always come from the
+					user settings.
 				</p>
 				<p>The first capture request from a caller extension opens the options page so the user can approve or
 					block future capture requests from that extension. Approved entries are stored with the extension ID

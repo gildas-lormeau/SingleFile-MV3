@@ -36,6 +36,60 @@ const ACTION_SAVE_SELECTED_TABS = "save-selected-tabs";
 const ACTION_SAVE_UNPINNED_TABS = "save-unpinned-tabs";
 const ACTION_SAVE_ALL_TABS = "save-all-tabs";
 const METHOD_CAPTURE_PAGE = "capture-page";
+// options an external extension is allowed to set: they define the content of the
+// captured page, they cannot select a destination, display anything in the tab, or
+// delay the capture
+const CAPTURE_OPTION_NAMES = [
+	"removeHiddenElements",
+	"removedElementsSelector",
+	"removeUnusedStyles",
+	"removeUnusedFonts",
+	"removeFrames",
+	"removeNoScriptTags",
+	"removeSavedDate",
+	"removeAlternativeFonts",
+	"removeAlternativeMedias",
+	"removeAlternativeImages",
+	"compressHTML",
+	"compressCSS",
+	"groupDuplicateImages",
+	"maxSizeDuplicateImages",
+	"groupDuplicateStylesheets",
+	"moveStylesInHead",
+	"imageReductionFactor",
+	"loadDeferredImages",
+	"loadDeferredImagesBlockCookies",
+	"loadDeferredImagesBlockStorage",
+	"loadDeferredImagesKeepZoomLevel",
+	"loadDeferredImagesDispatchScrollEvent",
+	"loadDeferredImagesBeforeFrames",
+	"blockImages",
+	"blockAlternativeImages",
+	"blockStylesheets",
+	"blockFonts",
+	"blockScripts",
+	"blockVideos",
+	"blockAudios",
+	"blockMixedContent",
+	"maxResourceSizeEnabled",
+	"maxResourceSize",
+	"saveRawPage",
+	"saveFavicon",
+	"saveOriginalURLs",
+	"resolveLinks",
+	"resolveFragmentIdentifierURLs",
+	"includeBOM",
+	"insertMetaNoIndex",
+	"insertMetaCSP",
+	"insertSingleFileComment",
+	"includeInfobar",
+	"infobarTemplate",
+	"openInfobar",
+	"displayStats",
+	"filenameTemplate",
+	"selected",
+	"optionallySelected"
+];
 
 export { onMessage };
 
@@ -89,7 +143,13 @@ async function onMessage(message, sender) {
 
 function getCaptureConfig(message) {
 	const config = Object.assign({}, getMessageObject(message.options, "options"), getMessageObject(message.config, "config"));
-	return config;
+	const captureConfig = {};
+	CAPTURE_OPTION_NAMES.forEach(optionName => {
+		if (config[optionName] !== undefined) {
+			captureConfig[optionName] = config[optionName];
+		}
+	});
+	return captureConfig;
 }
 
 function getMessageObject(value, key) {
