@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement, MouseEvent, btoa, URLSearchParams */
+/* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement, MouseEvent, btoa, URLSearchParams, setInterval, clearInterval */
 
 const HELP_ICON_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABIUlEQVQ4y+2TsarCMBSGvxTBRdqiUZAWOrhJB9EXcPKFfCvfQYfulUKHDqXg4CYUJSioYO4mSDX3ttzt3n87fMlHTpIjlsulxpDZbEYYhgghSNOUOI5Ny2mZYBAELBYLer0eAJ7ncTweKYri4x7LJJRS0u12n7XrukgpjSc0CpVSXK/XZ32/31FKNW85z3PW6zXT6RSAJEnIsqy5UGvNZrNhu90CcDqd+C6tT6J+v//2Th+PB2VZ1hN2Oh3G4zGTyQTbtl/YbrdjtVpxu91+Ljyfz0RRhG3bzOfzF+Y4TvNXvlwuaK2pE4tfzr/wzwsty0IIURlL0998KxRCMBqN8H2/wlzXJQxD2u12vVkeDoeUZUkURRU+GAw4HA7s9/sK+wK6CWHasQ/S/wAAAABJRU5ErkJggg==";
 const HELP_PAGE_PATH_PREFIX = "/src/ui/pages/help";
@@ -293,6 +293,7 @@ const externalCaptureApproveButton = document.getElementById("externalCaptureApp
 const externalCaptureDenyButton = document.getElementById("externalCaptureDenyButton");
 const externalCaptureAllowedIdsInput = document.getElementById("externalCaptureAllowedIdsInput");
 const externalCaptureDeniedIdsInput = document.getElementById("externalCaptureDeniedIdsInput");
+let externalCapturePingInterval;
 const backgroundSaveInput = document.getElementById("backgroundSaveInput");
 const autoSaveDelayInput = document.getElementById("autoSaveDelayInput");
 const autoSaveLoadInput = document.getElementById("autoSaveLoadInput");
@@ -1409,6 +1410,11 @@ async function initExternalCapturePermissions() {
 			externalCapturePendingRequest.dataset.requestId = request.id;
 			externalCapturePendingRequest.dataset.extensionId = request.extensionId;
 			externalCapturePendingRequest.dataset.displayName = request.displayName || "";
+			// the pending request is only kept in memory, keep the background page alive
+			// while the user decides
+			externalCapturePingInterval = setInterval(() => {
+				browser.runtime.sendMessage({ method: "ping" }).then(() => { });
+			}, 15000);
 			externalCapturePendingRequestLabel.textContent = browser.i18n.getMessage("optionsExternalCapturePendingRequest", requestLabel);
 			externalCapturePendingRequest.hidden = false;
 			externalCapturePermissionsSection.classList.add("external-capture-permissions--pending");
@@ -1439,6 +1445,7 @@ async function updateExternalCapturePermissions() {
 async function respondExternalCaptureRequest(approved) {
 	const { requestId, extensionId, displayName } = externalCapturePendingRequest.dataset;
 	if (requestId) {
+		clearInterval(externalCapturePingInterval);
 		const response = await browser.runtime.sendMessage({ method: "externalCapture.respondPendingRequest", requestId, approved });
 		if (response && !response.found && extensionId) {
 			// the request expired or the service worker restarted: store the decision anyway,
