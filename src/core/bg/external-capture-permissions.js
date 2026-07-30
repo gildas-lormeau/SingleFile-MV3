@@ -26,6 +26,7 @@
 import * as config from "./config.js";
 
 const OPTIONS_PAGE_PATH = "/src/ui/pages/options.html";
+// must be kept in sync with EXTERNAL_CAPTURE_PENDING_REQUEST_TIMEOUT in ui-options.js
 const PENDING_REQUEST_TIMEOUT = 300000;
 const pendingRequests = new Map();
 let requestId = 0;

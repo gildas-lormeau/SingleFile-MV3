@@ -23,6 +23,8 @@
 
 /* global browser, window, document, localStorage, FileReader, location, fetch, TextDecoder, DOMParser, HTMLElement, MouseEvent, btoa, URLSearchParams, setInterval, clearInterval */
 
+const EXTERNAL_CAPTURE_PING_DELAY = 15000;
+const EXTERNAL_CAPTURE_PENDING_REQUEST_TIMEOUT = 300000;
 const HELP_ICON_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABIUlEQVQ4y+2TsarCMBSGvxTBRdqiUZAWOrhJB9EXcPKFfCvfQYfulUKHDqXg4CYUJSioYO4mSDX3ttzt3n87fMlHTpIjlsulxpDZbEYYhgghSNOUOI5Ny2mZYBAELBYLer0eAJ7ncTweKYri4x7LJJRS0u12n7XrukgpjSc0CpVSXK/XZ32/31FKNW85z3PW6zXT6RSAJEnIsqy5UGvNZrNhu90CcDqd+C6tT6J+v//2Th+PB2VZ1hN2Oh3G4zGTyQTbtl/YbrdjtVpxu91+Ljyfz0RRhG3bzOfzF+Y4TvNXvlwuaK2pE4tfzr/wzwsty0IIURlL0998KxRCMBqN8H2/wlzXJQxD2u12vVkeDoeUZUkURRU+GAw4HA7s9/sK+wK6CWHasQ/S/wAAAABJRU5ErkJggg==";
 const HELP_PAGE_PATH_PREFIX = "/src/ui/pages/help";
 const HELP_PAGE_PATH_DEFAULT = "/src/ui/pages/help.html";
@@ -1411,10 +1413,16 @@ async function initExternalCapturePermissions() {
 			externalCapturePendingRequest.dataset.extensionId = request.extensionId;
 			externalCapturePendingRequest.dataset.displayName = request.displayName || "";
 			// the pending request is only kept in memory, keep the background page alive
-			// while the user decides
+			// while the user decides, until the request expires in the background page
+			let pingCount = 0;
 			externalCapturePingInterval = setInterval(() => {
-				browser.runtime.sendMessage({ method: "ping" }).then(() => { });
-			}, 15000);
+				pingCount++;
+				if (pingCount * EXTERNAL_CAPTURE_PING_DELAY >= EXTERNAL_CAPTURE_PENDING_REQUEST_TIMEOUT) {
+					clearInterval(externalCapturePingInterval);
+				} else {
+					browser.runtime.sendMessage({ method: "ping" }).then(() => { });
+				}
+			}, EXTERNAL_CAPTURE_PING_DELAY);
 			externalCapturePendingRequestLabel.textContent = browser.i18n.getMessage("optionsExternalCapturePendingRequest", requestLabel);
 			externalCapturePendingRequest.hidden = false;
 			externalCapturePermissionsSection.classList.add("external-capture-permissions--pending");
