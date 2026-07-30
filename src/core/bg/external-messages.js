@@ -25,6 +25,7 @@
 
 import * as autosave from "./autosave.js";
 import * as business from "./business.js";
+import * as externalCapturePermissions from "./external-capture-permissions.js";
 import "./../../lib/single-file/background.js";
 
 const ACTION_SAVE_PAGE = "save-page";
@@ -34,6 +35,7 @@ const ACTION_SAVE_SELECTED = "save-selected-content";
 const ACTION_SAVE_SELECTED_TABS = "save-selected-tabs";
 const ACTION_SAVE_UNPINNED_TABS = "save-unpinned-tabs";
 const ACTION_SAVE_ALL_TABS = "save-all-tabs";
+const METHOD_CAPTURE_PAGE = "capture-page";
 
 export { onMessage };
 
@@ -61,7 +63,20 @@ async function onMessage(message, sender) {
 	} else if (message == ACTION_SAVE_ALL_TABS) {
 		const tabs = await queryTabs({ currentWindow: true });
 		await business.saveTabs(tabs);
-	} else if (message.method) {
+	} else if (message && message.method == METHOD_CAPTURE_PAGE) {
+		const captureConfig = getCaptureConfig(message);
+		const permissionGranted = await externalCapturePermissions.requestPermission(sender, message);
+		if (!permissionGranted) {
+			throw new Error("SingleFile capture was not approved for this extension");
+		}
+		const currentTab = message.tabId
+			? await browser.tabs.get(message.tabId)
+			: (await browser.tabs.query({ currentWindow: true, active: true }))[0];
+		if (!currentTab) {
+			return false;
+		}
+		return business.captureTab(currentTab, captureConfig);
+	} else if (message && message.method) {
 		const tabs = await browser.tabs.query({ currentWindow: true, active: true });
 		const currentTab = tabs[0];
 		if (currentTab) {
@@ -70,6 +85,21 @@ async function onMessage(message, sender) {
 			return false;
 		}
 	}
+}
+
+function getCaptureConfig(message) {
+	const config = Object.assign({}, getMessageObject(message.options, "options"), getMessageObject(message.config, "config"));
+	return config;
+}
+
+function getMessageObject(value, key) {
+	if (value == null) {
+		return {};
+	}
+	if (typeof value != "object" || Array.isArray(value)) {
+		throw new Error(`SingleFile capture ${key} must be an object`);
+	}
+	return value;
 }
 
 async function queryTabs(options) {
