@@ -593,27 +593,31 @@
 				<label for="backgroundSaveInput" id="backgroundSaveLabel"></label>
 				<input type="checkbox" id="backgroundSaveInput">
 			</div>
-				<div class="option">
-					<label for="displayStatsInput" id="displayStatsLabel"></label>
-					<input type="checkbox" id="displayStatsInput">
+			<div class="option">
+				<label for="displayStatsInput" id="displayStatsLabel"></label>
+				<input type="checkbox" id="displayStatsInput">
+			</div>
+		</details>
+		<details id="externalCapturePermissionsSection">
+			<summary id="externalCapturePermissionsLabel"></summary>
+			<div id="externalCapturePendingRequest" class="external-capture-request" hidden>
+				<div id="externalCapturePendingRequestLabel"></div>
+				<div class="buttons">
+					<button id="externalCaptureApproveButton" type="button"></button>
+					<button id="externalCaptureDenyButton" type="button"></button>
 				</div>
-			</details>
-			<details id="externalCapturePermissionsSection">
-				<summary id="externalCapturePermissionsLabel"></summary>
-				<div id="externalCapturePendingRequest" class="external-capture-request" hidden>
-					<div id="externalCapturePendingRequestLabel"></div>
-					<div class="buttons">
-						<button id="externalCaptureApproveButton" type="button"></button>
-						<button id="externalCaptureDenyButton" type="button"></button>
-					</div>
-				</div>
-				<div class="option vertical">
-					<label for="externalCaptureAllowedIdsInput" id="externalCaptureAllowedIdsLabel"></label>
-					<textarea id="externalCaptureAllowedIdsInput"></textarea>
-				</div>
-			</details>
-			<details>
-				<summary id="autoSettingsLabel"></summary>
+			</div>
+			<div class="option vertical">
+				<label for="externalCaptureAllowedIdsInput" id="externalCaptureAllowedIdsLabel"></label>
+				<textarea id="externalCaptureAllowedIdsInput"></textarea>
+			</div>
+			<div class="option vertical">
+				<label for="externalCaptureDeniedIdsInput" id="externalCaptureDeniedIdsLabel"></label>
+				<textarea id="externalCaptureDeniedIdsInput"></textarea>
+			</div>
+		</details>
+		<details>
+			<summary id="autoSettingsLabel"></summary>
 			<div class="rules-table-container compact">
 				<div class="thead">
 					<div class="tr">

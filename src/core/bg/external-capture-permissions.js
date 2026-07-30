@@ -21,11 +21,12 @@
  *   Source.
  */
 
-/* global browser, URLSearchParams */
+/* global browser, URLSearchParams, setTimeout, clearTimeout */
 
 import * as config from "./config.js";
 
 const OPTIONS_PAGE_PATH = "/src/ui/pages/options.html";
+const PENDING_REQUEST_TIMEOUT = 300000;
 const pendingRequests = new Map();
 let requestId = 0;
 
@@ -33,6 +34,14 @@ export {
 	onMessage,
 	requestPermission
 };
+
+if (browser.tabs.onRemoved) {
+	browser.tabs.onRemoved.addListener(tabId => {
+		Array.from(pendingRequests.values())
+			.filter(request => request.tabId == tabId)
+			.forEach(request => resolveRequest(request, false));
+	});
+}
 
 async function requestPermission(sender, message = {}) {
 	const extensionId = sender && sender.id;
@@ -43,12 +52,20 @@ async function requestPermission(sender, message = {}) {
 	if (permissions.allowedExtensionIds.includes(extensionId)) {
 		return true;
 	}
-	const request = getOrCreatePendingRequest(extensionId, sender, message);
-	await openOptionsPage(request.id);
+	if (permissions.deniedExtensionIds.includes(extensionId)) {
+		return false;
+	}
+	const { request, created } = getOrCreatePendingRequest(extensionId, sender, message);
+	if (created) {
+		await openOptionsPage(request);
+	}
 	return request.promise;
 }
 
-async function onMessage(message) {
+async function onMessage(message, sender) {
+	if (!isOptionsPageSender(sender)) {
+		throw new Error("Unauthorized sender");
+	}
 	if (message.method.endsWith(".getPermissions")) {
 		return config.getExternalCapturePermissions();
 	}
@@ -64,10 +81,15 @@ async function onMessage(message) {
 	}
 }
 
+function isOptionsPageSender(sender) {
+	return Boolean(sender) && sender.id == browser.runtime.id &&
+		Boolean(sender.url) && sender.url.startsWith(browser.runtime.getURL(OPTIONS_PAGE_PATH));
+}
+
 function getOrCreatePendingRequest(extensionId, sender, message = {}) {
 	const existingRequest = Array.from(pendingRequests.values()).find(request => request.extensionId == extensionId);
 	if (existingRequest) {
-		return existingRequest;
+		return { request: existingRequest, created: false };
 	}
 	const id = String(++requestId);
 	let resolvePermission;
@@ -75,14 +97,23 @@ function getOrCreatePendingRequest(extensionId, sender, message = {}) {
 	const request = {
 		id,
 		extensionId,
-		displayName: sanitizeDisplayName(message.displayName || message.callerName || message.extensionName),
+		displayName: sanitizeDisplayName(message.displayName),
 		url: sender.url,
 		origin: sender.origin,
 		resolvePermission,
 		promise
 	};
+	request.timeoutId = setTimeout(() => resolveRequest(request, false), PENDING_REQUEST_TIMEOUT);
 	pendingRequests.set(id, request);
-	return request;
+	return { request, created: true };
+}
+
+function resolveRequest(request, approved) {
+	if (pendingRequests.has(request.id)) {
+		pendingRequests.delete(request.id);
+		clearTimeout(request.timeoutId);
+		request.resolvePermission(Boolean(approved));
+	}
 }
 
 function getPendingRequest(id) {
@@ -105,22 +136,26 @@ async function respondPendingRequest(id, approved) {
 	}
 	const permissions = await config.getExternalCapturePermissions();
 	const allowedExtensions = permissions.allowedExtensions.filter(extension => extension.id != request.extensionId);
+	const deniedExtensions = permissions.deniedExtensions.filter(extension => extension.id != request.extensionId);
+	const extension = {
+		id: request.extensionId,
+		name: request.displayName
+	};
 	if (approved) {
-		allowedExtensions.push({
-			id: request.extensionId,
-			name: request.displayName
-		});
+		allowedExtensions.push(extension);
+	} else {
+		deniedExtensions.push(extension);
 	}
-	await config.setExternalCapturePermissions({ allowedExtensions });
-	pendingRequests.delete(id);
-	request.resolvePermission(Boolean(approved));
+	await config.setExternalCapturePermissions({ allowedExtensions, deniedExtensions });
+	resolveRequest(request, approved);
 	return { found: true, approved: Boolean(approved) };
 }
 
-async function openOptionsPage(requestId) {
-	const searchParams = new URLSearchParams({ externalCaptureRequestId: requestId });
+async function openOptionsPage(request) {
+	const searchParams = new URLSearchParams({ externalCaptureRequestId: request.id });
 	const url = browser.runtime.getURL(`${OPTIONS_PAGE_PATH}?${searchParams.toString()}`);
-	await browser.tabs.create({ active: true, url });
+	const tab = await browser.tabs.create({ active: true, url });
+	request.tabId = tab.id;
 }
 
 function sanitizeDisplayName(value) {

@@ -183,7 +183,7 @@ async function captureTab(tab, options = {}) {
 	if (tabOptions.profileName == config.DISABLED_PROFILE_NAME) {
 		throw new Error("SingleFile is disabled for this URL");
 	}
-	Object.assign(tabOptions, {
+	Object.assign(tabOptions, options, {
 		silent: true,
 		logsEnabled: false,
 		progressBarEnabled: false,
@@ -202,8 +202,7 @@ async function captureTab(tab, options = {}) {
 		saveWithCompanion: false,
 		saveToRestFormApi: false,
 		saveToS3: false,
-		sharePage: false
-	}, options, {
+		sharePage: false,
 		tabId,
 		tabIndex: tab.index,
 		extensionScriptFiles: CONTENT_SCRIPTS

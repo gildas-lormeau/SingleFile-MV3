@@ -667,8 +667,12 @@
 		"message": "allowed extensions, one per line",
 		"description": "Options page label: 'allowed extensions, one per line'"
 	},
+	"optionExternalCaptureDeniedIds": {
+		"message": "blocked extensions, one per line",
+		"description": "Options page label: 'blocked extensions, one per line'"
+	},
 	"optionsExternalCapturePendingRequest": {
-		"message": "Extension $EXTENSION_ID$ wants to capture the current tab with SingleFile and receive the saved HTML. Allow future requests from this extension?",
+		"message": "Extension $EXTENSION_ID$ wants to use SingleFile to capture pages in this browser and receive their HTML content. If you allow it, it will be able to capture any tab at any time without asking again, until you remove it from the list below.",
 		"description": "Options page prompt to approve an external extension capture request.",
 		"placeholders": {
 			"extension_id": {

@@ -213,7 +213,9 @@ async function capturePage(message) {
 		clearInterval(pingInterval);
 		throw new Error("SingleFile is already processing this page");
 	}
+	options.updatedResources = bootstrap ? bootstrap.pageInfo.updatedResources : {};
 	options.visitDate = bootstrap ? bootstrap.pageInfo.visitDate : new Date();
+	Object.keys(options.updatedResources).forEach(url => options.updatedResources[url].retrieved = false);
 	if (options.optionallySelected && selectionFound) {
 		options.selected = true;
 	}

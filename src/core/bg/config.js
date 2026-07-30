@@ -32,6 +32,7 @@ const DISABLED_PROFILE_NAME = "__Disabled_Settings__";
 const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
 const EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY = "externalCaptureAllowedExtensionIds";
+const EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY = "externalCaptureDeniedExtensionIds";
 
 const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
 const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });
@@ -283,6 +284,9 @@ async function upgrade() {
 	if (!Array.isArray(config[EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY])) {
 		await configStorage.set({ [EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]: [] });
 	}
+	if (!Array.isArray(config[EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY])) {
+		await configStorage.set({ [EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY]: [] });
+	}
 	const profileNames = await getProfileNames();
 	profileNames.map(async profileName => {
 		const profile = await getProfile(profileName);
@@ -329,27 +333,38 @@ async function getRule(url, ignoreWildcard) {
 
 async function getConfig() {
 	await pendingUpgradePromise;
-	const { maxParallelWorkers, processInForeground, externalCaptureAllowedExtensionIds } = await configStorage.get(["maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]);
+	const { maxParallelWorkers, processInForeground } = await configStorage.get(["maxParallelWorkers", "processInForeground"]);
 	const rules = await getRules();
 	const profiles = await getProfiles();
-	return { profiles, rules, maxParallelWorkers, processInForeground, externalCaptureAllowedExtensionIds };
+	return { profiles, rules, maxParallelWorkers, processInForeground };
 }
 
 async function getExternalCapturePermissions() {
 	await pendingUpgradePromise;
-	const { externalCaptureAllowedExtensionIds = [] } = await configStorage.get([EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]);
+	const {
+		externalCaptureAllowedExtensionIds = [],
+		externalCaptureDeniedExtensionIds = []
+	} = await configStorage.get([EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY, EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY]);
 	const allowedExtensions = sanitizeExtensionEntries(externalCaptureAllowedExtensionIds);
+	const deniedExtensions = sanitizeExtensionEntries(externalCaptureDeniedExtensionIds);
 	return {
 		allowedExtensions,
-		allowedExtensionIds: allowedExtensions.map(entry => entry.id)
+		allowedExtensionIds: allowedExtensions.map(entry => entry.id),
+		deniedExtensions,
+		deniedExtensionIds: deniedExtensions.map(entry => entry.id)
 	};
 }
 
-async function setExternalCapturePermissions({ allowedExtensions = [], allowedExtensionIds = [] } = {}) {
+async function setExternalCapturePermissions({ allowedExtensions, deniedExtensions } = {}) {
 	await pendingUpgradePromise;
-	await configStorage.set({
-		[EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]: sanitizeExtensionEntries(allowedExtensions.length ? allowedExtensions : allowedExtensionIds)
-	});
+	const permissions = {};
+	if (allowedExtensions !== undefined) {
+		permissions[EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY] = sanitizeExtensionEntries(allowedExtensions);
+	}
+	if (deniedExtensions !== undefined) {
+		permissions[EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY] = sanitizeExtensionEntries(deniedExtensions);
+	}
+	await configStorage.set(permissions);
 }
 
 function sanitizeExtensionEntries(extensionEntries) {
@@ -389,10 +404,9 @@ async function onMessage(message) {
 		const rules = config.rules;
 		const maxParallelWorkers = config.maxParallelWorkers;
 		const processInForeground = config.processInForeground;
-		const externalCaptureAllowedExtensionIds = config.externalCaptureAllowedExtensionIds || [];
 		const profileKeyNames = await getProfileKeyNames();
-		await configStorage.remove([...profileKeyNames, "rules", "maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]);
-		await configStorage.set({ rules, maxParallelWorkers, processInForeground, externalCaptureAllowedExtensionIds });
+		await configStorage.remove([...profileKeyNames, "rules", "maxParallelWorkers", "processInForeground"]);
+		await configStorage.set({ rules, maxParallelWorkers, processInForeground });
 		Object.keys(profiles).forEach(profileName => setProfile(profileName, profiles[profileName]));
 	}
 	if (message.method.endsWith(".deleteRules")) {
@@ -440,45 +454,39 @@ async function onMessage(message) {
 	if (message.method.endsWith(".getRules")) {
 		return getRules();
 	}
-		if (message.method.endsWith(".getProfiles")) {
-			return getProfiles();
-		}
-		if (message.method.endsWith(".getExternalCapturePermissions")) {
-			return getExternalCapturePermissions();
-		}
-		if (message.method.endsWith(".setExternalCapturePermissions")) {
-			await setExternalCapturePermissions(message.permissions);
-			return {};
-		}
-		if (message.method.endsWith(".exportConfig")) {
-			return exportConfig();
-		}
+	if (message.method.endsWith(".getProfiles")) {
+		return getProfiles();
+	}
+	if (message.method.endsWith(".exportConfig")) {
+		return exportConfig();
+	}
 	if (message.method.endsWith(".enableSync")) {
 		await browser.storage.local.set({ sync: true });
 		const syncConfig = await browser.storage.sync.get();
 		if (!syncConfig || !syncConfig.rules) {
 			const profileKeyNames = await getProfileKeyNames();
-				const localConfig = await browser.storage.local.get(["rules", "maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY, ...profileKeyNames]);
-				await browser.storage.sync.set(localConfig);
-			}
+			const localConfig = await browser.storage.local.get(["rules", "maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY, EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY, ...profileKeyNames]);
+			await browser.storage.sync.set(localConfig);
+		}
 		configStorage = browser.storage.sync;
 		await upgrade();
 		return {};
 	}
 	if (message.method.endsWith(".disableSync")) {
 		await browser.storage.local.set({ sync: false });
-			const syncConfig = await browser.storage.sync.get();
-			const localConfig = await browser.storage.local.get();
-			if (syncConfig && syncConfig.rules && (!localConfig || !localConfig.rules)) {
-				await browser.storage.local.set({
-					rules: syncConfig.rules,
-					maxParallelWorkers: syncConfig.maxParallelWorkers,
-					processInForeground: syncConfig.processInForeground,
-					externalCaptureAllowedExtensionIds: syncConfig.externalCaptureAllowedExtensionIds || []
-				});
-				const profiles = {};
-				await browser.storage.local.set(profiles);
-			}
+		const syncConfig = await browser.storage.sync.get();
+		const localConfig = await browser.storage.local.get();
+		if (syncConfig && syncConfig.rules && (!localConfig || !localConfig.rules)) {
+			await browser.storage.local.set({
+				rules: syncConfig.rules,
+				maxParallelWorkers: syncConfig.maxParallelWorkers,
+				processInForeground: syncConfig.processInForeground,
+				externalCaptureAllowedExtensionIds: syncConfig.externalCaptureAllowedExtensionIds || [],
+				externalCaptureDeniedExtensionIds: syncConfig.externalCaptureDeniedExtensionIds || []
+			});
+			const profiles = {};
+			await browser.storage.local.set(profiles);
+		}
 		configStorage = browser.storage.local;
 		await upgrade();
 		return {};
@@ -702,7 +710,7 @@ async function resetProfiles() {
 	delete allTabsData.profileName;
 	await tabsData.set(allTabsData);
 	let profileKeyNames = await getProfileKeyNames();
-	await configStorage.remove([...profileKeyNames, "rules", "maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]);
+	await configStorage.remove([...profileKeyNames, "rules", "maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY, EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY]);
 	await upgrade();
 }
 
@@ -716,13 +724,7 @@ async function resetProfile(profileName) {
 
 async function exportConfig() {
 	const config = await getConfig();
-	const textContent = JSON.stringify({
-		profiles: config.profiles,
-		rules: config.rules,
-		maxParallelWorkers: config.maxParallelWorkers,
-		processInForeground: config.processInForeground,
-		externalCaptureAllowedExtensionIds: config.externalCaptureAllowedExtensionIds
-	}, null, 2);
+	const textContent = JSON.stringify({ profiles: config.profiles, rules: config.rules, maxParallelWorkers: config.maxParallelWorkers, processInForeground: config.processInForeground }, null, 2);
 	const filename = `singlefile-settings-${(new Date()).toISOString().replace(/:/g, "_")}.json`;
 	const url = "data:text/json;base64," + btoa(unescape(encodeURIComponent(textContent)));
 	const downloadInfo = {
@@ -741,13 +743,8 @@ async function importConfig(config) {
 		delete allTabsData.profileName;
 		await tabsData.set(allTabsData);
 	}
-	await configStorage.remove([...profileKeyNames, "rules", "maxParallelWorkers", "processInForeground", EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY]);
-	const newConfig = {
-		rules: config.rules,
-		maxParallelWorkers: config.maxParallelWorkers,
-		processInForeground: config.processInForeground,
-		externalCaptureAllowedExtensionIds: config.externalCaptureAllowedExtensionIds || []
-	};
+	await configStorage.remove([...profileKeyNames, "rules", "maxParallelWorkers", "processInForeground"]);
+	const newConfig = { rules: config.rules, maxParallelWorkers: config.maxParallelWorkers, processInForeground: config.processInForeground };
 	Object.keys(config.profiles).forEach(profileName => newConfig[PROFILE_NAME_PREFIX + profileName] = config.profiles[profileName]);
 	await configStorage.set(newConfig);
 	await upgrade();

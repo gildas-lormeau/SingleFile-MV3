@@ -191,6 +191,7 @@ const removeInfobarSavedDateLabel = document.getElementById("removeInfobarSavedD
 const miscLabel = document.getElementById("miscLabel");
 const externalCapturePermissionsLabel = document.getElementById("externalCapturePermissionsLabel");
 const externalCaptureAllowedIdsLabel = document.getElementById("externalCaptureAllowedIdsLabel");
+const externalCaptureDeniedIdsLabel = document.getElementById("externalCaptureDeniedIdsLabel");
 const helpLabel = document.getElementById("helpLabel");
 const synchronizeLabel = document.getElementById("synchronizeLabel");
 const customShortcutLabel = document.getElementById("customShortcutLabel");
@@ -291,6 +292,7 @@ const externalCapturePendingRequestLabel = document.getElementById("externalCapt
 const externalCaptureApproveButton = document.getElementById("externalCaptureApproveButton");
 const externalCaptureDenyButton = document.getElementById("externalCaptureDenyButton");
 const externalCaptureAllowedIdsInput = document.getElementById("externalCaptureAllowedIdsInput");
+const externalCaptureDeniedIdsInput = document.getElementById("externalCaptureDeniedIdsInput");
 const backgroundSaveInput = document.getElementById("backgroundSaveInput");
 const autoSaveDelayInput = document.getElementById("autoSaveDelayInput");
 const autoSaveLoadInput = document.getElementById("autoSaveLoadInput");
@@ -615,6 +617,7 @@ addProofInput.addEventListener("click", async event => {
 	}
 });
 externalCaptureAllowedIdsInput.addEventListener("change", updateExternalCapturePermissions, false);
+externalCaptureDeniedIdsInput.addEventListener("change", updateExternalCapturePermissions, false);
 externalCaptureApproveButton.addEventListener("click", () => respondExternalCaptureRequest(true), false);
 externalCaptureDenyButton.addEventListener("click", () => respondExternalCaptureRequest(false), false);
 browser.runtime.sendMessage({ method: "config.isSync" }).then(data => synchronizeInput.checked = data.sync);
@@ -651,7 +654,8 @@ document.body.onchange = async event => {
 		target != ruleEditAutoSaveProfileInput &&
 		target != showAutoSaveProfileInput &&
 		target != saveCreatedBookmarksInput &&
-		target != externalCaptureAllowedIdsInput) {
+		target != externalCaptureAllowedIdsInput &&
+		target != externalCaptureDeniedIdsInput) {
 		if (target != profileNamesInput && target != showAllProfilesInput) {
 			await update();
 		}
@@ -805,6 +809,7 @@ autoSaveLabel.textContent = browser.i18n.getMessage("optionsAutoSaveSubTitle");
 miscLabel.textContent = browser.i18n.getMessage("optionsMiscSubTitle");
 externalCapturePermissionsLabel.textContent = browser.i18n.getMessage("optionsExternalCapturePermissionsSubTitle");
 externalCaptureAllowedIdsLabel.textContent = browser.i18n.getMessage("optionExternalCaptureAllowedIds");
+externalCaptureDeniedIdsLabel.textContent = browser.i18n.getMessage("optionExternalCaptureDeniedIds");
 helpLabel.textContent = browser.i18n.getMessage("optionsHelpLink");
 infobarTemplateLabel.textContent = browser.i18n.getMessage("optionInfobarTemplate");
 blockMixedContentLabel.textContent = browser.i18n.getMessage("optionBlockMixedContent");
@@ -1415,13 +1420,15 @@ async function initExternalCapturePermissions() {
 async function refreshExternalCapturePermissions() {
 	const permissions = await browser.runtime.sendMessage({ method: "externalCapture.getPermissions" });
 	externalCaptureAllowedIdsInput.value = formatExtensionEntries(permissions.allowedExtensions);
+	externalCaptureDeniedIdsInput.value = formatExtensionEntries(permissions.deniedExtensions);
 }
 
 async function updateExternalCapturePermissions() {
 	await browser.runtime.sendMessage({
 		method: "externalCapture.setPermissions",
 		permissions: {
-			allowedExtensions: parseExtensionEntries(externalCaptureAllowedIdsInput.value)
+			allowedExtensions: parseExtensionEntries(externalCaptureAllowedIdsInput.value),
+			deniedExtensions: parseExtensionEntries(externalCaptureDeniedIdsInput.value)
 		}
 	});
 	await refreshExternalCapturePermissions();

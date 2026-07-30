@@ -1295,9 +1295,14 @@
 					specific tab. Include <code>config</code> to pass SingleFile options for that capture request, for
 					example <code>{ method: "capture-page", config: { removeFrames: true } }</code>.
 				</p>
-				<p>The first capture request from a caller extension opens the options page so the user can approve
-					future capture requests from that extension. Approved entries are stored with the extension ID and
-					display name.
+				<p>The first capture request from a caller extension opens the options page so the user can approve or
+					block future capture requests from that extension. Approved entries are stored with the extension ID
+					and display name; blocked extensions are rejected without prompting again. Both lists can be edited
+					in the "External capture API" section of the options page. Note that approving an extension lets it
+					capture any tab, not only the active one, until it is removed from the allowed list.
+				</p>
+				<p>Requests from an extension that is neither allowed nor blocked stay pending until the user answers;
+					closing the approval tab or leaving it unanswered rejects the request.
 				</p>
 			</li>
 			<li><a id="notes">Technical notes</a>
