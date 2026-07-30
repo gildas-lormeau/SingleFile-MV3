@@ -1407,6 +1407,8 @@ async function initExternalCapturePermissions() {
 				? `${request.displayName} (${request.extensionId})`
 				: request.extensionId;
 			externalCapturePendingRequest.dataset.requestId = request.id;
+			externalCapturePendingRequest.dataset.extensionId = request.extensionId;
+			externalCapturePendingRequest.dataset.displayName = request.displayName || "";
 			externalCapturePendingRequestLabel.textContent = browser.i18n.getMessage("optionsExternalCapturePendingRequest", requestLabel);
 			externalCapturePendingRequest.hidden = false;
 			externalCapturePermissionsSection.classList.add("external-capture-permissions--pending");
@@ -1435,14 +1437,37 @@ async function updateExternalCapturePermissions() {
 }
 
 async function respondExternalCaptureRequest(approved) {
-	const requestId = externalCapturePendingRequest.dataset.requestId;
+	const { requestId, extensionId, displayName } = externalCapturePendingRequest.dataset;
 	if (requestId) {
-		await browser.runtime.sendMessage({ method: "externalCapture.respondPendingRequest", requestId, approved });
+		const response = await browser.runtime.sendMessage({ method: "externalCapture.respondPendingRequest", requestId, approved });
+		if (response && !response.found && extensionId) {
+			// the request expired or the service worker restarted: store the decision anyway,
+			// otherwise the button would silently do nothing
+			await storeExternalCaptureDecision(extensionId, displayName, approved);
+		}
 		externalCapturePendingRequest.hidden = true;
 		externalCapturePermissionsSection.classList.remove("external-capture-permissions--pending");
 		delete externalCapturePendingRequest.dataset.requestId;
+		delete externalCapturePendingRequest.dataset.extensionId;
+		delete externalCapturePendingRequest.dataset.displayName;
 		await refreshExternalCapturePermissions();
 	}
+}
+
+async function storeExternalCaptureDecision(extensionId, displayName, approved) {
+	const permissions = await browser.runtime.sendMessage({ method: "externalCapture.getPermissions" });
+	const allowedExtensions = permissions.allowedExtensions.filter(extension => extension.id != extensionId);
+	const deniedExtensions = permissions.deniedExtensions.filter(extension => extension.id != extensionId);
+	const extension = { id: extensionId, name: displayName || "" };
+	if (approved) {
+		allowedExtensions.push(extension);
+	} else {
+		deniedExtensions.push(extension);
+	}
+	await browser.runtime.sendMessage({
+		method: "externalCapture.setPermissions",
+		permissions: { allowedExtensions, deniedExtensions }
+	});
 }
 
 function formatExtensionEntries(extensionEntries = []) {
