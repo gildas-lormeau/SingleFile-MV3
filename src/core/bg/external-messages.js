@@ -142,7 +142,13 @@ async function onMessage(message, sender) {
 }
 
 function getCaptureConfig(message) {
-	const config = Object.assign({}, getMessageObject(message.options, "options"), getMessageObject(message.config, "config"));
+	const { config } = message;
+	if (config == null) {
+		return {};
+	}
+	if (typeof config != "object" || Array.isArray(config)) {
+		throw new Error("SingleFile capture config must be an object");
+	}
 	const captureConfig = {};
 	CAPTURE_OPTION_NAMES.forEach(optionName => {
 		if (config[optionName] !== undefined) {
@@ -150,16 +156,6 @@ function getCaptureConfig(message) {
 		}
 	});
 	return captureConfig;
-}
-
-function getMessageObject(value, key) {
-	if (value == null) {
-		return {};
-	}
-	if (typeof value != "object" || Array.isArray(value)) {
-		throw new Error(`SingleFile capture ${key} must be an object`);
-	}
-	return value;
 }
 
 async function queryTabs(options) {
