@@ -50,8 +50,9 @@ package_extension singlefile-extension-chromium.zip
 cp src/core/bg/config.js config.copy.js
 cp manifest.json manifest.copy.json
 jq 'del(.oauth2)' manifest.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
-sed -i "" 's/forceWebAuthFlow: false/forceWebAuthFlow: true/g' src/core/bg/config.js
-sed -i "" 's/image\/avif,//g' src/core/bg/config.js
+sed -i.bak 's/forceWebAuthFlow: false/forceWebAuthFlow: true/g' src/core/bg/config.js
+sed -i.bak 's/image\/avif,//g' src/core/bg/config.js
+rm -f src/core/bg/config.js.bak
 # config.js is bundled into lib/ by rollup, so it must be rebuilt for the patches
 # above to reach the code that actually runs
 ./build.sh
