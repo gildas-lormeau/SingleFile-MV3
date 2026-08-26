@@ -18,14 +18,34 @@ then
     fi
 fi
 
-npm install
-npm update
+npm ci
 
 ./build.sh
 
-rm singlefile-extension-chromium.zip singlefile-extension-edge.zip
+rm -f singlefile-extension-chromium.zip singlefile-extension-edge.zip
 
-zip -r singlefile-extension-chromium.zip manifest.json lib _locales src
+# The Woleet API key is kept out of the repository and injected into the
+# packaged files only, from the WOLEET_API_KEY variable or the .woleet-key file
+WOLEET_API_KEY="${WOLEET_API_KEY:-$([ -f .woleet-key ] && cat .woleet-key)}"
+
+package_extension() {
+    rm -rf .staging
+    mkdir .staging
+    cp manifest.json .staging/
+    cp -R lib _locales src .staging
+    if [ -n "$WOLEET_API_KEY" ]; then
+        sed -i.bak "s|WOLEET_API_KEY_PLACEHOLDER|$WOLEET_API_KEY|" .staging/src/lib/woleet/woleet.js .staging/lib/single-file-extension-background.js
+        rm -f .staging/src/lib/woleet/woleet.js.bak .staging/lib/single-file-extension-background.js.bak
+        if ! grep -q "$WOLEET_API_KEY" .staging/lib/single-file-extension-background.js; then
+            echo "The Woleet API key could not be injected"
+            exit 1
+        fi
+    fi
+    (cd .staging && zip -r "../$1" manifest.json lib _locales src)
+    rm -rf .staging
+}
+
+package_extension singlefile-extension-chromium.zip
 
 cp src/core/bg/config.js config.copy.js
 cp manifest.json manifest.copy.json
@@ -35,7 +55,7 @@ sed -i "" 's/image\/avif,//g' src/core/bg/config.js
 # config.js is bundled into lib/ by rollup, so it must be rebuilt for the patches
 # above to reach the code that actually runs
 ./build.sh
-zip -r singlefile-extension-edge.zip manifest.json lib _locales src
+package_extension singlefile-extension-edge.zip
 mv config.copy.js src/core/bg/config.js
 mv manifest.copy.json manifest.json
 # restore lib/ to the unpatched build kept in the repository
