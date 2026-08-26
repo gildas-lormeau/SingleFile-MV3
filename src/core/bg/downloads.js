@@ -644,7 +644,7 @@ function promptFilename(tabId, filename) {
 async function downloadPage(pageData, options) {
 	const downloadInfo = {
 		url: pageData.url,
-		saveAs: options.confirmFilename,
+		saveAs: options.confirmFilename || undefined,
 		filename: pageData.filename,
 		conflictAction: options.filenameConflictAction
 	};
