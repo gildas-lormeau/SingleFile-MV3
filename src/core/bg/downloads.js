@@ -514,7 +514,7 @@ async function saveToGitHub(taskId, filename, content, githubToken, githubUser, 
 			return await client.upload(filename, content, { filenameConflictAction, prompt });
 		}
 	} catch (error) {
-		throw new Error(error.message + " (GitHub)");
+		throw new Error(error.message + " (GitHub)", { cause: error });
 	}
 }
 
@@ -527,7 +527,7 @@ async function saveToS3(taskId, filename, blob, domain, region, bucket, accessKe
 			return await client.upload(filename, blob, { filenameConflictAction, prompt });
 		}
 	} catch (error) {
-		throw new Error(error.message + " (S3)");
+		throw new Error(error.message + " (S3)", { cause: error });
 	}
 }
 
@@ -540,7 +540,7 @@ async function saveWithWebDAV(taskId, filename, content, url, username, password
 			return await client.upload(filename, content, { filenameConflictAction, prompt });
 		}
 	} catch (error) {
-		throw new Error(error.message + " (WebDAV)");
+		throw new Error(error.message + " (WebDAV)", { cause: error });
 	}
 }
 
@@ -553,7 +553,7 @@ async function saveWithMCP(taskId, filename, content, serverUrl, authToken, { fi
 			return await client.upload(filename, content, { filenameConflictAction, prompt });
 		}
 	} catch (error) {
-		throw new Error(error.message + " (MCP)");
+		throw new Error(error.message + " (MCP)", { cause: error });
 	}
 }
 
@@ -574,7 +574,7 @@ async function saveToGDrive(taskId, filename, blob, authOptions, uploadOptions) 
 				if (error.message == "unknown_token") {
 					authInfo = await getAuthInfo(authOptions, true);
 				} else {
-					throw new Error(error.message + " (Google Drive)");
+					throw new Error(error.message + " (Google Drive)", { cause: error });
 				}
 			}
 			if (authInfo) {
@@ -584,7 +584,7 @@ async function saveToGDrive(taskId, filename, blob, authOptions, uploadOptions) 
 			}
 			return await saveToGDrive(taskId, filename, blob, authOptions, uploadOptions);
 		} else {
-			throw new Error(error.message + " (Google Drive)");
+			throw new Error(error.message + " (Google Drive)", { cause: error });
 		}
 	}
 }
@@ -606,7 +606,7 @@ async function saveToDropbox(taskId, filename, blob, uploadOptions) {
 				if (error.message == "unknown_token") {
 					authInfo = await getDropboxAuthInfo(true);
 				} else {
-					throw new Error(error.message + " (Dropbox)");
+					throw new Error(error.message + " (Dropbox)", { cause: error });
 				}
 			}
 			if (authInfo) {
@@ -616,7 +616,7 @@ async function saveToDropbox(taskId, filename, blob, uploadOptions) {
 			}
 			return await saveToDropbox(taskId, filename, blob, uploadOptions);
 		} else {
-			throw new Error(error.message + " (Dropbox)");
+			throw new Error(error.message + " (Dropbox)", { cause: error });
 		}
 	}
 }
@@ -673,7 +673,7 @@ async function saveToRestFormApi(taskId, filename, content, url, token, restApiU
 			return await client.upload(filename, content, url);
 		}
 	} catch (error) {
-		throw new Error(error.message + " (RestFormApi)");
+		throw new Error(error.message + " (RestFormApi)", { cause: error });
 	}
 }
 

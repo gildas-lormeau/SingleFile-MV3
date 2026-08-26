@@ -27,7 +27,7 @@ import { setLabels } from "./../../ui/common/common-content-ui.js";
 import { downloadPageForeground } from "../../core/common/download.js";
 import { convert } from "../../lib/mhtml-to-html/mod.js";
 
-(globalThis => {
+(() => {
 
 	const singlefile = globalThis.singlefile;
 
@@ -2451,4 +2451,4 @@ pre code {
 			(firstDocumentChild.textContent.includes(COMMENT_HEADER) || firstDocumentChild.textContent.includes(COMMENT_HEADER_LEGACY));
 	}
 
-})(typeof globalThis == "object" ? globalThis : window);
+})();
