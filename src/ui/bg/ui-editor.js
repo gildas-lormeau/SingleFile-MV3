@@ -477,13 +477,13 @@ async function onMessage(message) {
 				tabData.tabId = message.tabId;
 				tabData.options = message.options;
 				tabDataContents = [];
-				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content, password: tabData.options.password, compressContent: message.compressContent }), "*");
+				editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content, password: tabData.options.password, compressContent: message.compressContent, url: tabData.url }), "*");
 				editorElement.contentWindow.focus();
 				saveTabData();
 			} else {
 				tabData = { tabId: message.tabId };
 				loadTabData().then(() => {
-					editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content }), "*");
+					editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content, url: tabData.url }), "*");
 					editorElement.contentWindow.focus();
 				});
 			}
