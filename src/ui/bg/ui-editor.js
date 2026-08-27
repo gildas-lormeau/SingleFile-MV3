@@ -662,7 +662,7 @@ async function onMessage(message) {
 			} else {
 				tabData = { tabId: message.tabId };
 				loadTabData().then(() => {
-					editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content, url: tabData.url }), "*");
+					editorElement.contentWindow.postMessage(JSON.stringify({ method: "init", content: tabData.content, password: tabData.options.password, compressContent: tabData.compressContent, url: tabData.url }), "*");
 					editorElement.contentWindow.focus();
 				});
 			}
