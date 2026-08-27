@@ -4,3 +4,4 @@
 .woleet-key
 .staging/
 singlefile-extension-*.zip
+/test/.browser/
