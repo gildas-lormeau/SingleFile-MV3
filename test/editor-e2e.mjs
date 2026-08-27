@@ -19,6 +19,7 @@ const EDITOR_PAGE_PATH = "/src/ui/pages/editor.html";
 const SENDER_PAGE_PATH = "/src/ui/pages/pendings.html";
 
 options.apiUrl = "http://127.0.0.1:" + DEBUG_PORT;
+options.commandMaxTime = 15000;
 
 function findChrome() {
 	if (process.env.SF_CHROME_PATH) {
