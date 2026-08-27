@@ -60,7 +60,7 @@ function findChromeExecutable(root, depth) {
 
 let failures = 0;
 const userDataDir = mkdtempSync(join(tmpdir(), "sf-editor-e2e-"));
-const chromeProcess = spawn(CHROME_PATH, [
+const chromeArguments = [
 	"--headless=new",
 	"--remote-debugging-port=" + DEBUG_PORT,
 	"--user-data-dir=" + userDataDir,
@@ -72,13 +72,22 @@ const chromeProcess = spawn(CHROME_PATH, [
 	"--disable-renderer-backgrounding",
 	"--disable-backgrounding-occluded-windows",
 	"about:blank"
-], { stdio: "ignore" });
+];
+if (process.env.CI) {
+	chromeArguments.unshift("--no-sandbox", "--disable-dev-shm-usage");
+}
+const chromeProcess = spawn(CHROME_PATH, chromeArguments, { stdio: ["ignore", "ignore", "pipe"] });
+let chromeStderr = "";
+chromeProcess.stderr.on("data", data => chromeStderr = (chromeStderr + data).slice(-4096));
 
 try {
 	await run();
 } catch (error) {
 	failures++;
 	console.error("FATAL", error);
+	if (chromeStderr) {
+		console.error("chrome stderr:", chromeStderr);
+	}
 } finally {
 	chromeProcess.kill();
 	await new Promise(resolve => chromeProcess.on("exit", resolve));
