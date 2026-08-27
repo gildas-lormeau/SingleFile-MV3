@@ -88,6 +88,12 @@ jobs:
           CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
           CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
         run: |
+          # stray whitespace pasted around the stored secrets breaks authentication
+          CWS_CLIENT_ID=$(printf %s "$CWS_CLIENT_ID" | tr -d "[:space:]")
+          CWS_CLIENT_SECRET=$(printf %s "$CWS_CLIENT_SECRET" | tr -d "[:space:]")
+          CWS_REFRESH_TOKEN=$(printf %s "$CWS_REFRESH_TOKEN" | tr -d "[:space:]")
+          CWS_PUBLISHER_ID=$(printf %s "$CWS_PUBLISHER_ID" | tr -d "[:space:]")
+          CWS_EXTENSION_ID=$(printf %s "$CWS_EXTENSION_ID" | tr -d "[:space:]")
           access_token=$(curl -sf -X POST https://oauth2.googleapis.com/token \
             -d client_id="$CWS_CLIENT_ID" \
             -d client_secret="$CWS_CLIENT_SECRET" \
@@ -112,6 +118,9 @@ jobs:
           EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
         run: |
+          EDGE_CLIENT_ID=$(printf %s "$EDGE_CLIENT_ID" | tr -d "[:space:]")
+          EDGE_API_KEY=$(printf %s "$EDGE_API_KEY" | tr -d "[:space:]")
+          EDGE_PRODUCT_ID=$(printf %s "$EDGE_PRODUCT_ID" | tr -d "[:space:]")
           status=$(curl -s -o /dev/null -w "%{http_code}" \
             -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" \
             "https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions/draft/package/operations/00000000-0000-0000-0000-000000000000")
@@ -136,6 +145,12 @@ jobs:
           CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
           CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
         run: |
+          # stray whitespace pasted around the stored secrets breaks authentication
+          CWS_CLIENT_ID=$(printf %s "$CWS_CLIENT_ID" | tr -d "[:space:]")
+          CWS_CLIENT_SECRET=$(printf %s "$CWS_CLIENT_SECRET" | tr -d "[:space:]")
+          CWS_REFRESH_TOKEN=$(printf %s "$CWS_REFRESH_TOKEN" | tr -d "[:space:]")
+          CWS_PUBLISHER_ID=$(printf %s "$CWS_PUBLISHER_ID" | tr -d "[:space:]")
+          CWS_EXTENSION_ID=$(printf %s "$CWS_EXTENSION_ID" | tr -d "[:space:]")
           access_token=$(curl -sf -X POST https://oauth2.googleapis.com/token \
             -d client_id="$CWS_CLIENT_ID" \
             -d client_secret="$CWS_CLIENT_SECRET" \
@@ -169,6 +184,9 @@ jobs:
           EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
         run: |
+          EDGE_CLIENT_ID=$(printf %s "$EDGE_CLIENT_ID" | tr -d "[:space:]")
+          EDGE_API_KEY=$(printf %s "$EDGE_API_KEY" | tr -d "[:space:]")
+          EDGE_PRODUCT_ID=$(printf %s "$EDGE_PRODUCT_ID" | tr -d "[:space:]")
           api="https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID"
           poll() {
             for attempt in $(seq 1 30); do
