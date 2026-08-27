@@ -1,0 +1,201 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Validate the build and the store credentials without submitting
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      -
+        name: Checkout sources
+        uses: actions/checkout@v4
+      -
+        name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+      -
+        name: Check the credentials are configured
+        env:
+          WOLEET_API_KEY: ${{ secrets.WOLEET_API_KEY }}
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+        run: |
+          test -n "$WOLEET_API_KEY"
+          test -n "$CWS_CLIENT_ID"
+          test -n "$CWS_CLIENT_SECRET"
+          test -n "$CWS_REFRESH_TOKEN"
+          test -n "$CWS_PUBLISHER_ID"
+          test -n "$CWS_EXTENSION_ID"
+          test -n "$EDGE_CLIENT_ID"
+          test -n "$EDGE_API_KEY"
+          test -n "$EDGE_PRODUCT_ID"
+      -
+        name: Check the release tag matches the manifest version
+        if: github.event_name == 'release'
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+          version=$(jq -r .version manifest.json)
+          if [ "${tag#v}" != "$version" ]; then
+            echo "release tag $tag does not match manifest version $version"
+            exit 1
+          fi
+      -
+        name: Build the extension packages
+        env:
+          WOLEET_API_KEY: ${{ secrets.WOLEET_API_KEY }}
+        run: ./build-extension.sh
+      # the store packages must carry the injected key, not the placeholder
+      -
+        name: Check the Woleet API key injection
+        run: |
+          for package in singlefile-extension-chromium.zip singlefile-extension-edge.zip; do
+            if unzip -p "$package" lib/single-file-extension-background.js | grep -q WOLEET_API_KEY_PLACEHOLDER; then
+              echo "$package still contains the placeholder"
+              exit 1
+            fi
+          done
+      # authenticated read-only calls, run in dry runs too, so an expired refresh
+      # token or Edge API key (they expire after 72 days) is caught early
+      -
+        name: Check the Chrome Web Store credentials
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+        run: |
+          access_token=$(curl -sf -X POST https://oauth2.googleapis.com/token \
+            -d client_id="$CWS_CLIENT_ID" \
+            -d client_secret="$CWS_CLIENT_SECRET" \
+            -d refresh_token="$CWS_REFRESH_TOKEN" \
+            -d grant_type=refresh_token | jq -r .access_token)
+          if [ -z "$access_token" ] || [ "$access_token" = "null" ]; then
+            echo "could not refresh the Chrome Web Store access token"
+            exit 1
+          fi
+          status=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $access_token" \
+            "https://chromewebstore.googleapis.com/v2/publishers/$CWS_PUBLISHER_ID/items/$CWS_EXTENSION_ID:fetchStatus")
+          if [ "$status" != "200" ]; then
+            echo "Chrome Web Store authentication failed (HTTP $status)"
+            exit 1
+          fi
+      # no read-only endpoint exists, so probe a nonexistent operation: 404 proves
+      # the credentials pass authentication, 401/403 means expired or wrong
+      -
+        name: Check the Edge Add-ons credentials
+        env:
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" \
+            "https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions/draft/package/operations/00000000-0000-0000-0000-000000000000")
+          if [ "$status" = "401" ] || [ "$status" = "403" ]; then
+            echo "Edge Add-ons authentication failed (HTTP $status) - the API key expires after 72 days, renew it in Partner Center"
+            exit 1
+          fi
+          echo "Edge Add-ons credentials accepted (HTTP $status)"
+      -
+        name: Attach the packages to the release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" singlefile-extension-chromium.zip singlefile-extension-edge.zip --clobber
+      -
+        name: Submit to the Chrome Web Store
+        if: github.event_name == 'release' || !inputs.dry_run
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+        run: |
+          access_token=$(curl -sf -X POST https://oauth2.googleapis.com/token \
+            -d client_id="$CWS_CLIENT_ID" \
+            -d client_secret="$CWS_CLIENT_SECRET" \
+            -d refresh_token="$CWS_REFRESH_TOKEN" \
+            -d grant_type=refresh_token | jq -r .access_token)
+          base_url="https://chromewebstore.googleapis.com/v2/publishers/$CWS_PUBLISHER_ID/items/$CWS_EXTENSION_ID"
+          upload_url="https://chromewebstore.googleapis.com/upload/v2/publishers/$CWS_PUBLISHER_ID/items/$CWS_EXTENSION_ID"
+          curl -sf -X POST -H "Authorization: Bearer $access_token" -H "Content-Type: application/zip" \
+            -T singlefile-extension-chromium.zip "$upload_url:upload"
+          echo
+          # the upload is processed asynchronously; publishing before it finishes
+          # fails, so retry for up to 5 minutes
+          for attempt in $(seq 1 10); do
+            curl -sf -H "Authorization: Bearer $access_token" "$base_url:fetchStatus" || true
+            echo
+            if curl -sf -X POST -H "Authorization: Bearer $access_token" "$base_url:publish"; then
+              echo
+              echo "submitted to the Chrome Web Store"
+              exit 0
+            fi
+            echo "publish attempt $attempt failed, retrying in 30s"
+            sleep 30
+          done
+          echo "could not publish the Chrome Web Store submission"
+          exit 1
+      -
+        name: Submit to Microsoft Edge Add-ons
+        if: github.event_name == 'release' || !inputs.dry_run
+        env:
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+        run: |
+          api="https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID"
+          poll() {
+            for attempt in $(seq 1 30); do
+              status=$(curl -sf -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$1" | jq -r .status)
+              echo "status: $status"
+              if [ "$status" = "Succeeded" ]; then
+                return 0
+              fi
+              if [ "$status" = "Failed" ]; then
+                curl -sf -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$1"
+                return 1
+              fi
+              sleep 10
+            done
+            return 1
+          }
+          operation=$(curl -sfD - -o /dev/null -X POST \
+            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" -H "Content-Type: application/zip" \
+            -T singlefile-extension-edge.zip "$api/submissions/draft/package" | tr -d "\r" | awk -F": " "tolower(\$1) == \"location\" { print \$2 }")
+          operation=${operation##*/}
+          test -n "$operation"
+          poll "$api/submissions/draft/package/operations/$operation"
+          operation=$(curl -sfD - -o /dev/null -X POST \
+            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" -H "Content-Type: application/json" \
+            -d "{\"notes\":\"Automated submission of version $(jq -r .version manifest.json) from GitHub Actions\"}" \
+            "$api/submissions" | tr -d "\r" | awk -F": " "tolower(\$1) == \"location\" { print \$2 }")
+          operation=${operation##*/}
+          test -n "$operation"
+          poll "$api/submissions/operations/$operation"
+          echo "submitted to Microsoft Edge Add-ons"
