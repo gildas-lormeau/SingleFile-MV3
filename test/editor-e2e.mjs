@@ -269,11 +269,16 @@ async function run() {
 	await assertEquals("cluster label says TOC", () => evalInPage("document.querySelector('.archive-page-title').textContent"), "Table of contents");
 	await assertEquals("save button stays visible", () => evalInPage("document.querySelector('.save-page-button').hidden"), false);
 	await assertEquals("import button hidden", () => evalInPage("document.querySelector('.import-mht-button').hidden"), true);
+	await assertEquals("edit tools hidden on the TOC", () => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => element.hidden)"), true);
+	await evalInPage("document.querySelector('.editor').contentWindow.postMessage(JSON.stringify({ method: 'addNote', color: 'note-yellow' }), '*')");
+	await new Promise(resolve => setTimeout(resolve, 500));
+	await assertEquals("addNote ignored on the TOC", () => evalInFrame("document.querySelectorAll('single-file-note').length"), 0);
 
 	await evalInFrame("document.querySelector(\"a[href='pages/2/index.html']\").click()");
 	await waitFor(() => evalInPage("location.hash == '#sfz/pages/2/' || undefined"), "route follows TOC click");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Alpha' || undefined"), "alpha page displayed");
 	await assertEquals("cluster shows page title", () => evalInPage("document.querySelector('.archive-page-title').textContent"), "Alpha page");
+	await assertEquals("edit tools visible on a page", () => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => !element.hidden)"), true);
 
 	await evalInFrame("document.body.dataset.testMarker = 'stashed'");
 	await evalInFrame("document.querySelector(\"a[href^='http'][href$='beta.html']\").click()");
@@ -334,6 +339,7 @@ async function run() {
 	await assertEquals("single-page: no archive route", () => evalInPage("location.hash"), "");
 	await assertEquals("single-page: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("single-page: save button visible", () => evalInPage("document.querySelector('.save-page-button').hidden"), false);
+	await assertEquals("single-page: edit tools visible", () => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => !element.hidden)"), true);
 
 	const dedupBase64 = readFileSync(DEDUP_FIXTURE_PATH).toString("base64");
 	await openEditorArchive(dedupBase64, "multi-page-dedup.zip.html");
