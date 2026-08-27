@@ -355,11 +355,14 @@ async function downloadCompressedContent(message, tab) {
 					url: message.originalUrl
 				});
 			} else if (message.foregroundSave || message.sharePage) {
-				const blob = (await fetch(blobURI)).blob();
-				await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
+				const blob = await (await fetch(blobURI)).blob();
+				response = await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
 					foregroundSave: message.foregroundSave,
 					sharePage: message.sharePage
 				});
+				if (response && response.error) {
+					throw new Error(response.error);
+				}
 			} else if (message.saveWithWebDAV) {
 				const blob = await (await fetch(blobURI)).blob();
 				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
