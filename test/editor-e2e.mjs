@@ -335,6 +335,27 @@ async function run() {
 	await waitFor(() => evalInFrame("(() => { const heading = document.querySelector('h1'); return heading && heading.textContent == 'Two' || undefined; })()"), "re-saved dedup sibling page displayed");
 	await waitFor(() => evalInFrame("(() => { const image = document.querySelector('img.logo'); return image && image.naturalWidth == 64 || undefined; })()"), "deduplicated image resolves after round-trip");
 
+	const dropBase64 = readFileSync(SINGLE_PAGE_FIXTURE_PATH).toString("base64");
+	await evalInFrame("window.__dropBase64 = \"\"");
+	for (let offset = 0; offset < dropBase64.length; offset += 200000) {
+		await evalInFrame("window.__dropBase64 += " + JSON.stringify(dropBase64.substring(offset, offset + 200000)));
+	}
+	await evalInFrame("(() => {" +
+		"const bytes = Uint8Array.from(atob(window.__dropBase64), character => character.charCodeAt(0));" +
+		"const file = new File([bytes], \"dropped-single.zip.html\", { type: \"text/html\" });" +
+		"document.ondrop({ dataTransfer: { files: [file] }, preventDefault: () => { } });" +
+		"})()");
+	await waitFor(() => evalInFrame("(() => { const heading = document.querySelector('h1'); return heading && heading.textContent == 'Alpha' || undefined; })()"), "dropped single-page archive displayed");
+	const dropDownloadDir = mkdtempSync(join(tmpdir(), "sf-editor-dl-"));
+	await cdp.Browser.setDownloadBehavior({ behavior: "allow", downloadPath: dropDownloadDir });
+	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
+	const savedDropPath = await waitFor(async () => {
+		const filenames = readdirSync(dropDownloadDir).filter(filename => !filename.endsWith(".crdownload") && !filename.startsWith("."));
+		return filenames.length ? join(dropDownloadDir, filenames[0]) : undefined;
+	}, "dropped archive downloaded");
+	await verifySavedDroppedArchive(savedDropPath);
+	rmSync(dropDownloadDir, { recursive: true, force: true });
+
 
 
 
@@ -364,6 +385,20 @@ async function run() {
 		await assertEquals("edited dedup page contains the note", async () => editedPage.includes("single-file-note"), true);
 		await savedReader.close();
 		await originalReader.close();
+	}
+
+	async function verifySavedDroppedArchive(savedFilePath) {
+		const zip = await import(ZIP_MODULE_URL);
+		const savedData = new Uint8Array(readFileSync(savedFilePath));
+		const prelude = new TextDecoder().decode(savedData.subarray(0, 200));
+		await assertEquals("dropped archive save has an SFZ prelude", async () => /^<!DOCTYPE html>\s?<html data-sfz>/.test(prelude), true);
+		const savedReader = new zip.ZipReader(new zip.Uint8ArrayReader(savedData));
+		const savedEntries = await savedReader.getEntries();
+		const savedNames = savedEntries.map(entry => entry.filename).sort();
+		await assertEquals("dropped archive save contains only the dropped page entries", async () => JSON.stringify(savedNames), JSON.stringify(["index.html", "manifest.json"]));
+		const indexContent = await savedEntries.find(entry => entry.filename == "index.html").getData(new zip.TextWriter());
+		await assertEquals("dropped archive save contains the dropped page content", async () => indexContent.includes("Alpha"), true);
+		await savedReader.close();
 	}
 
 	async function verifySavedArchive(savedFilePath) {
