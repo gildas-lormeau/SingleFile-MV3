@@ -47,3 +47,26 @@ jobs:
           fi
           unzip -p singlefile-extension-chromium.zip lib/single-file-extension-background.js | grep -q WOLEET_API_KEY_PLACEHOLDER
           unzip -p singlefile-extension-edge.zip lib/single-file-extension-background.js | grep -q WOLEET_API_KEY_PLACEHOLDER
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      -
+        name: Checkout sources
+        uses: actions/checkout@v4
+      -
+        name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+      -
+        name: Install dependencies
+        run: npm ci
+      -
+        name: Install Chrome for Testing
+        run: npm run install-test-browser
+      -
+        name: Run the editor e2e tests
+        run: npm test
