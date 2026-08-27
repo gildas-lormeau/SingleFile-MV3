@@ -135,16 +135,32 @@ async function run() {
 	const fixtureBase64 = readFileSync(FIXTURE_PATH).toString("base64");
 
 	async function openEditorArchive(base64Content, filename) {
-		await cdp.Runtime.evaluate({ expression: "window.__fixtureBase64 = \"\"" }, sessionId);
-		for (let offset = 0; offset < base64Content.length; offset += 200000) {
-			await cdp.Runtime.evaluate({ expression: "window.__fixtureBase64 += " + JSON.stringify(base64Content.substring(offset, offset + 200000)) }, sessionId);
+		for (let attempt = 0; attempt < 3; attempt++) {
+			try {
+				await cdp.Runtime.evaluate({ expression: "window.__fixtureBase64 = \"\"; window.__editorOpenPending = true" }, sessionId);
+				for (let offset = 0; offset < base64Content.length; offset += 200000) {
+					await cdp.Runtime.evaluate({ expression: "window.__fixtureBase64 += " + JSON.stringify(base64Content.substring(offset, offset + 200000)) }, sessionId);
+				}
+				await cdp.Runtime.evaluate({
+					expression: "(() => {" +
+						"const bytes = Uint8Array.from(atob(window.__fixtureBase64), character => character.charCodeAt(0));" +
+						"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(bytes), compressContent: true, selfExtractingArchive: true, filename: " + JSON.stringify(filename) + " });" +
+						"})()"
+				}, sessionId);
+				// eslint-disable-next-line no-unused-vars
+			} catch (error) {
+				// evaluate raced a navigation, retry the injection
+			}
+			const navigated = await poll(async () => {
+				const { result } = await cdp.Runtime.evaluate({ expression: "window.__editorOpenPending === undefined || undefined" }, sessionId).catch(() => ({ result: {} }));
+				return result && result.value;
+			}, 10000);
+			if (navigated) {
+				return;
+			}
+			console.log("editor.open injection not acknowledged, retrying (attempt " + (attempt + 1) + ")");
 		}
-		await cdp.Runtime.evaluate({
-			expression: "(() => {" +
-				"const bytes = Uint8Array.from(atob(window.__fixtureBase64), character => character.charCodeAt(0));" +
-				"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(bytes), compressContent: true, selfExtractingArchive: true, filename: " + JSON.stringify(filename) + " });" +
-				"})()"
-		}, sessionId).catch(() => { });
+		throw new Error("editor.open injection failed");
 	}
 	await openEditorArchive(fixtureBase64, "fixture.zip.html");
 
@@ -407,6 +423,23 @@ async function run() {
 			console.log("FAIL", label, "expected", JSON.stringify(expected), "got", JSON.stringify(value));
 		}
 	}
+}
+
+async function poll(getValue, timeout) {
+	const start = Date.now();
+	while (Date.now() - start < timeout) {
+		try {
+			const value = await getValue();
+			if (value !== undefined && value !== false) {
+				return value;
+			}
+			// eslint-disable-next-line no-unused-vars
+		} catch (error) {
+			// transient error, keep polling
+		}
+		await new Promise(resolve => setTimeout(resolve, 250));
+	}
+	return undefined;
 }
 
 async function waitFor(getValue, label, timeout = 20000) {
