@@ -182,6 +182,10 @@ if (typeof globalThis == "undefined") {
 				clear: () => nativeAPI.storage.local.clear(),
 				remove: keys => nativeAPI.storage.local.remove(keys)
 			},
+			onChanged: {
+				addListener: listener => nativeAPI.storage.onChanged.addListener(listener),
+				removeListener: listener => nativeAPI.storage.onChanged.removeListener(listener)
+			},
 			sync: {
 				set: value => nativeAPI.storage.sync.set(value),
 				get: keys => nativeAPI.storage.sync.get(keys),
