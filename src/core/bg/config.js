@@ -486,6 +486,9 @@ async function onMessage(message) {
 				externalCaptureDeniedExtensionIds: syncConfig.externalCaptureDeniedExtensionIds || []
 			});
 			const profiles = {};
+			Object.keys(syncConfig)
+				.filter(keyName => keyName.startsWith(PROFILE_NAME_PREFIX))
+				.forEach(keyName => profiles[keyName] = syncConfig[keyName]);
 			await browser.storage.local.set(profiles);
 		}
 		configStorage = browser.storage.local;
@@ -688,18 +691,18 @@ async function setDropboxAuthInfo(authInfo) {
 }
 
 async function removeAuthInfo() {
-	let authInfo = getAuthInfo();
-	if (authInfo.revokableAccessToken) {
-		setAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
+	const authInfo = await getAuthInfo();
+	if (authInfo && authInfo.revokableAccessToken) {
+		await setAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
 	} else {
 		await configStorage.remove(["authInfo"]);
 	}
 }
 
 async function removeDropboxAuthInfo() {
-	let authInfo = getDropboxAuthInfo();
-	if (authInfo.revokableAccessToken) {
-		setDropboxAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
+	const authInfo = await getDropboxAuthInfo();
+	if (authInfo && authInfo.revokableAccessToken) {
+		await setDropboxAuthInfo({ revokableAccessToken: authInfo.revokableAccessToken });
 	} else {
 		await configStorage.remove(["dropboxAuthInfo"]);
 	}
