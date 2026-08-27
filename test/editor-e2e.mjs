@@ -2,9 +2,9 @@
 /* global process, URL, setTimeout, TextDecoder */
 
 import { spawn } from "node:child_process";
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, join, resolve } from "node:path";
 import { cdp, getTargets, options } from "simple-cdp";
 
 const EXTENSION_PATH = process.env.SF_EXTENSION_PATH || resolve(new URL("..", import.meta.url).pathname);
@@ -76,6 +76,11 @@ function findChromeExecutable(root, depth) {
 
 let failures = 0;
 const userDataDir = mkdtempSync(join(tmpdir(), "sf-editor-e2e-"));
+const downloadDir = mkdtempSync(join(tmpdir(), "sf-editor-dl-"));
+mkdirSync(join(userDataDir, "Default"), { recursive: true });
+writeFileSync(join(userDataDir, "Default", "Preferences"), JSON.stringify({
+	download: { default_directory: downloadDir, prompt_for_download: false }
+}));
 const chromeArguments = [
 	"--headless=new",
 	"--remote-debugging-port=" + DEBUG_PORT,
@@ -118,9 +123,22 @@ try {
 	chromeProcess.kill();
 	await new Promise(resolve => chromeProcess.on("exit", resolve));
 	rmSync(userDataDir, { recursive: true, force: true });
+	rmSync(downloadDir, { recursive: true, force: true });
 }
 console.log(failures ? "FAILED (" + failures + ")" : "PASSED");
 process.exit(failures ? 1 : 0);
+
+function clearDownloadDir() {
+	rmSync(downloadDir, { recursive: true, force: true });
+	mkdirSync(downloadDir, { recursive: true });
+}
+
+function waitForDownload(description) {
+	return waitFor(() => {
+		const filenames = readdirSync(downloadDir).filter(filename => !filename.endsWith(".crdownload") && !filename.startsWith("."));
+		return filenames.length ? join(downloadDir, filenames[0]) : undefined;
+	}, description);
+}
 
 async function run() {
 	const extensionId = await waitFor(async () => {
@@ -281,8 +299,7 @@ async function run() {
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Fixture home' || undefined"), "root page displayed");
 
 
-	const downloadDir = mkdtempSync(join(tmpdir(), "sf-editor-dl-"));
-	await cdp.Browser.setDownloadBehavior({ behavior: "allow", downloadPath: downloadDir });
+	clearDownloadDir();
 	await evalInPage("location.hash = '#sfz/pages/2/'");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Alpha' || undefined"), "alpha page displayed for editing");
 	await evalInPage("document.querySelector('.add-note-yellow-button').dispatchEvent(new MouseEvent('mouseup'))");
@@ -290,15 +307,11 @@ async function run() {
 	await evalInPage("location.hash = '#sfz/?toc'");
 	await waitFor(() => evalInFrame("document.querySelectorAll('.sfz-modified-page').length == 1 || undefined"), "TOC shows one modified page");
 	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
-	const savedFilePath = await waitFor(async () => {
-		const filenames = readdirSync(downloadDir).filter(filename => !filename.endsWith(".crdownload") && !filename.startsWith("."));
-		return filenames.length ? join(downloadDir, filenames[0]) : undefined;
-	}, "archive downloaded");
-	console.log("saved file:", savedFilePath);
+	const savedFilePath = await waitForDownload("archive downloaded");
+	await assertEquals("archive saved under its filename", () => basename(savedFilePath), "fixture.zip.html");
 	await waitFor(() => evalInFrame("document.querySelectorAll('.sfz-modified-page').length == 0 || undefined"), "modified markers cleared after save");
 	await verifySavedArchive(savedFilePath);
 	const savedBase64 = readFileSync(savedFilePath).toString("base64");
-	rmSync(downloadDir, { recursive: true, force: true });
 	await openEditorArchive(savedBase64, "fixture-resaved.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/?toc' || undefined"), "re-saved archive reopens on the TOC");
 	await waitFor(() => evalInFrame("document.querySelectorAll(\"a[href$='index.html']\").length == 5 || undefined"), "re-saved archive TOC lists 5 pages");
@@ -331,16 +344,12 @@ async function run() {
 	await waitFor(() => evalInFrame("getComputedStyle(document.querySelector('h1')).borderBottomWidth == '2px' || undefined"), "deduplicated stylesheet applied");
 	await evalInPage("document.querySelector('.add-note-yellow-button').dispatchEvent(new MouseEvent('mouseup'))");
 	await waitFor(() => evalInFrame("Boolean(document.querySelector('single-file-note')) || undefined"), "note added to dedup page");
-	const dedupDownloadDir = mkdtempSync(join(tmpdir(), "sf-editor-dl-"));
-	await cdp.Browser.setDownloadBehavior({ behavior: "allow", downloadPath: dedupDownloadDir });
+	clearDownloadDir();
 	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
-	const savedDedupPath = await waitFor(async () => {
-		const filenames = readdirSync(dedupDownloadDir).filter(filename => !filename.endsWith(".crdownload") && !filename.startsWith("."));
-		return filenames.length ? join(dedupDownloadDir, filenames[0]) : undefined;
-	}, "dedup archive downloaded");
+	const savedDedupPath = await waitForDownload("dedup archive downloaded");
+	await assertEquals("dedup archive saved under its filename", () => basename(savedDedupPath), "multi-page-dedup.zip.html");
 	await verifySavedDedupArchive(savedDedupPath);
 	const savedDedupBase64 = readFileSync(savedDedupPath).toString("base64");
-	rmSync(dedupDownloadDir, { recursive: true, force: true });
 	await openEditorArchive(savedDedupBase64, "multi-page-dedup-resaved.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/pages/2/' || undefined"), "re-saved dedup archive reopens on the carried route");
 	await waitFor(() => evalInFrame("(() => { const heading = document.querySelector('h1'); return heading && heading.textContent == 'One' || undefined; })()"), "re-saved dedup page displayed");
@@ -364,16 +373,12 @@ async function run() {
 	await assertEquals("dropped single-page: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("dropped single-page: archive route cleared", () => evalInPage("location.hash"), "");
 	await evalInPage(FILENAME_CAPTURE_SCRIPT);
-	const dropDownloadDir = mkdtempSync(join(tmpdir(), "sf-editor-dl-"));
-	await cdp.Browser.setDownloadBehavior({ behavior: "allow", downloadPath: dropDownloadDir });
+	clearDownloadDir();
 	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
-	const savedDropPath = await waitFor(async () => {
-		const filenames = readdirSync(dropDownloadDir).filter(filename => !filename.endsWith(".crdownload") && !filename.startsWith("."));
-		return filenames.length ? join(dropDownloadDir, filenames[0]) : undefined;
-	}, "dropped archive downloaded");
+	const savedDropPath = await waitForDownload("dropped archive downloaded");
 	await assertEquals("dropped archive saved under the dropped filename", () => evalInPage("window.__savedFilename"), "dropped-single.zip.html");
+	await assertEquals("dropped archive on disk under the dropped filename", () => basename(savedDropPath), "dropped-single.zip.html");
 	await verifySavedDroppedArchive(savedDropPath);
-	rmSync(dropDownloadDir, { recursive: true, force: true });
 
 	await openEditorArchive(dedupBase64, "multi-page-dedup-2.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/?toc' || undefined"), "archive reopened before plain drop");
@@ -385,17 +390,13 @@ async function run() {
 	await assertEquals("plain drop: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("plain drop: archive route cleared", () => evalInPage("location.hash"), "");
 	await evalInPage(FILENAME_CAPTURE_SCRIPT);
-	const plainDownloadDir = mkdtempSync(join(tmpdir(), "sf-editor-dl-"));
-	await cdp.Browser.setDownloadBehavior({ behavior: "allow", downloadPath: plainDownloadDir });
+	clearDownloadDir();
 	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
-	const savedPlainPath = await waitFor(async () => {
-		const filenames = readdirSync(plainDownloadDir).filter(filename => !filename.endsWith(".crdownload") && !filename.startsWith("."));
-		return filenames.length ? join(plainDownloadDir, filenames[0]) : undefined;
-	}, "dropped plain page downloaded");
+	const savedPlainPath = await waitForDownload("dropped plain page downloaded");
 	await assertEquals("plain drop saved under the dropped filename", () => evalInPage("window.__savedFilename"), "dropped-plain.html");
+	await assertEquals("plain drop on disk under the dropped filename", () => basename(savedPlainPath), "dropped-plain.html");
 	const savedPlainContent = readFileSync(savedPlainPath).toString();
 	await assertEquals("plain drop save is a plain page with the dropped content", async () => savedPlainContent.includes("Gamma") && !savedPlainContent.includes("data-sfz") && !savedPlainContent.includes("sfz-pages.json"), true);
-	rmSync(plainDownloadDir, { recursive: true, force: true });
 
 
 
