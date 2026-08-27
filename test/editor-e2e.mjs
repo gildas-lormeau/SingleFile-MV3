@@ -80,9 +80,19 @@ const chromeProcess = spawn(CHROME_PATH, chromeArguments, { stdio: ["ignore", "i
 let chromeStderr = "";
 chromeProcess.stderr.on("data", data => chromeStderr = (chromeStderr + data).slice(-4096));
 
+let suiteCompleted = false;
+process.on("beforeExit", () => {
+	if (!suiteCompleted) {
+		console.error("suite aborted early" + (chromeStderr ? ", chrome stderr: " + chromeStderr : ""));
+		process.exitCode = 1;
+	}
+});
+
 try {
 	await run();
+	suiteCompleted = true;
 } catch (error) {
+	suiteCompleted = true;
 	failures++;
 	console.error("FATAL", error);
 	if (chromeStderr) {
@@ -122,25 +132,20 @@ async function run() {
 		return result.value;
 	}, "sender page ready");
 	const fixtureBase64 = readFileSync(FIXTURE_PATH).toString("base64");
-	const { result: sendResult } = await cdp.Runtime.evaluate({
-		expression: `(async () => {
-			try {
-				const bytes = Uint8Array.from(atob("${fixtureBase64}"), character => character.charCodeAt(0));
-				const response = await chrome.runtime.sendMessage({
-					method: "editor.open",
-					content: Array.from(bytes),
-					compressContent: true,
-					selfExtractingArchive: true,
-					filename: "fixture.zip.html"
-				});
-				return "sent " + JSON.stringify(response);
-			} catch (error) {
-				return "error " + error.message;
-			}
-		})()`,
-		awaitPromise: true
-	}, sessionId).catch(error => ({ result: { value: "evaluate failed (navigation?) " + error.message } }));
-	console.log("editor.open:", sendResult && sendResult.value);
+
+	async function openEditorArchive(base64Content, filename) {
+		await cdp.Runtime.evaluate({ expression: "window.__fixtureBase64 = \"\"" }, sessionId);
+		for (let offset = 0; offset < base64Content.length; offset += 200000) {
+			await cdp.Runtime.evaluate({ expression: "window.__fixtureBase64 += " + JSON.stringify(base64Content.substring(offset, offset + 200000)) }, sessionId);
+		}
+		await cdp.Runtime.evaluate({
+			expression: "(() => {" +
+				"const bytes = Uint8Array.from(atob(window.__fixtureBase64), character => character.charCodeAt(0));" +
+				"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(bytes), compressContent: true, selfExtractingArchive: true, filename: " + JSON.stringify(filename) + " });" +
+				"})()"
+		}, sessionId).catch(() => { });
+	}
+	await openEditorArchive(fixtureBase64, "fixture.zip.html");
 
 	const contexts = [];
 	cdp.Runtime.addEventListener("executionContextCreated", event => {
@@ -262,10 +267,7 @@ async function run() {
 	await verifySavedArchive(savedFilePath);
 	const savedBase64 = readFileSync(savedFilePath).toString("base64");
 	rmSync(downloadDir, { recursive: true, force: true });
-	await cdp.Runtime.evaluate({
-		expression: "const savedBytes = Uint8Array.from(atob(\"" + savedBase64 + "\"), character => character.charCodeAt(0));" +
-			"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(savedBytes), compressContent: true, selfExtractingArchive: true, filename: \"fixture-resaved.zip.html\" });"
-	}, sessionId).catch(() => {});
+	await openEditorArchive(savedBase64, "fixture-resaved.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/?toc' || undefined"), "re-saved archive reopens on the TOC");
 	await waitFor(() => evalInFrame("document.querySelectorAll(\"a[href$='index.html']\").length == 5 || undefined"), "re-saved archive TOC lists 5 pages");
 	await evalInPage("location.hash = '#sfz/pages/2/'");
@@ -273,10 +275,7 @@ async function run() {
 
 	await evalInPage("location.hash = '#sfz/pages/3/'");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Beta' || undefined"), "route set before deep-link reopen");
-	await cdp.Runtime.evaluate({
-		expression: "const deepLinkBytes = Uint8Array.from(atob(\"" + fixtureBase64 + "\"), character => character.charCodeAt(0));" +
-			"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(deepLinkBytes), compressContent: true, selfExtractingArchive: true, filename: \"fixture.zip.html\" });"
-	}, sessionId).catch(() => {});
+	await openEditorArchive(fixtureBase64, "fixture.zip.html");
 	await waitFor(async () => {
 		const title = await evalInFrame("document.title").catch(() => undefined);
 		return title == "Beta page" || undefined;
@@ -285,27 +284,14 @@ async function run() {
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Beta' || undefined"), "deep-linked page displayed");
 
 	const singlePageBase64 = readFileSync(SINGLE_PAGE_FIXTURE_PATH).toString("base64");
-	await cdp.Runtime.evaluate({
-		expression: `
-			const singlePageBytes = Uint8Array.from(atob("${singlePageBase64}"), character => character.charCodeAt(0));
-			chrome.runtime.sendMessage({
-				method: "editor.open",
-				content: Array.from(singlePageBytes),
-				compressContent: true,
-				selfExtractingArchive: true,
-				filename: "single.zip.html"
-			});`
-	}, sessionId).catch(() => {});
+	await openEditorArchive(singlePageBase64, "single.zip.html");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Alpha' || undefined"), "single-page archive displayed");
 	await assertEquals("single-page: no archive route", () => evalInPage("location.hash"), "");
 	await assertEquals("single-page: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("single-page: save button visible", () => evalInPage("document.querySelector('.save-page-button').hidden"), false);
 
 	const dedupBase64 = readFileSync(DEDUP_FIXTURE_PATH).toString("base64");
-	await cdp.Runtime.evaluate({
-		expression: "const dedupBytes = Uint8Array.from(atob(\"" + dedupBase64 + "\"), character => character.charCodeAt(0));" +
-			"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(dedupBytes), compressContent: true, selfExtractingArchive: true, filename: \"multi-page-dedup.zip.html\" });"
-	}, sessionId).catch(() => {});
+	await openEditorArchive(dedupBase64, "multi-page-dedup.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/?toc' || undefined"), "dedup archive opens on the TOC");
 	await evalInPage("location.hash = '#sfz/pages/2/'");
 	await waitFor(() => evalInFrame("(() => { const heading = document.querySelector('h1'); return heading && heading.textContent == 'One' || undefined; })()"), "dedup page displayed");
@@ -323,10 +309,7 @@ async function run() {
 	await verifySavedDedupArchive(savedDedupPath);
 	const savedDedupBase64 = readFileSync(savedDedupPath).toString("base64");
 	rmSync(dedupDownloadDir, { recursive: true, force: true });
-	await cdp.Runtime.evaluate({
-		expression: "const resavedDedupBytes = Uint8Array.from(atob(\"" + savedDedupBase64 + "\"), character => character.charCodeAt(0));" +
-			"chrome.runtime.sendMessage({ method: \"editor.open\", content: Array.from(resavedDedupBytes), compressContent: true, selfExtractingArchive: true, filename: \"multi-page-dedup-resaved.zip.html\" });"
-	}, sessionId).catch(() => {});
+	await openEditorArchive(savedDedupBase64, "multi-page-dedup-resaved.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/pages/2/' || undefined"), "re-saved dedup archive reopens on the carried route");
 	await waitFor(() => evalInFrame("(() => { const heading = document.querySelector('h1'); return heading && heading.textContent == 'One' || undefined; })()"), "re-saved dedup page displayed");
 	await waitFor(() => evalInFrame("Boolean(document.querySelector('single-file-note')) || undefined"), "note persisted in re-saved dedup archive");
