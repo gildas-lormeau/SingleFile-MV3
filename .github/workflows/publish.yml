@@ -158,20 +158,27 @@ jobs:
             -d grant_type=refresh_token | jq -r .access_token)
           base_url="https://chromewebstore.googleapis.com/v2/publishers/$CWS_PUBLISHER_ID/items/$CWS_EXTENSION_ID"
           upload_url="https://chromewebstore.googleapis.com/upload/v2/publishers/$CWS_PUBLISHER_ID/items/$CWS_EXTENSION_ID"
-          curl -sf -X POST -H "Authorization: Bearer $access_token" -H "Content-Type: application/zip" \
-            -T singlefile-extension-chromium.zip "$upload_url:upload"
-          echo
+          response=$(curl -s -w "\n%{http_code}" -X POST -H "Authorization: Bearer $access_token" -H "Content-Type: application/zip" \
+            -T singlefile-extension-chromium.zip "$upload_url:upload")
+          upload_status=$(printf %s "$response" | tail -n 1)
+          printf '%s\n' "$response" | sed '$d'
+          if [ "$upload_status" != "200" ]; then
+            echo "Chrome Web Store upload failed (HTTP $upload_status)"
+            exit 1
+          fi
           # the upload is processed asynchronously; publishing before it finishes
           # fails, so retry for up to 5 minutes
           for attempt in $(seq 1 10); do
-            curl -sf -H "Authorization: Bearer $access_token" "$base_url:fetchStatus" || true
+            curl -s -H "Authorization: Bearer $access_token" "$base_url:fetchStatus" || true
             echo
-            if curl -sf -X POST -H "Authorization: Bearer $access_token" "$base_url:publish"; then
-              echo
+            response=$(curl -s -w "\n%{http_code}" -X POST -H "Authorization: Bearer $access_token" "$base_url:publish")
+            publish_status=$(printf %s "$response" | tail -n 1)
+            printf '%s\n' "$response" | sed '$d'
+            if [ "$publish_status" = "200" ]; then
               echo "submitted to the Chrome Web Store"
               exit 0
             fi
-            echo "publish attempt $attempt failed, retrying in 30s"
+            echo "publish attempt $attempt failed (HTTP $publish_status), retrying in 30s"
             sleep 30
           done
           echo "could not publish the Chrome Web Store submission"
