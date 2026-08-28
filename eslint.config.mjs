@@ -5,7 +5,8 @@ export default [
 		ignores: [
 			"lib/**",
 			"src/lib/readability/**",
-			"src/lib/mhtml-to-html/vendor/**"
+			"src/lib/mhtml-to-html/vendor/**",
+			"test/.browser/**"
 		]
 	},
 	js.configs.recommended,
