@@ -9,6 +9,14 @@ on:
         description: Validate the build and the store credentials without submitting
         type: boolean
         default: true
+      cws:
+        description: Submit to the Chrome Web Store
+        type: boolean
+        default: true
+      edge:
+        description: Submit to Microsoft Edge Add-ons
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -137,7 +145,7 @@ jobs:
         run: gh release upload "${{ github.event.release.tag_name }}" singlefile-extension-chromium.zip singlefile-extension-edge.zip --clobber
       -
         name: Submit to the Chrome Web Store
-        if: github.event_name == 'release' || !inputs.dry_run
+        if: github.event_name == 'release' || (!inputs.dry_run && inputs.cws)
         env:
           CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
           CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
@@ -185,7 +193,7 @@ jobs:
           exit 1
       -
         name: Submit to Microsoft Edge Add-ons
-        if: github.event_name == 'release' || !inputs.dry_run
+        if: github.event_name == 'release' || (!inputs.dry_run && inputs.edge)
         env:
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
