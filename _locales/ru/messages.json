@@ -686,7 +686,7 @@
 		"description": "Options button: 'Allow'"
 	},
 	"optionsExternalCaptureDenyButton": {
-		"message": "Отклонить",
+		"message": "Запретить",
 		"description": "Options button: 'Deny'"
 	},
 	"optionBackgroundSave": {
@@ -1044,6 +1044,10 @@
 	"editorImportMht": {
 		"message": "Импорт MHTML-файла",
 		"description": "Title of the button 'Import MHTML file' in the editor"
+	},
+	"editorArchiveToc": {
+		"message": "Оглавление",
+		"description": "Title of the table of contents button displayed in the editor when viewing a multi-page archive"
 	},
 	"pendingsTitle": {
 		"message": "Отложенное сохранение",
