@@ -42,6 +42,7 @@ const AUTO_SCROLL_MARGIN = 40;
 const AUTO_SCROLL_STEP = 12;
 const CHROME_ACTION_MENU_LIMIT = browser.contextMenus && browser.contextMenus.ACTION_MENU_TOP_LEVEL_LIMIT;
 const TAB_MENU_SUPPORTED = Boolean(browser.contextMenus && browser.contextMenus.ContextType && browser.contextMenus.ContextType.TAB);
+const MENU_AUTO_WRAP = Boolean(browser.runtime.getBrowserInfo);
 
 const menuList = document.getElementById("menuList");
 const surfaceSelect = document.getElementById("surfaceSelect");
@@ -463,28 +464,31 @@ function menuSlots(entry, surface) {
 }
 
 function applyChromeCap() {
+	const total = layout.button.reduce((sum, entry) => sum + menuSlots(entry, "button"), 0);
+	const wrapped = MENU_AUTO_WRAP && total > CHROME_ACTION_MENU_LIMIT;
+	const limit = wrapped ? CHROME_ACTION_MENU_LIMIT - 1 : CHROME_ACTION_MENU_LIMIT;
 	let count = 0;
 	let overflow = false;
 	Array.from(menuList.children).forEach((item, index) => {
 		const slots = menuSlots(layout.button[index], "button");
-		if (slots && count >= CHROME_ACTION_MENU_LIMIT) {
+		if (slots && count >= limit) {
 			if (!overflow) {
 				overflow = true;
 				const line = document.createElement("li");
 				line.className = "menus-cap-line";
-				line.textContent = getMessage("menusActionLimitLine", [String(CHROME_ACTION_MENU_LIMIT)]);
+				line.textContent = getMessage(wrapped ? "menusActionLimitLineWrapped" : "menusActionLimitLine", [String(limit)]);
 				menuList.insertBefore(line, item);
 			}
 			item.classList.add("over-cap");
 		}
 		count += slots;
 	});
-	overflow = overflow || count > CHROME_ACTION_MENU_LIMIT;
+	overflow = overflow || total > CHROME_ACTION_MENU_LIMIT;
 	capNote.hidden = !overflow;
 	if (overflow) {
 		capNote.replaceChildren();
 		const text = document.createElement("span");
-		text.textContent = getMessage("menusActionLimitNote", [String(CHROME_ACTION_MENU_LIMIT)]);
+		text.textContent = getMessage(wrapped ? "menusActionLimitNoteWrapped" : "menusActionLimitNote", [String(limit)]);
 		const wrap = document.createElement("button");
 		wrap.type = "button";
 		wrap.textContent = getMessage("menusWrapButton");
