@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
-/* global process, URL, setTimeout, TextDecoder */
+/* global process, URL, setTimeout, TextDecoder, Buffer */
 
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
+import { createServer } from "node:http";
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
@@ -129,6 +130,33 @@ try {
 }
 console.log(failures ? "FAILED (" + failures + ")" : "PASSED");
 process.exit(failures ? 1 : 0);
+
+// answers the WebDAV client's HEAD probe with "not found" so it PUTs, and keeps each
+// uploaded body on disk for the archive checks
+function startWebDAVStub() {
+	const uploadDir = mkdtempSync(join(tmpdir(), "sf-e2e-webdav-"));
+	const uploads = new Map();
+	const server = createServer((request, response) => {
+		if (request.method == "PUT") {
+			const chunks = [];
+			request.on("data", chunk => chunks.push(chunk));
+			request.on("end", () => {
+				const filename = decodeURIComponent(request.url.substring(1));
+				const filePath = join(uploadDir, basename(filename));
+				writeFileSync(filePath, Buffer.concat(chunks));
+				uploads.set(filename, filePath);
+				response.writeHead(201).end();
+			});
+		} else {
+			response.writeHead(404).end();
+		}
+	});
+	return new Promise(resolve => server.listen(0, "127.0.0.1", () => resolve({
+		url: "http://127.0.0.1:" + server.address().port + "/",
+		uploads,
+		close: () => server.close()
+	})));
+}
 
 function clearDownloadDir() {
 	rmSync(downloadDir, { recursive: true, force: true });
@@ -322,11 +350,25 @@ async function run() {
 	await waitFor(() => evalInFrame("document.querySelectorAll('.sfz-modified-page').length == 0 || undefined"), "modified markers cleared after save");
 	await verifySavedArchive(savedFilePath);
 	const savedBase64 = readFileSync(savedFilePath).toString("base64");
+	// the re-saved archive goes to a WebDAV stub: the background used to read the
+	// archive bytes as text before handing them to a destination
+	const webDAV = await startWebDAVStub();
+	await updateDefaultProfile({ saveWithWebDAV: true, webDAVURL: webDAV.url, webDAVUser: "user", webDAVPassword: "password" });
 	await openEditorArchive(savedBase64, "fixture-resaved.zip.html");
 	await waitFor(() => evalInPage("location.hash == '#sfz/?toc' || undefined"), "re-saved archive reopens on the TOC");
 	await waitFor(() => evalInFrame("document.querySelectorAll(\"a[href$='index.html']\").length == 5 || undefined"), "re-saved archive TOC lists 5 pages");
 	await evalInPage("location.hash = '#sfz/pages/2/'");
 	await waitFor(() => evalInFrame("Boolean(document.querySelector('single-file-note')) || undefined"), "note persisted in re-saved archive");
+	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
+	const uploadedFilePath = await waitFor(() => webDAV.uploads.get("fixture-resaved.zip.html"), "archive uploaded to WebDAV");
+	try {
+		await verifySavedArchive(uploadedFilePath);
+	} catch (error) {
+		failures++;
+		console.log("FAIL uploaded archive is readable", error.message);
+	}
+	await updateDefaultProfile({ saveWithWebDAV: false });
+	webDAV.close();
 
 	await evalInPage("location.hash = '#sfz/pages/3/'");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Beta' || undefined"), "route set before deep-link reopen");
@@ -496,12 +538,16 @@ async function run() {
 		await originalReader.close();
 	}
 
-	async function evalInPage(expression) {
-		const { result, exceptionDetails } = await cdp.Runtime.evaluate({ expression }, sessionId);
+	async function evalInPage(expression, awaitPromise = false) {
+		const { result, exceptionDetails } = await cdp.Runtime.evaluate({ expression, awaitPromise }, sessionId);
 		if (exceptionDetails) {
 			throw new Error(exceptionDetails.text + " " + JSON.stringify(exceptionDetails.exception));
 		}
 		return result.value;
+	}
+
+	function updateDefaultProfile(profile) {
+		return evalInPage("chrome.runtime.sendMessage(" + JSON.stringify({ method: "config.updateProfile", profileName: "__Default_Settings__", profile }) + ")", true);
 	}
 
 	async function evalInFrame(expression) {

@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, fetch, Blob, TextEncoder */
+/* global browser, fetch, TextEncoder */
 
 import * as config from "./config.js";
 import * as bookmarks from "./bookmarks.js";
@@ -44,6 +44,7 @@ import * as offscreen from "./offscreen.js";
 
 const partialContents = new Map();
 const tabData = new Map();
+const viewerBlobURLs = new Map();
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const CONFLICT_ACTION_SKIP = "skip";
 const CONFLICT_ACTION_UNIQUIFY = "uniquify";
@@ -60,6 +61,14 @@ if (gDriveOauth2) {
 }
 const gDrive = new GDrive(GDRIVE_CLIENT_ID, GDRIVE_CLIENT_KEY, SCOPES);
 const dropbox = new Dropbox(DROPBOX_CLIENT_ID, DROPBOX_CLIENT_KEY);
+
+browser.tabs.onRemoved.addListener(tabId => {
+	const blobURL = viewerBlobURLs.get(tabId);
+	if (blobURL) {
+		viewerBlobURLs.delete(tabId);
+		offscreen.revokeObjectURL(blobURL).catch(() => { });
+	}
+});
 
 export {
 	onMessage,
@@ -133,7 +142,6 @@ async function downloadTabPage(message, tab) {
 				message.pageData = await yabson.parse(new Uint8Array(await (await fetch(message.blobURL)).arrayBuffer()));
 				await downloadCompressedContent(message, tab);
 			} else {
-				message.content = await (await fetch(message.blobURL)).text();
 				await downloadContent(message, tab);
 			}
 			// eslint-disable-next-line no-unused-vars
@@ -196,6 +204,7 @@ async function downloadTabPage(message, tab) {
 async function downloadContent(message, tab) {
 	const tabId = tab.id;
 	try {
+		const blob = await (await fetch(message.url)).blob();
 		let skipped;
 		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi && !message.saveToS3) {
 			const testSkip = await testSkipSave(message.filename, message);
@@ -209,15 +218,15 @@ async function downloadContent(message, tab) {
 			let response;
 			if (message.openEditor) {
 				ui.onEdit(tabId);
-				await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: message.content, url: message.originalUrl });
+				await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: await blob.text(), url: message.originalUrl });
 			} else if (message.saveToClipboard) {
-				await offscreen.saveToClipboard(message.content, message.mimeType);
+				await offscreen.saveToClipboard(await blob.text(), message.mimeType);
 			} else if (message.saveWithWebDAV) {
-				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), message.content, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
+				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
 			} else if (message.saveWithMCP) {
-				response = await saveWithMCP(message.taskId, encodeSharpCharacter(message.filename), message.content, message.mcpServerUrl, message.mcpAuthToken, { filenameConflictAction: message.filenameConflictAction, prompt });
+				response = await saveWithMCP(message.taskId, encodeSharpCharacter(message.filename), blob, message.mcpServerUrl, message.mcpAuthToken, { filenameConflictAction: message.filenameConflictAction, prompt });
 			} else if (message.saveToGDrive) {
-				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), new Blob([message.content], { type: message.mimeType }), {
+				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), blob, {
 					forceWebAuthFlow: message.forceWebAuthFlow
 				}, {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
@@ -225,13 +234,13 @@ async function downloadContent(message, tab) {
 					prompt
 				});
 			} else if (message.saveToDropbox) {
-				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), new Blob([message.content], { type: message.mimeType }), {
+				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), blob, {
 					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
 			} else if (message.saveToGitHub) {
-				response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), message.content, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
+				response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), blob, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
@@ -239,7 +248,7 @@ async function downloadContent(message, tab) {
 			} else if (message.saveWithCompanion) {
 				await companion.save({
 					filename: message.filename,
-					content: message.content,
+					content: await blob.text(),
 					title: message.title,
 					url: message.originalUrl,
 					filenameConflictAction: message.filenameConflictAction
@@ -248,7 +257,7 @@ async function downloadContent(message, tab) {
 				response = await saveToRestFormApi(
 					message.taskId,
 					message.filename,
-					message.content,
+					blob,
 					message.originalUrl,
 					message.saveToRestFormApiToken,
 					message.saveToRestFormApiUrl,
@@ -256,7 +265,7 @@ async function downloadContent(message, tab) {
 					message.saveToRestFormApiUrlFieldName
 				);
 			} else if (message.saveToS3) {
-				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), new Blob([message.content], { type: message.mimeType }), message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
+				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
@@ -285,11 +294,8 @@ async function downloadContent(message, tab) {
 			}
 			ui.onEnd(tabId);
 			if (message.openSavedPage && !message.openEditor) {
-				const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?blobURI=" + message.url };
-				if (tab.index != null) {
-					createTabProperties.index = tab.index + 1;
-				}
-				browser.tabs.create(createTabProperties);
+				const viewerBlobURL = await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())), message.mimeType);
+				await openViewerTab(tab, viewerBlobURL);
 			}
 		}
 	} catch (error) {
@@ -298,7 +304,7 @@ async function downloadContent(message, tab) {
 			ui.onError(tabId, error.message, error.link);
 		}
 	} finally {
-		if (!message.openSavedPage && message.url) {
+		if (message.url) {
 			try {
 				await offscreen.revokeObjectURL(message.url);
 				// eslint-disable-next-line no-unused-vars
@@ -311,7 +317,7 @@ async function downloadContent(message, tab) {
 
 async function downloadCompressedContent(message, tab) {
 	const tabId = tab.id;
-	let blobURI;
+	let blobURI, viewerOpened;
 	try {
 		const prompt = filename => promptFilename(tabId, filename);
 		let skipped, response;
@@ -438,11 +444,8 @@ async function downloadCompressedContent(message, tab) {
 			}
 			ui.onEnd(tabId);
 			if (message.openSavedPage && !message.openEditor) {
-				const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?compressed&blobURI=" + blobURI, windowId: tab.windowId };
-				if (tab.index != null) {
-					createTabProperties.index = tab.index + 1;
-				}
-				browser.tabs.create(createTabProperties);
+				await openViewerTab(tab, blobURI, { compressed: true });
+				viewerOpened = true;
 			}
 		}
 	} catch (error) {
@@ -451,7 +454,7 @@ async function downloadCompressedContent(message, tab) {
 			ui.onError(tabId, error.message, error.link);
 		}
 	} finally {
-		if (!message.openSavedPage && blobURI) {
+		if (!viewerOpened && blobURI) {
 			try {
 				await offscreen.revokeObjectURL(blobURI);
 				// eslint-disable-next-line no-unused-vars
@@ -460,6 +463,15 @@ async function downloadCompressedContent(message, tab) {
 			}
 		}
 	}
+}
+
+async function openViewerTab(tab, blobURL, { compressed } = {}) {
+	const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?" + (compressed ? "compressed&" : "") + "blobURI=" + blobURL, windowId: tab.windowId };
+	if (tab.index != null) {
+		createTabProperties.index = tab.index + 1;
+	}
+	const viewerTab = await browser.tabs.create(createTabProperties);
+	viewerBlobURLs.set(viewerTab.id, blobURL);
 }
 
 function encodeSharpCharacter(path) {
