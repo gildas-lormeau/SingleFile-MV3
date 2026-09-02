@@ -306,6 +306,10 @@ async function run() {
 	await new Promise(resolve => setTimeout(resolve, 500));
 	await assertEquals("addNote ignored on the TOC", () => evalInFrame("document.querySelectorAll('single-file-note').length"), 0);
 
+	// the editor's profile switch reads its options through this message, which applies
+	// the same background-save clamp as a regular save
+	await assertEquals("profile options carry the profile name", () => evalInPage("chrome.runtime.sendMessage({ method: 'config.getProfileOptions', profileName: '__Default_Settings__' }).then(options => options.profileName + ':' + typeof options.backgroundSave)", true), "__Default_Settings__:boolean");
+
 	await evalInFrame("document.querySelector(\"a[href='pages/2/index.html']\").click()");
 	await waitFor(() => evalInPage("location.hash == '#sfz/pages/2/' || undefined"), "route follows TOC click");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Alpha' || undefined"), "alpha page displayed");
