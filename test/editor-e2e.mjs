@@ -281,8 +281,9 @@ async function run() {
 	await evalInFrame("document.querySelector(\"a[href='pages/2/index.html']\").click()");
 	await waitFor(() => evalInPage("location.hash == '#sfz/pages/2/' || undefined"), "route follows TOC click");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Alpha' || undefined"), "alpha page displayed");
-	await assertEquals("cluster shows page title", () => evalInPage("document.querySelector('.archive-page-title').textContent"), "Alpha page");
-	await assertEquals("edit tools visible on a page", () => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => !element.hidden)"), true);
+	// the cluster is updated when the frame reports the displayed page, after the page itself is visible
+	await waitFor(() => evalInPage("document.querySelector('.archive-page-title').textContent == 'Alpha page' || undefined"), "cluster shows page title");
+	await waitFor(() => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => !element.hidden) || undefined"), "edit tools visible on a page");
 
 	await evalInFrame("document.body.dataset.testMarker = 'stashed'");
 	await evalInFrame("document.querySelector(\"a[href^='http'][href$='beta.html']\").click()");
