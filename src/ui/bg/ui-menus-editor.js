@@ -66,6 +66,7 @@ let currentSurface = "page";
 let pageContext = "page";
 let dragData = null;
 let renderedJson = "";
+let ownSaves = [];
 let pendingSave = Promise.resolve();
 
 document.getElementById("titleLabel").textContent = getMessage("menusTitle");
@@ -111,7 +112,30 @@ async function init() {
 	renderContextChips();
 	render();
 	bindEvents();
-	browser.storage.onChanged.addListener(refreshProfiles);
+	browser.storage.onChanged.addListener(onStorageChanged);
+}
+
+async function onStorageChanged(changes) {
+	if (Object.keys(changes).includes("menuLayout")) {
+		await refreshLayout();
+	}
+	await refreshProfiles();
+}
+
+async function refreshLayout() {
+	const { menuLayout } = await browser.runtime.sendMessage({ method: "config.getMenuLayout" });
+	const stored = JSON.stringify(menuLayout || getDefaultLayout());
+	const ownSaveIndex = ownSaves.indexOf(stored);
+	if (ownSaveIndex >= 0) {
+		ownSaves.splice(0, ownSaveIndex + 1);
+		return;
+	}
+	const current = JSON.stringify(normalizeLayout(serialize(layout)));
+	if (stored != current) {
+		layout = withUids(menuLayout || getDefaultLayout());
+		selected = null;
+		render();
+	}
 }
 
 async function refreshProfiles() {
@@ -867,6 +891,7 @@ function commit() {
 }
 
 function save(menuLayout = serialize(layout)) {
+	ownSaves.push(JSON.stringify(menuLayout ? normalizeLayout(menuLayout) : getDefaultLayout()));
 	pendingSave = pendingSave
 		.then(() => browser.runtime.sendMessage({ method: "config.setMenuLayout", menuLayout }))
 		.then(() => browser.runtime.sendMessage({ method: "ui.refreshMenu" }))
