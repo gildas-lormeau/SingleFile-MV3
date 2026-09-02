@@ -101,9 +101,15 @@ if (typeof globalThis == "undefined") {
 					(details => nativeAPI.identity.removeCachedAuthToken(details));
 			}
 		},
-		contextMenus: {
+		contextMenus: nativeAPI.contextMenus && {
 			onClicked: {
 				addListener: listener => nativeAPI.contextMenus.onClicked.addListener(listener)
+			},
+			get ACTION_MENU_TOP_LEVEL_LIMIT() {
+				return nativeAPI.contextMenus.ACTION_MENU_TOP_LEVEL_LIMIT;
+			},
+			get ContextType() {
+				return nativeAPI.contextMenus.ContextType;
 			},
 			create: options => nativeAPI.contextMenus.create(options),
 			update: (menuItemId, options) => nativeAPI.contextMenus.update(menuItemId, options),
