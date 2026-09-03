@@ -143,9 +143,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${{ github.event.release.tag_name }}" singlefile-extension-chromium.zip singlefile-extension-edge.zip --clobber
+      # a store rejecting the package must not skip the other store, so both steps
+      # run and the last step turns the job red when one of them failed
       -
         name: Submit to the Chrome Web Store
+        id: cws
         if: github.event_name == 'release' || (!inputs.dry_run && inputs.cws)
+        continue-on-error: true
         env:
           CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
           CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
@@ -193,7 +197,9 @@ jobs:
           exit 1
       -
         name: Submit to Microsoft Edge Add-ons
+        id: edge
         if: github.event_name == 'release' || (!inputs.dry_run && inputs.edge)
+        continue-on-error: true
         env:
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
@@ -203,32 +209,55 @@ jobs:
           EDGE_API_KEY=$(printf %s "$EDGE_API_KEY" | tr -d "[:space:]")
           EDGE_PRODUCT_ID=$(printf %s "$EDGE_PRODUCT_ID" | tr -d "[:space:]")
           api="https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID"
+          # the API answers an accepted request with 202 and the operation URL in the
+          # Location header; anything else carries the reason in the body
+          submit() {
+            status=$(curl -s -D edge-headers -o edge-body -w "%{http_code}" -X POST \
+              -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$@")
+            if [ "$status" != "202" ]; then
+              echo "Microsoft Edge Add-ons request failed (HTTP $status)"
+              cat edge-body
+              echo
+              return 1
+            fi
+            operation=$(tr -d "\r" < edge-headers | awk -F": " "tolower(\$1) == \"location\" { print \$2 }")
+            operation=${operation##*/}
+            test -n "$operation"
+          }
           poll() {
             for attempt in $(seq 1 30); do
-              status=$(curl -sf -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$1" | jq -r .status)
+              response=$(curl -s -w "\n%{http_code}" -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$1")
+              status=$(printf %s "$response" | tail -n 1)
+              body=$(printf '%s\n' "$response" | sed '$d')
+              if [ "$status" != "200" ]; then
+                echo "Microsoft Edge Add-ons status check failed (HTTP $status)"
+                printf '%s\n' "$body"
+                return 1
+              fi
+              status=$(printf %s "$body" | jq -r .status)
               echo "status: $status"
               if [ "$status" = "Succeeded" ]; then
                 return 0
               fi
               if [ "$status" = "Failed" ]; then
-                curl -sf -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$1"
+                printf '%s\n' "$body"
                 return 1
               fi
               sleep 10
             done
+            echo "the Microsoft Edge Add-ons operation is still pending after 5 minutes"
             return 1
           }
-          operation=$(curl -sfD - -o /dev/null -X POST \
-            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" -H "Content-Type: application/zip" \
-            -T singlefile-extension-edge.zip "$api/submissions/draft/package" | tr -d "\r" | awk -F": " "tolower(\$1) == \"location\" { print \$2 }")
-          operation=${operation##*/}
-          test -n "$operation"
+          submit -H "Content-Type: application/zip" -T singlefile-extension-edge.zip "$api/submissions/draft/package"
           poll "$api/submissions/draft/package/operations/$operation"
-          operation=$(curl -sfD - -o /dev/null -X POST \
-            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" -H "Content-Type: application/json" \
+          submit -H "Content-Type: application/json" \
             -d "{\"notes\":\"Automated submission of version $(jq -r .version manifest.json) from GitHub Actions\"}" \
-            "$api/submissions" | tr -d "\r" | awk -F": " "tolower(\$1) == \"location\" { print \$2 }")
-          operation=${operation##*/}
-          test -n "$operation"
+            "$api/submissions"
           poll "$api/submissions/operations/$operation"
           echo "submitted to Microsoft Edge Add-ons"
+      -
+        name: Check both stores accepted the submission
+        if: steps.cws.outcome == 'failure' || steps.edge.outcome == 'failure'
+        run: |
+          echo "Chrome Web Store: ${{ steps.cws.outcome }}, Microsoft Edge Add-ons: ${{ steps.edge.outcome }}"
+          exit 1
