@@ -229,7 +229,7 @@ jobs:
               response=$(curl -s -w "\n%{http_code}" -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" "$1")
               status=$(printf %s "$response" | tail -n 1)
               body=$(printf '%s\n' "$response" | sed '$d')
-              if [ "$status" != "200" ]; then
+              if [ "$status" != "200" ] && [ "$status" != "202" ]; then
                 echo "Microsoft Edge Add-ons status check failed (HTTP $status)"
                 printf '%s\n' "$body"
                 return 1
