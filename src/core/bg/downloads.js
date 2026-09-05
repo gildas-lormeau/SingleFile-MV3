@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, fetch, TextEncoder */
+/* global browser, fetch, TextEncoder, Blob */
 
 import * as config from "./config.js";
 import * as bookmarks from "./bookmarks.js";
@@ -142,7 +142,8 @@ async function downloadTabPage(message, tab) {
 				message.pageData = await yabson.parse(new Uint8Array(await (await fetch(message.blobURL)).arrayBuffer()));
 				await downloadCompressedContent(message, tab);
 			} else {
-				await downloadContent(message, tab);
+				const blob = await (await fetch(message.blobURL)).blob();
+				await downloadContent(blob, message, tab);
 			}
 			// eslint-disable-next-line no-unused-vars
 		} catch (error) {
@@ -187,7 +188,7 @@ async function downloadTabPage(message, tab) {
 			message.content = contents.join("");
 			try {
 				message.url = await offscreen.getBlobURL(Array.from(new TextEncoder().encode(message.content)), message.mimeType);
-				await downloadContent(message, tab);
+				await downloadContent(new Blob(contents, { type: message.mimeType }), message, tab);
 			} finally {
 				try {
 					await offscreen.revokeObjectURL(message.url);
@@ -201,10 +202,9 @@ async function downloadTabPage(message, tab) {
 	return {};
 }
 
-async function downloadContent(message, tab) {
+async function downloadContent(blob, message, tab) {
 	const tabId = tab.id;
 	try {
-		const blob = await (await fetch(message.url)).blob();
 		let skipped;
 		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi && !message.saveToS3) {
 			const testSkip = await testSkipSave(message.filename, message);
