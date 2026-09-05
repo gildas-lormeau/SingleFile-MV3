@@ -446,6 +446,8 @@ async function run() {
 	await waitFor(() => evalInFrame("(() => { const heading = document.querySelector('h1'); return heading && heading.textContent == 'Gamma' || undefined; })()"), "dropped plain page displayed");
 	await assertEquals("plain drop: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("plain drop: archive route cleared", () => evalInPage("location.hash"), "");
+	await evalInPage("document.querySelector('.add-note-yellow-button').dispatchEvent(new MouseEvent('mouseup'))");
+	await waitFor(() => evalInFrame("Boolean(document.querySelector('single-file-note')) || undefined"), "note added to the dropped plain page");
 	await evalInPage(FILENAME_CAPTURE_SCRIPT);
 	clearDownloadDir();
 	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
@@ -454,6 +456,7 @@ async function run() {
 	await assertEquals("plain drop on disk under the dropped filename", () => basename(savedPlainPath), "dropped-plain.html");
 	const savedPlainContent = readFileSync(savedPlainPath).toString();
 	await assertEquals("plain drop save is a plain page with the dropped content", async () => savedPlainContent.includes("Gamma") && !savedPlainContent.includes("data-sfz") && !savedPlainContent.includes("sfz-pages.json"), true);
+	await assertEquals("plain drop save keeps the note added in the editor", async () => savedPlainContent.includes("single-file-note"), true);
 
 	const digestBase64 = readFileSync(DIGEST_FIXTURE_PATH).toString("base64");
 	await openEditorArchive(digestBase64, "classic-digest.html", false);
