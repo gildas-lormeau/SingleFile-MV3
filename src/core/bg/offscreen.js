@@ -91,12 +91,12 @@ async function createOffscreenDocument() {
 		return;
 	}
 
-	if (creating) {
-		await creating;
-	} else {
-		creating = await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER", "WORKERS", "CLIPBOARD", "BLOBS"] });
-		creating = null;
+	if (!creating) {
+		creating = browser.offscreen
+			.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER", "WORKERS", "CLIPBOARD", "BLOBS"] })
+			.finally(() => creating = null);
 	}
+	await creating;
 }
 
 async function sendMessageData(message, data) {
