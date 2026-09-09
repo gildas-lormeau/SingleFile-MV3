@@ -338,6 +338,7 @@ async function downloadCompressedContent(message, tab) {
 				disableCompression: message.disableCompression,
 				extractDataFromPage: message.extractDataFromPage,
 				preventAppendedData: message.preventAppendedData,
+				maxAppendedDataLength: message.maxAppendedDataLength,
 				insertCanonicalLink: message.insertCanonicalLink,
 				insertMetaNoIndex: message.insertMetaNoIndex,
 				insertMetaCSP: message.insertMetaCSP,

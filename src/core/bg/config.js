@@ -141,6 +141,7 @@ const DEFAULT_CONFIG = {
 	disableCompression: false,
 	extractDataFromPage: false,
 	preventAppendedData: false,
+	maxAppendedDataLength: 16361,
 	insertEmbeddedImage: false,
 	insertEmbeddedScreenshotImage: false,
 	insertTextBody: false,
