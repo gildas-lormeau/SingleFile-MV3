@@ -561,7 +561,8 @@ async function saveArchive(message) {
 		tocPage: message.tocPage,
 		dedupPages: Boolean(manifest.aliases),
 		markUnarchivedLinks: Boolean(manifest.markUnarchivedLinks),
-		pageTransitions: manifest.pageTransitions
+		pageTransitions: manifest.pageTransitions,
+		createRootDirectory: Boolean(manifestPages.length && manifestPages[0].path)
 	});
 	await zipReader.close();
 	const downloadOptions = Object.assign({}, options, {
