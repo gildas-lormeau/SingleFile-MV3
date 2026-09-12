@@ -21,10 +21,9 @@
  *   Source.
  */
 
-/* global browser, fetch, setTimeout */
+/* global browser, fetch */
 
 const MAX_CONTENT_SIZE = 8 * (1024 * 1024);
-const REQUEST_WAIT_DELAY = 1000;
 
 let requestId = 1;
 
@@ -72,14 +71,13 @@ async function sendResponse(tabId, requestId, response) {
 	return {};
 }
 
-async function fetchResource(url, options = {}) {
-	options.cache = "no-store";
-	const response = await fetch(url, options);
-	if (options.referrer && (response.status == 401 || response.status == 403 || response.status == 404)) {
-		const requestId = await enableReferrerOnError(url, options.referrer);
-		await new Promise(resolve => setTimeout(resolve, REQUEST_WAIT_DELAY));
+async function fetchResource(url, { referrer, ...fetchOptions } = {}) {
+	fetchOptions.cache = "no-store";
+	const response = await fetch(url, fetchOptions);
+	if (referrer && (response.status == 401 || response.status == 403 || response.status == 404)) {
+		const requestId = await enableReferrerOnError(url, referrer);
 		try {
-			const response = await fetch(url, options);
+			const response = await fetch(url, fetchOptions);
 			const array = Array.from(new Uint8Array(await response.arrayBuffer()));
 			const headers = [...response.headers];
 			const status = response.status;
