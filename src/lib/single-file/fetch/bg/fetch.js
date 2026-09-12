@@ -81,7 +81,7 @@ async function fetchResource(url, options = {}) {
 		try {
 			const response = await fetch(url, options);
 			const array = Array.from(new Uint8Array(await response.arrayBuffer()));
-			const headers = { "content-type": response.headers.get("content-type") };
+			const headers = [...response.headers];
 			const status = response.status;
 			return {
 				array,
@@ -94,7 +94,7 @@ async function fetchResource(url, options = {}) {
 	}
 
 	const array = Array.from(new Uint8Array(await response.arrayBuffer()));
-	const headers = { "content-type": response.headers.get("content-type") };
+	const headers = [...response.headers];
 	const status = response.status;
 	return {
 		array,

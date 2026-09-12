@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, window, document, CustomEvent */
+/* global browser, window, document, CustomEvent, Headers */
 
 const FETCH_SUPPORTED_REQUEST_EVENT = "single-file-request-fetch-supported";
 const FETCH_SUPPORTED_RESPONSE_EVENT = "single-file-response-fetch-supported";
@@ -79,7 +79,7 @@ async function onFetchResponse(message) {
 			if (!message.truncated || message.finished) {
 				pendingResponse.resolve({
 					status: message.status,
-					headers: { get: headerName => message.headers && message.headers[headerName] },
+					headers: getHeaders(message.headers),
 					arrayBuffer: async () => new Uint8Array(message.array).buffer
 				});
 				pendingResponses.delete(message.requestId);
@@ -107,7 +107,7 @@ async function hostFetch(url, options) {
 						if (event.detail.response) {
 							resolve({
 								status: event.detail.status,
-								headers: new Map(event.detail.headers),
+								headers: getHeaders(event.detail.headers),
 								arrayBuffer: async () => event.detail.response
 							});
 						} else {
@@ -173,9 +173,13 @@ async function frameFetch(url, options) {
 	const response = await sendMessage({ method: "singlefile.fetchFrame", url, frameId: options.frameId, referrer: options.referrer, headers: options.headers });
 	return {
 		status: response.status,
-		headers: new Map(response.headers),
+		headers: getHeaders(response.headers),
 		arrayBuffer: async () => new Uint8Array(response.array).buffer
 	};
+}
+
+function getHeaders(headers) {
+	return new Headers(headers ? Array.from(headers, header => [header[0], header[1]]) : []);
 }
 
 async function sendMessage(message) {
