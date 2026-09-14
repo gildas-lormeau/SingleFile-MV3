@@ -1,22 +1,11 @@
 #!/bin/bash
 
-dpkg -s zip &> /dev/null
-if [ $? -ne 0 ]
-then
-    if ! command -v zip &> /dev/null; then
-        echo "Installing zip"
-        sudo apt install zip
+for tool in zip jq; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo "$tool is required, please install it"
+        exit 1
     fi
-fi
-
-dpkg -s jq &> /dev/null
-if [ $? -ne 0 ]
-then
-    if ! command -v jq &> /dev/null; then
-        echo "Installing jq"
-        sudo apt install jq
-    fi
-fi
+done
 
 npm ci
 
