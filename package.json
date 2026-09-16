@@ -8,6 +8,7 @@
 		"dev": "./build-dev.sh",
 		"build": "./build-extension.sh",
 		"test": "node test/editor-e2e.mjs",
+		"test:unit": "node --test \"test/*.test.js\"",
 		"install-test-browser": "browsers install chrome@131.0.6778.204 --path test/.browser"
 	},
 	"type": "module",
