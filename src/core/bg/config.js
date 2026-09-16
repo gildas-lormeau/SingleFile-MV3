@@ -76,6 +76,7 @@ const DEFAULT_CONFIG = {
 	infobarTemplate: "",
 	includeInfobar: false,
 	openInfobar: false,
+	animateInfobar: true,
 	confirmInfobarContent: false,
 	autoClose: false,
 	confirmFilename: false,
