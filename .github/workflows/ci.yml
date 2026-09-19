@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       -
@@ -66,7 +66,7 @@ jobs:
           unzip -p singlefile-extension-edge.zip lib/single-file-extension-background.js | grep -q WOLEET_API_KEY_PLACEHOLDER
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       -
