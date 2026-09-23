@@ -15,6 +15,7 @@ const FIXTURE_PATH = process.env.SF_FIXTURE_PATH || join(FIXTURES_PATH, "multi-p
 const SINGLE_PAGE_FIXTURE_PATH = process.env.SF_SINGLE_PAGE_FIXTURE_PATH || join(FIXTURES_PATH, "single-page.zip.html");
 const DEDUP_FIXTURE_PATH = process.env.SF_DEDUP_FIXTURE_PATH || join(FIXTURES_PATH, "multi-page-dedup.zip.html");
 const DIGEST_FIXTURE_PATH = process.env.SF_DIGEST_FIXTURE_PATH || join(FIXTURES_PATH, "classic-digest.html");
+const NESTING_FIXTURE_PATH = new URL("fixtures/nesting.zip.html", import.meta.url).pathname;
 const ZIP_MODULE_URL = new URL("../node_modules/single-file-core/vendor/zip/zip.js", import.meta.url).href;
 const FILENAME_CAPTURE_SCRIPT = "(() => {" +
 	"if (!window.__sendMessagePatched) {" +
@@ -31,6 +32,9 @@ const FILENAME_CAPTURE_SCRIPT = "(() => {" +
 	"window.__savedFilename = undefined;" +
 	"})()";
 const PLAIN_PAGE_CONTENT = "<!DOCTYPE html><html><!--\n Page saved with SingleFile \n url: https://example.com/plain\n saved date: Thu Aug 27 2026 00:00:00 GMT+0000\n--><head><meta charset=\"utf-8\"><title>Plain page</title></head><body><h1>Gamma</h1></body></html>";
+const NESTING_PAGE_CONTENT = "<!DOCTYPE html><html><!--\n Page saved with SingleFile \n url: https://example.com/nesting\n saved date: Thu Sep 24 2026 00:00:00 GMT+0000\n--><head><meta charset=\"utf-8\"><title>Nesting page</title></head><body>" +
+	"<form id=bouter>" + getNestingMarkers("1.1.1", "binner", "body inner") + "</form>" +
+	"<div id=host><template shadowrootmode=open><form id=souter>" + getNestingMarkers("s0.1.1", "sinner", "shadow inner") + "</form><p id=clean>clean <b>bold</b></p></template></div></body></html>";
 const CHROME_PATH = findChrome();
 const DEBUG_PORT = Number(process.env.SF_E2E_PORT) || 19000 + (process.pid % 2000);
 const EDITOR_PAGE_PATH = "/src/ui/pages/editor.html";
@@ -38,6 +42,11 @@ const SENDER_PAGE_PATH = "/src/ui/pages/pendings.html";
 
 options.apiUrl = "http://127.0.0.1:" + DEBUG_PORT;
 options.commandMaxTime = 15000;
+
+function getNestingMarkers(trackId, id, content) {
+	const data = encodeURIComponent(JSON.stringify({ tag: "form", attributes: [["id", id], ["data-sf-nesting-track-id", trackId]] }));
+	return "<!--data-sf-nesting-track-id-start " + trackId + " " + data + "-->" + content + "<!--data-sf-nesting-track-id-end " + trackId + "-->";
+}
 
 function findChrome() {
 	if (process.env.SF_CHROME_PATH) {
@@ -469,6 +478,30 @@ async function run() {
 	const savedDigestHash = createHash("sha256").update(readFileSync(savedDigestPath)).digest("hex");
 	await assertEquals("digest filename recomputed from the template data", () => /^Digest fixture_[0-9a-f]{64}\.html$/.test(savedDigestName), true);
 	await assertEquals("filename digest matches the saved bytes", () => savedDigestName.includes(savedDigestHash), true);
+
+	await openEditorArchive(Buffer.from(NESTING_PAGE_CONTENT).toString("base64"), "nesting.html", false);
+	await waitFor(() => evalInFrame("(() => { const host = document.getElementById('host'); return host && host.shadowRoot && host.shadowRoot.getElementById('clean') ? true : undefined; })()"), "page with dropped forms displayed");
+	await assertEquals("the editor re-creates a dropped form in the page", () => evalInFrame("Boolean(document.querySelector('#bouter > #binner'))"), true);
+	await assertEquals("and in a shadow root", () => evalInFrame("Boolean(document.getElementById('host').shadowRoot.querySelector('#souter > #sinner'))"), true);
+	await evalInPage(FILENAME_CAPTURE_SCRIPT);
+	clearDownloadDir();
+	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
+	const savedNestingContent = readFileSync(await waitForDownload("page with dropped forms downloaded")).toString();
+	await assertEquals("the saved page carries markers for both forms and nothing else", () => JSON.stringify(Array.from(savedNestingContent.matchAll(/data-sf-nesting-track-id-start \S+ (\S+?)-->/g), match => JSON.parse(decodeURIComponent(match[1])).attributes.find(([name]) => name == "id")[1])), JSON.stringify(["binner", "sinner"]));
+
+	await openEditorArchive(readFileSync(NESTING_FIXTURE_PATH).toString("base64"), "nesting.zip.html");
+	await waitFor(() => evalInFrame("(() => { const host = document.getElementById('host'); return host && host.shadowRoot && host.shadowRoot.getElementById('clean') ? true : undefined; })()"), "archive with dropped forms displayed");
+	await assertEquals("the editor re-creates a dropped form in a shadow root of an archive", () => evalInFrame("Boolean(document.getElementById('host').shadowRoot.querySelector('#souter > #sinner'))"), true);
+	await evalInFrame("document.getElementById('host').shadowRoot.getElementById('clean').append(' edited')");
+	clearDownloadDir();
+	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
+	const savedNestingArchivePath = await waitForDownload("archive with dropped forms downloaded");
+	const nestingZip = await import(ZIP_MODULE_URL);
+	const nestingReader = new nestingZip.ZipReader(new nestingZip.Uint8ArrayReader(new Uint8Array(readFileSync(savedNestingArchivePath))));
+	const savedNestingArchiveContent = await (await nestingReader.getEntries()).find(entry => entry.filename == "index.html").getData(new nestingZip.TextWriter());
+	await nestingReader.close();
+	await assertEquals("the saved archive keeps the edit made in the shadow root", () => savedNestingArchiveContent.includes("bold</b> edited"), true);
+	await assertEquals("and carries markers for both forms and nothing else", () => JSON.stringify(Array.from(savedNestingArchiveContent.matchAll(/data-sf-nesting-track-id-start \S+ (\S+?)-->/g), match => JSON.parse(decodeURIComponent(match[1])).attributes.find(([name]) => name == "id")[1])), JSON.stringify(["binner", "sinner"]));
 
 
 
