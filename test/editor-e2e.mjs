@@ -483,10 +483,13 @@ async function run() {
 	await waitFor(() => evalInFrame("(() => { const host = document.getElementById('host'); return host && host.shadowRoot && host.shadowRoot.getElementById('clean') ? true : undefined; })()"), "page with dropped forms displayed");
 	await assertEquals("the editor re-creates a dropped form in the page", () => evalInFrame("Boolean(document.querySelector('#bouter > #binner'))"), true);
 	await assertEquals("and in a shadow root", () => evalInFrame("Boolean(document.getElementById('host').shadowRoot.querySelector('#souter > #sinner'))"), true);
+	await assertEquals("the host keeps no template once its shadow root is attached", () => evalInFrame("document.querySelectorAll('#host > template').length"), 0);
+	await evalInFrame("document.getElementById('host').shadowRoot.getElementById('clean').append(' edited')");
 	await evalInPage(FILENAME_CAPTURE_SCRIPT);
 	clearDownloadDir();
 	await evalInPage("document.querySelector('.save-page-button').dispatchEvent(new MouseEvent('mouseup'))");
 	const savedNestingContent = readFileSync(await waitForDownload("page with dropped forms downloaded")).toString();
+	await assertEquals("the saved page keeps the edit made in the shadow root, in a single template", () => savedNestingContent.includes("bold</b> edited") && savedNestingContent.match(/<template shadowrootmode/g).length, 1);
 	await assertEquals("the saved page carries markers for both forms and nothing else", () => JSON.stringify(Array.from(savedNestingContent.matchAll(/data-sf-nesting-track-id-start \S+ (\S+?)-->/g), match => JSON.parse(decodeURIComponent(match[1])).attributes.find(([name]) => name == "id")[1])), JSON.stringify(["binner", "sinner"]));
 
 	await openEditorArchive(readFileSync(NESTING_FIXTURE_PATH).toString("base64"), "nesting.zip.html");
