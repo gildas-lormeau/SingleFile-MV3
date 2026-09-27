@@ -111,7 +111,7 @@ async function sendMessageData(message, data) {
 	for (let blockIndex = 0; blockIndex * MAX_CONTENT_SIZE < data.length; blockIndex++) {
 		message.truncated = data.length > MAX_CONTENT_SIZE;
 		if (message.truncated) {
-			message.finished = (blockIndex + 1) * MAX_CONTENT_SIZE > data.length;
+			message.finished = (blockIndex + 1) * MAX_CONTENT_SIZE >= data.length;
 			message.data = data.slice(blockIndex * MAX_CONTENT_SIZE, (blockIndex + 1) * MAX_CONTENT_SIZE);
 		} else {
 			message.data = data;
