@@ -10,6 +10,7 @@ import { basename, join, resolve } from "node:path";
 import { cdp, getTargets, options } from "simple-cdp";
 
 const EXTENSION_PATH = process.env.SF_EXTENSION_PATH || resolve(new URL("..", import.meta.url).pathname);
+const SERVICE_WORKER_PATH = "/" + JSON.parse(readFileSync(join(EXTENSION_PATH, "manifest.json"), "utf8")).background.service_worker;
 const FIXTURES_PATH = new URL("../node_modules/single-file-core/test/fixtures/", import.meta.url).pathname;
 const FIXTURE_PATH = process.env.SF_FIXTURE_PATH || join(FIXTURES_PATH, "multi-page.zip.html");
 const SINGLE_PAGE_FIXTURE_PATH = process.env.SF_SINGLE_PAGE_FIXTURE_PATH || join(FIXTURES_PATH, "single-page.zip.html");
@@ -181,7 +182,7 @@ function waitForDownload(description) {
 
 async function run() {
 	const extensionId = await waitFor(async () => {
-		const targets = (await getTargets()).filter(target => target.type == "service_worker" && target.url.startsWith("chrome-extension://"));
+		const targets = (await getTargets()).filter(target => target.type == "service_worker" && target.url.startsWith("chrome-extension://") && new URL(target.url).pathname == SERVICE_WORKER_PATH);
 		if (process.env.SF_E2E_DEBUG) {
 			console.log("targets:", (await getTargets()).map(target => target.type + " " + target.url.substring(0, 70)));
 		}
