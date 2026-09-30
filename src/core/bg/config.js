@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, navigator, Blob, File, btoa */
+/* global browser, navigator, btoa */
 
 import { download } from "./download-util.js";
 import * as tabsData from "./tabs-data.js";
@@ -42,7 +42,6 @@ const EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY = "externalCaptureDeniedExtensio
 const MENU_LAYOUT_KEY = "menuLayout";
 
 const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
-const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });
 const BROWSER_MENUS_API_SUPPORTED = Boolean(browser.contextMenus);
 const LEGACY_FILENAME_REPLACED_CHARACTERS = ["~", "+", "\\\\", "?", "%", "*", ":", "|", "\"", "<", ">", "\u0000-\u001f", "\u007f"];
 
@@ -258,7 +257,6 @@ export {
 	PROFILE_NAME_PREFIX,
 	MENU_LAYOUT_KEY,
 	BACKGROUND_SAVE_SUPPORTED,
-	SHARE_API_SUPPORTED,
 	BROWSER_MENUS_API_SUPPORTED,
 	getConfig as get,
 	getRule,
@@ -534,7 +532,6 @@ async function onMessage(message) {
 			DEFAULT_PROFILE_NAME,
 			CURRENT_PROFILE_NAME,
 			BACKGROUND_SAVE_SUPPORTED,
-			SHARE_API_SUPPORTED,
 			BROWSER_MENUS_API_SUPPORTED,
 			DEFAULT_FILENAME_REPLACED_CHARACTERS,
 			DEFAULT_FILENAME_REPLACEMENT_CHARACTERS

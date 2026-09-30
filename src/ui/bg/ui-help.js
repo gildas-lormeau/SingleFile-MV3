@@ -21,14 +21,14 @@
  *   Source.
  */
 
-/* global browser, document */
+/* global browser, document, navigator, File, Blob */
 
-let BACKGROUND_SAVE_SUPPORTED,
-	SHARE_API_SUPPORTED;
+const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });
+
+let BACKGROUND_SAVE_SUPPORTED;
 browser.runtime.sendMessage({ method: "config.getConstants" }).then(data => {
 	({
-		BACKGROUND_SAVE_SUPPORTED,
-		SHARE_API_SUPPORTED
+		BACKGROUND_SAVE_SUPPORTED
 	} = data);
 	init();
 });
