@@ -726,13 +726,18 @@ async function downloadContent(message) {
 	const result = await downloadParser.next(message.data);
 	if (result.done) {
 		downloadParser = null;
-		if (result.value.foregroundSave || result.value.sharePage) {
+		if (result.value.sharePage) {
+			download.downloadPageForeground({
+				filename: result.value.filename,
+				content: new Uint8Array(result.value.content),
+				mimeType: result.value.mimeType
+			}, { sharePage: true }).catch(error => onError(error.message));
+		} else if (result.value.foregroundSave) {
 			editorElement.contentWindow.postMessage(JSON.stringify({
 				method: "download",
 				filename: result.value.filename,
 				content: Array.from(new Uint8Array(result.value.content)),
-				mimeType: result.value.mimeType,
-				sharePage: result.value.sharePage
+				mimeType: result.value.mimeType
 			}), "*");
 		} else {
 			const link = document.createElement("a");

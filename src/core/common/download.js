@@ -250,7 +250,7 @@ async function downloadPageForeground(pageData, options) {
 
 async function sharePage(pageData, options) {
 	sharePageBar = getSharePageBar();
-	const cancelled = await sharePageBar.display(options.selected);
+	const cancelled = navigator.userActivation && navigator.userActivation.isActive ? false : await sharePageBar.display(options.selected);
 	if (!cancelled) {
 		const data = { files: [new File([pageData.content], pageData.filename, { type: pageData.mimeType })] };
 		try {

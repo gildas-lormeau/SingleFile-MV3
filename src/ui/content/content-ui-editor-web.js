@@ -231,7 +231,7 @@ import { convert } from "../../lib/mhtml-to-html/mod.js";
 						documentHeight: document.documentElement.offsetHeight
 					}), "*");
 				} else {
-					if (message.foregroundSave || message.sharePage) {
+					if (message.foregroundSave && !message.sharePage) {
 						try {
 							await downloadPageForeground({
 								content,
