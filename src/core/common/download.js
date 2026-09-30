@@ -258,9 +258,7 @@ async function sharePage(pageData, options) {
 			sharePageBar.hide();
 		} catch (error) {
 			sharePageBar.hide();
-			if (error.name === "AbortError") {
-				await sharePage(pageData, options);
-			} else {
+			if (error.name !== "AbortError") {
 				throw error;
 			}
 		}
