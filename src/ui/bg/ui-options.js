@@ -109,6 +109,7 @@ const insertEmbeddedCustomImageLabel = document.getElementById("insertEmbeddedCu
 const insertEmbeddedScreenshotImageLabel = document.getElementById("insertEmbeddedScreenshotImageLabel");
 const groupDuplicateStylesheetsLabel = document.getElementById("groupDuplicateStylesheetsLabel");
 const moveStylesInHeadLabel = document.getElementById("moveStylesInHeadLabel");
+const customStylesheetLabel = document.getElementById("customStylesheetLabel");
 const imageReductionFactorLabel = document.getElementById("imageReductionFactorLabel");
 const imageQualityLabel = document.getElementById("imageQualityLabel");
 const loadDeferredContentLabel = document.getElementById("loadDeferredContentLabel");
@@ -290,6 +291,7 @@ const groupDuplicateStylesheetsInput = document.getElementById("groupDuplicateSt
 const imageReductionFactorInput = document.getElementById("imageReductionFactorInput");
 const imageQualityInput = document.getElementById("imageQualityInput");
 const moveStylesInHeadInput = document.getElementById("moveStylesInHeadInput");
+const customStylesheetInput = document.getElementById("customStylesheetInput");
 const loadDeferredContentInput = document.getElementById("loadDeferredContentInput");
 const loadDeferredContentMaxIdleTimeInput = document.getElementById("loadDeferredContentMaxIdleTimeInput");
 const loadDeferredContentKeepZoomLevelInput = document.getElementById("loadDeferredContentKeepZoomLevelInput");
@@ -805,6 +807,7 @@ insertEmbeddedCustomImageLabel.textContent = browser.i18n.getMessage("optionInse
 insertEmbeddedScreenshotImageLabel.textContent = browser.i18n.getMessage("optionInsertEmbeddedScreenshotImage");
 groupDuplicateStylesheetsLabel.textContent = browser.i18n.getMessage("optionGroupDuplicateStylesheets");
 moveStylesInHeadLabel.textContent = browser.i18n.getMessage("optionMoveStylesInHead");
+customStylesheetLabel.textContent = browser.i18n.getMessage("optionCustomStylesheet");
 imageReductionFactorLabel.textContent = browser.i18n.getMessage("optionImageReductionFactor");
 imageQualityLabel.textContent = browser.i18n.getMessage("optionImageQuality");
 loadDeferredContentLabel.textContent = browser.i18n.getMessage("optionLoadDeferredContent");
@@ -1159,6 +1162,7 @@ async function refresh(profileName) {
 	compressHTMLInput.checked = profileOptions.compressHTML;
 	groupDuplicateStylesheetsInput.checked = profileOptions.groupDuplicateStylesheets;
 	moveStylesInHeadInput.checked = profileOptions.moveStylesInHead;
+	customStylesheetInput.value = profileOptions.customStylesheet;
 	loadDeferredContentInput.checked = profileOptions.loadDeferredContent;
 	loadDeferredContentMaxIdleTimeInput.value = profileOptions.loadDeferredContentMaxIdleTime;
 	loadDeferredContentKeepZoomLevelInput.checked = profileOptions.loadDeferredContentKeepZoomLevel;
@@ -1400,6 +1404,7 @@ async function update() {
 			insertEmbeddedScreenshotImage: insertEmbeddedScreenshotImageInput.checked,
 			groupDuplicateStylesheets: groupDuplicateStylesheetsInput.checked,
 			moveStylesInHead: moveStylesInHeadInput.checked,
+			customStylesheet: customStylesheetInput.value,
 			loadDeferredContent: loadDeferredContentInput.checked,
 			loadDeferredContentMaxIdleTime: Math.max(loadDeferredContentMaxIdleTimeInput.value, 0),
 			loadDeferredContentKeepZoomLevel: loadDeferredContentKeepZoomLevelInput.checked,
