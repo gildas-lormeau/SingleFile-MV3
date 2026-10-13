@@ -261,6 +261,7 @@ export {
 	getConfig as get,
 	getRule,
 	getOptions,
+	getProfileOptions,
 	getMenuLayout,
 	getExternalCapturePermissions,
 	setExternalCapturePermissions,
@@ -544,6 +545,9 @@ async function onMessage(message) {
 	if (message.method.endsWith(".getProfileOptions")) {
 		return getProfileOptions(message.profileName);
 	}
+	if (message.method.endsWith(".getProfileName")) {
+		return getProfileName(message.url);
+	}
 	if (message.method.endsWith(".getProfiles")) {
 		return getProfiles();
 	}
@@ -614,17 +618,19 @@ async function getProfiles() {
 }
 
 async function getOptions(url, autoSave) {
+	return getProfileOptions(await getProfileName(url, autoSave));
+}
+
+async function getProfileName(url, autoSave) {
 	await pendingUpgradePromise;
 	const [rule, allTabsData] = await Promise.all([getRule(url), tabsData.get()]);
 	const tabProfileName = allTabsData.profileName || DEFAULT_PROFILE_NAME;
-	let selectedProfileName;
 	if (rule) {
 		const profileName = rule[autoSave ? "autoSaveProfile" : "profile"];
-		selectedProfileName = profileName == CURRENT_PROFILE_NAME ? tabProfileName : profileName;
+		return profileName == CURRENT_PROFILE_NAME ? tabProfileName : profileName;
 	} else {
-		selectedProfileName = tabProfileName;
+		return tabProfileName;
 	}
-	return getProfileOptions(selectedProfileName);
 }
 
 async function getProfileOptions(profileName) {
