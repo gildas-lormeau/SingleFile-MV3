@@ -107,26 +107,27 @@ async function batchSaveUrls() {
 
 async function saveUrls(urls, options = {}) {
 	await initMaxParallelWorkers();
-	await Promise.all(urls.map(async url => {
+	const pendingTasks = await Promise.all(urls.map(async url => {
 		const tabOptions = await config.getOptions(url);
 		if (tabOptions.profileName != config.DISABLED_PROFILE_NAME) {
 			Object.keys(options).forEach(key => tabOptions[key] = options[key]);
 			tabOptions.autoClose = true;
 			tabOptions.originalUrl = url;
-			addTask({
+			return {
 				tab: { url },
 				status: TASK_PENDING_STATE,
 				options: tabOptions,
 				method: "content.save"
-			});
+			};
 		}
 	}));
+	pendingTasks.filter(Boolean).forEach(addTask);
 	runTasks();
 }
 
 async function saveTabs(tabs, options = {}) {
 	await initMaxParallelWorkers();
-	await Promise.all(tabs.map(async tab => {
+	const pendingTasks = await Promise.all(tabs.map(async tab => {
 		const tabId = tab.id;
 		const tabOptions = await config.getOptions(tab.url);
 		if (tabOptions.profileName != config.DISABLED_PROFILE_NAME) {
@@ -160,12 +161,12 @@ async function saveTabs(tabs, options = {}) {
 				}
 				if (scriptsInjected || editor.isEditor(tab)) {
 					ui.onStart(tabId, EXECUTE_SCRIPTS_STEP);
-					addTask({
+					return {
 						status: TASK_PENDING_STATE,
 						tab: tabData,
 						options: tabOptions,
 						method: "content.save"
-					});
+					};
 				} else {
 					ui.onForbiddenDomain(tab);
 				}
@@ -174,6 +175,7 @@ async function saveTabs(tabs, options = {}) {
 			ui.onForbiddenDomain(tab);
 		}
 	}));
+	pendingTasks.filter(Boolean).forEach(addTask);
 	runTasks();
 }
 
@@ -266,11 +268,9 @@ function openEditor(tab) {
 }
 
 async function initMaxParallelWorkers() {
-	if (!maxParallelWorkers) {
-		const configData = await config.get();
-		processInForeground = configData.processInForeground;
-		maxParallelWorkers = processInForeground ? 1 : configData.maxParallelWorkers;
-	}
+	const configData = await config.get();
+	processInForeground = configData.processInForeground;
+	maxParallelWorkers = processInForeground ? 1 : configData.maxParallelWorkers;
 }
 
 function runTasks() {
