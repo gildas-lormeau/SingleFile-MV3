@@ -128,7 +128,8 @@
 				"src/ui/pages/editor-note-web.css",
 				"src/ui/pages/editor-mask-web.css",
 				"src/ui/pages/editor-frame-web.css"
-			]
+			],
+			"use_dynamic_url": true
 		}
 	],
 	"oauth2": {
