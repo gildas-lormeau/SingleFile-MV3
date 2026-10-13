@@ -274,6 +274,8 @@ async function downloadContent(blob, message, tab) {
 					incognito: tab.incognito,
 					filenameConflictAction: message.filenameConflictAction,
 					filenameReplacementCharacter: message.filenameReplacementCharacter,
+					filenameReplacedCharacters: message.filenameReplacedCharacters,
+					filenameReplacementCharacters: message.filenameReplacementCharacters,
 					bookmarkId: message.bookmarkId,
 					replaceBookmarkURL: message.replaceBookmarkURL,
 					includeInfobar: message.includeInfobar,
@@ -425,6 +427,8 @@ async function downloadCompressedContent(message, tab) {
 						incognito: tab.incognito,
 						filenameConflictAction: message.filenameConflictAction,
 						filenameReplacementCharacter: message.filenameReplacementCharacter,
+						filenameReplacedCharacters: message.filenameReplacedCharacters,
+						filenameReplacementCharacters: message.filenameReplacementCharacters,
 						bookmarkId: message.bookmarkId,
 						replaceBookmarkURL: message.replaceBookmarkURL,
 						includeInfobar: message.includeInfobar,
@@ -668,7 +672,7 @@ async function downloadPage(pageData, options) {
 	if (options.incognito) {
 		downloadInfo.incognito = true;
 	}
-	const downloadData = await download(downloadInfo, options.filenameReplacementCharacter);
+	const downloadData = await download(downloadInfo, options);
 	if (downloadData.filename) {
 		let url = downloadData.filename;
 		if (!url.startsWith("file:")) {
