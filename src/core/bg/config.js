@@ -60,6 +60,7 @@ const DEFAULT_CONFIG = {
 	removedElementsSelector: "",
 	removeUnusedStyles: true,
 	removeUnusedFonts: true,
+	removeUnusedGlyphs: false,
 	removeFrames: false,
 	compressHTML: true,
 	loadDeferredContent: true,
