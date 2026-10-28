@@ -38,7 +38,8 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 			archiveTime: result.archiveTime,
 			doctype: result.doctype,
 			filename: result.filename,
-			title: result.title
+			title: result.title,
+			hash: result.hash
 		};
 	}
 	if (method == "compressPage") {
@@ -55,7 +56,11 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 			parsers.delete(tabId);
 			const pageData = result.value;
 			const blob = await singlefile.processors.compression.process(pageData, options);
-			return URL.createObjectURL(blob);
+			const response = { url: URL.createObjectURL(blob) };
+			if (options.addProof) {
+				response.hash = await singlefile.helper.digest("SHA-256", new Uint8Array(await blob.arrayBuffer()));
+			}
+			return response;
 		}
 	}
 	if (method == "getBlobURL") {

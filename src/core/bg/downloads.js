@@ -331,7 +331,9 @@ async function downloadCompressedContent(message, tab) {
 		if (skipped) {
 			ui.onEnd(tabId);
 		} else {
-			blobURI = await offscreen.compressPage(message.pageData, {
+			let hash;
+			({ url: blobURI, hash } = await offscreen.compressPage(message.pageData, {
+				addProof: message.addProof && !message.openEditor,
 				insertTextBody: message.insertTextBody,
 				url: message.pageData.url || tab.url,
 				createRootDirectory: message.createRootDirectory,
@@ -346,7 +348,7 @@ async function downloadCompressedContent(message, tab) {
 				insertMetaCSP: message.insertMetaCSP,
 				password: message.password,
 				embeddedImage: message.embeddedImage
-			});
+			}));
 			if (message.openEditor) {
 				ui.onEdit(tabId);
 				const content = Array.from(new Uint8Array(await (await fetch(blobURI)).arrayBuffer()));
@@ -452,6 +454,9 @@ async function downloadCompressedContent(message, tab) {
 			if (message.openSavedPage && !message.openEditor) {
 				await openViewerTab(tab, blobURI, { compressed: true });
 				viewerOpened = true;
+			}
+			if (hash) {
+				await woleet.anchor(hash, message.woleetKey);
 			}
 		}
 	} catch (error) {
