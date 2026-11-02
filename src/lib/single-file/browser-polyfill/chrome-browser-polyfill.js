@@ -84,6 +84,9 @@ if (typeof globalThis == "undefined") {
 			getUILanguage: () => nativeAPI.i18n.getUILanguage(),
 			getMessage: (messageName, substitutions) => nativeAPI.i18n.getMessage(messageName, substitutions)
 		},
+		extension: {
+			isAllowedFileSchemeAccess: () => new Promise(resolve => nativeAPI.extension.isAllowedFileSchemeAccess(resolve))
+		},
 		identity: {
 			// "identity" is an optional permission, so nativeAPI.identity is undefined
 			// until it is granted. The getters below allow callers to feature-detect it
