@@ -205,70 +205,66 @@ async function downloadContent(blob, message, tab) {
 	const tabId = tab.id;
 	try {
 		let skipped;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi && !message.saveToS3) {
-			const testSkip = await testSkipSave(message.filename, message);
-			message.filenameConflictAction = testSkip.filenameConflictAction;
-			skipped = testSkip.skipped;
-		}
-		if (skipped) {
-			ui.onEnd(tabId);
+		const prompt = filename => promptFilename(tabId, filename);
+		let response;
+		if (message.openEditor) {
+			ui.onEdit(tabId);
+			await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: await blob.text(), url: message.originalUrl });
+		} else if (message.saveToClipboard) {
+			await offscreen.saveToClipboard(await blob.text(), message.mimeType);
+		} else if (message.saveWithWebDAV) {
+			response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
+		} else if (message.saveWithMCP) {
+			response = await saveWithMCP(message.taskId, encodeSharpCharacter(message.filename), blob, message.mcpServerUrl, message.mcpAuthToken, { filenameConflictAction: message.filenameConflictAction, prompt });
+		} else if (message.saveToGDrive) {
+			await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), blob, {
+				forceWebAuthFlow: message.forceWebAuthFlow
+			}, {
+				onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+		} else if (message.saveToDropbox) {
+			await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), blob, {
+				onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+		} else if (message.saveToGitHub) {
+			response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), blob, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+			await response.pushPromise;
+		} else if (message.saveWithCompanion) {
+			await companion.save({
+				filename: message.filename,
+				content: await blob.text(),
+				title: message.title,
+				url: message.originalUrl,
+				filenameConflictAction: message.filenameConflictAction
+			});
+		} else if (message.saveToRestFormApi) {
+			response = await saveToRestFormApi(
+				message.taskId,
+				message.filename,
+				blob,
+				message.originalUrl,
+				message.saveToRestFormApiToken,
+				message.saveToRestFormApiUrl,
+				message.saveToRestFormApiFileFieldName,
+				message.saveToRestFormApiUrlFieldName
+			);
+		} else if (message.saveToS3) {
+			response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
 		} else {
-			const prompt = filename => promptFilename(tabId, filename);
-			let response;
-			if (message.openEditor) {
-				ui.onEdit(tabId);
-				await editor.open({ tabIndex: tab.index + 1, filename: message.filename, content: await blob.text(), url: message.originalUrl });
-			} else if (message.saveToClipboard) {
-				await offscreen.saveToClipboard(await blob.text(), message.mimeType);
-			} else if (message.saveWithWebDAV) {
-				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
-			} else if (message.saveWithMCP) {
-				response = await saveWithMCP(message.taskId, encodeSharpCharacter(message.filename), blob, message.mcpServerUrl, message.mcpAuthToken, { filenameConflictAction: message.filenameConflictAction, prompt });
-			} else if (message.saveToGDrive) {
-				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), blob, {
-					forceWebAuthFlow: message.forceWebAuthFlow
-				}, {
-					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-			} else if (message.saveToDropbox) {
-				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), blob, {
-					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-			} else if (message.saveToGitHub) {
-				response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), blob, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-				await response.pushPromise;
-			} else if (message.saveWithCompanion) {
-				await companion.save({
-					filename: message.filename,
-					content: await blob.text(),
-					title: message.title,
-					url: message.originalUrl,
-					filenameConflictAction: message.filenameConflictAction
-				});
-			} else if (message.saveToRestFormApi) {
-				response = await saveToRestFormApi(
-					message.taskId,
-					message.filename,
-					blob,
-					message.originalUrl,
-					message.saveToRestFormApiToken,
-					message.saveToRestFormApiUrl,
-					message.saveToRestFormApiFileFieldName,
-					message.saveToRestFormApiUrlFieldName
-				);
-			} else if (message.saveToS3) {
-				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-			} else {
+			const testSkip = await testSkipSave(message.filename, message);
+			skipped = testSkip.skipped;
+			if (!skipped) {
+				message.filenameConflictAction = testSkip.filenameConflictAction;
 				response = await downloadPage(message, {
 					confirmFilename: message.confirmFilename,
 					incognito: tab.incognito,
@@ -291,14 +287,14 @@ async function downloadContent(blob, message, tab) {
 					throw new Error("upload_cancelled");
 				}
 			}
-			if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
-				await bookmarks.update(message.bookmarkId, { url: response.url });
-			}
-			ui.onEnd(tabId);
-			if (message.openSavedPage && !message.openEditor) {
-				const viewerBlobURL = await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())), message.mimeType);
-				await openViewerTab(tab, viewerBlobURL);
-			}
+		}
+		if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
+			await bookmarks.update(message.bookmarkId, { url: response.url });
+		}
+		ui.onEnd(tabId);
+		if (message.openSavedPage && !message.openEditor && !skipped) {
+			const viewerBlobURL = await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())), message.mimeType);
+			await openViewerTab(tab, viewerBlobURL);
 		}
 	} catch (error) {
 		if (!error.message || error.message != "upload_cancelled") {
@@ -323,106 +319,102 @@ async function downloadCompressedContent(message, tab) {
 	try {
 		const prompt = filename => promptFilename(tabId, filename);
 		let skipped, response;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveWithMCP && !message.saveToGitHub && !message.saveToRestFormApi && !message.sharePage) {
-			const testSkip = await testSkipSave(message.filename, message);
-			message.filenameConflictAction = testSkip.filenameConflictAction;
-			skipped = testSkip.skipped;
-		}
-		if (skipped) {
-			ui.onEnd(tabId);
-		} else {
-			let hash;
-			({ url: blobURI, hash } = await offscreen.compressPage(message.pageData, {
-				addProof: message.addProof && !message.openEditor,
-				insertTextBody: message.insertTextBody,
-				url: message.pageData.url || tab.url,
-				createRootDirectory: message.createRootDirectory,
-				tabId,
+		let hash;
+		({ url: blobURI, hash } = await offscreen.compressPage(message.pageData, {
+			addProof: message.addProof && !message.openEditor,
+			insertTextBody: message.insertTextBody,
+			url: message.pageData.url || tab.url,
+			createRootDirectory: message.createRootDirectory,
+			tabId,
+			selfExtractingArchive: message.selfExtractingArchive,
+			disableCompression: message.disableCompression,
+			extractDataFromPage: message.extractDataFromPage,
+			preventAppendedData: message.preventAppendedData,
+			maxAppendedDataLength: message.maxAppendedDataLength,
+			insertCanonicalLink: message.insertCanonicalLink,
+			insertMetaNoIndex: message.insertMetaNoIndex,
+			insertMetaCSP: message.insertMetaCSP,
+			password: message.password,
+			embeddedImage: message.embeddedImage
+		}));
+		if (message.openEditor) {
+			ui.onEdit(tabId);
+			const content = Array.from(new Uint8Array(await (await fetch(blobURI)).arrayBuffer()));
+			await editor.open({
+				tabIndex: tab.index + 1,
+				filename: message.filename,
+				content,
+				compressContent: message.compressContent,
 				selfExtractingArchive: message.selfExtractingArchive,
 				disableCompression: message.disableCompression,
 				extractDataFromPage: message.extractDataFromPage,
-				preventAppendedData: message.preventAppendedData,
-				maxAppendedDataLength: message.maxAppendedDataLength,
-				insertCanonicalLink: message.insertCanonicalLink,
-				insertMetaNoIndex: message.insertMetaNoIndex,
+				insertTextBody: message.insertTextBody,
 				insertMetaCSP: message.insertMetaCSP,
-				password: message.password,
-				embeddedImage: message.embeddedImage
-			}));
-			if (message.openEditor) {
-				ui.onEdit(tabId);
-				const content = Array.from(new Uint8Array(await (await fetch(blobURI)).arrayBuffer()));
-				await editor.open({
-					tabIndex: tab.index + 1,
-					filename: message.filename,
-					content,
-					compressContent: message.compressContent,
-					selfExtractingArchive: message.selfExtractingArchive,
-					disableCompression: message.disableCompression,
-					extractDataFromPage: message.extractDataFromPage,
-					insertTextBody: message.insertTextBody,
-					insertMetaCSP: message.insertMetaCSP,
-					embeddedImage: message.embeddedImage,
-					url: message.originalUrl
-				});
-			} else if (message.foregroundSave || message.sharePage) {
-				const blob = await (await fetch(blobURI)).blob();
-				response = await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
-					foregroundSave: message.foregroundSave,
-					sharePage: message.sharePage
-				});
-				if (response && response.error) {
-					throw new Error(response.error);
-				}
-			} else if (message.saveWithWebDAV) {
-				const blob = await (await fetch(blobURI)).blob();
-				response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
-			} else if (message.saveWithMCP) {
-				const blob = await (await fetch(blobURI)).blob();
-				response = await saveWithMCP(message.taskId, encodeSharpCharacter(message.filename), blob, message.mcpServerUrl, message.mcpAuthToken, { filenameConflictAction: message.filenameConflictAction, prompt });
-			} else if (message.saveToGDrive) {
-				const blob = await (await fetch(blobURI)).blob();
-				await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), blob, {
-					forceWebAuthFlow: message.forceWebAuthFlow
-				}, {
-					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-			} else if (message.saveToDropbox) {
-				const blob = await (await fetch(blobURI)).blob();
-				await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), blob, {
-					onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-			} else if (message.saveToGitHub) {
-				const blob = await (await fetch(blobURI)).blob();
-				response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), blob, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-				await response.pushPromise;
-			} else if (message.saveToRestFormApi) {
-				const blob = await (await fetch(blobURI)).blob();
-				response = await saveToRestFormApi(
-					message.taskId,
-					message.filename,
-					blob,
-					message.originalUrl,
-					message.saveToRestFormApiToken,
-					message.saveToRestFormApiUrl,
-					message.saveToRestFormApiFileFieldName,
-					message.saveToRestFormApiUrlFieldName
-				);
-			} else if (message.saveToS3) {
-				const blob = await (await fetch(blobURI)).blob();
-				response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
-					filenameConflictAction: message.filenameConflictAction,
-					prompt
-				});
-			} else {
-				if (message.backgroundSave) {
+				embeddedImage: message.embeddedImage,
+				url: message.originalUrl
+			});
+		} else if (message.foregroundSave || message.sharePage) {
+			const blob = await (await fetch(blobURI)).blob();
+			response = await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
+				foregroundSave: message.foregroundSave,
+				sharePage: message.sharePage
+			});
+			if (response && response.error) {
+				throw new Error(response.error);
+			}
+		} else if (message.saveWithWebDAV) {
+			const blob = await (await fetch(blobURI)).blob();
+			response = await saveWithWebDAV(message.taskId, encodeSharpCharacter(message.filename), blob, message.webDAVURL, message.webDAVUser, message.webDAVPassword, { filenameConflictAction: message.filenameConflictAction, prompt });
+		} else if (message.saveWithMCP) {
+			const blob = await (await fetch(blobURI)).blob();
+			response = await saveWithMCP(message.taskId, encodeSharpCharacter(message.filename), blob, message.mcpServerUrl, message.mcpAuthToken, { filenameConflictAction: message.filenameConflictAction, prompt });
+		} else if (message.saveToGDrive) {
+			const blob = await (await fetch(blobURI)).blob();
+			await saveToGDrive(message.taskId, encodeSharpCharacter(message.filename), blob, {
+				forceWebAuthFlow: message.forceWebAuthFlow
+			}, {
+				onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+		} else if (message.saveToDropbox) {
+			const blob = await (await fetch(blobURI)).blob();
+			await saveToDropbox(message.taskId, encodeSharpCharacter(message.filename), blob, {
+				onProgress: (offset, size) => ui.onUploadProgress(tabId, offset, size),
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+		} else if (message.saveToGitHub) {
+			const blob = await (await fetch(blobURI)).blob();
+			response = await saveToGitHub(message.taskId, encodeSharpCharacter(message.filename), blob, message.githubToken, message.githubUser, message.githubRepository, message.githubBranch, {
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+			await response.pushPromise;
+		} else if (message.saveToRestFormApi) {
+			const blob = await (await fetch(blobURI)).blob();
+			response = await saveToRestFormApi(
+				message.taskId,
+				message.filename,
+				blob,
+				message.originalUrl,
+				message.saveToRestFormApiToken,
+				message.saveToRestFormApiUrl,
+				message.saveToRestFormApiFileFieldName,
+				message.saveToRestFormApiUrlFieldName
+			);
+		} else if (message.saveToS3) {
+			const blob = await (await fetch(blobURI)).blob();
+			response = await saveToS3(message.taskId, encodeSharpCharacter(message.filename), blob, message.S3Domain, message.S3Region, message.S3Bucket, message.S3AccessKey, message.S3SecretKey, {
+				filenameConflictAction: message.filenameConflictAction,
+				prompt
+			});
+		} else {
+			if (message.backgroundSave) {
+				const testSkip = await testSkipSave(message.filename, message);
+				skipped = testSkip.skipped;
+				if (!skipped) {
+					message.filenameConflictAction = testSkip.filenameConflictAction;
 					message.url = blobURI;
 					response = await downloadPage(message, {
 						confirmFilename: message.confirmFilename,
@@ -442,22 +434,22 @@ async function downloadCompressedContent(message, tab) {
 						infobarPositionLeft: message.infobarPositionLeft,
 						infobarPositionRight: message.infobarPositionRight
 					});
-				} else {
-					const blob = await (await fetch(blobURI)).blob();
-					await downloadPageForeground(message.taskId, message.filename, blob, message.mimeType, tabId);
 				}
+			} else {
+				const blob = await (await fetch(blobURI)).blob();
+				await downloadPageForeground(message.taskId, message.filename, blob, message.mimeType, tabId);
 			}
-			if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
-				await bookmarks.update(message.bookmarkId, { url: response.url });
-			}
-			ui.onEnd(tabId);
-			if (message.openSavedPage && !message.openEditor) {
-				await openViewerTab(tab, blobURI, { compressed: true });
-				viewerOpened = true;
-			}
-			if (hash) {
-				await woleet.anchor(hash, message.woleetKey);
-			}
+		}
+		if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
+			await bookmarks.update(message.bookmarkId, { url: response.url });
+		}
+		ui.onEnd(tabId);
+		if (message.openSavedPage && !message.openEditor && !skipped) {
+			await openViewerTab(tab, blobURI, { compressed: true });
+			viewerOpened = true;
+		}
+		if (hash && !skipped) {
+			await woleet.anchor(hash, message.woleetKey);
 		}
 	} catch (error) {
 		if (!error.message || error.message != "upload_cancelled") {
