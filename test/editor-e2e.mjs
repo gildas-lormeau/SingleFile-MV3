@@ -467,6 +467,7 @@ async function run() {
 	const savedPlainContent = readFileSync(savedPlainPath).toString();
 	await assertEquals("plain drop save is a plain page with the dropped content", async () => savedPlainContent.includes("Gamma") && !savedPlainContent.includes("data-sfz") && !savedPlainContent.includes("sfz-pages.json"), true);
 	await assertEquals("plain drop save keeps the note added in the editor", async () => savedPlainContent.includes("single-file-note"), true);
+	await assertEquals("plain drop save embeds the notes runtime once", async () => savedPlainContent.split("<script data-template-shadow-root>").length, 2);
 
 	const digestBase64 = readFileSync(DIGEST_FIXTURE_PATH).toString("base64");
 	await openEditorArchive(digestBase64, "classic-digest.html", false);
@@ -571,6 +572,7 @@ async function run() {
 		};
 		const alphaContent = await getText(savedEntries, "pages/2/index.html");
 		await assertEquals("edited page contains the note", async () => alphaContent.includes("single-file-note") && alphaContent.includes("Alpha"), true);
+		await assertEquals("edited page embeds the notes runtime", async () => alphaContent.includes("<script data-template-shadow-root>") && alphaContent.includes("data-sf-nesting-track-id"), true);
 		const betaSaved = await getText(savedEntries, "pages/3/index.html");
 		const betaOriginal = await getText(originalEntries, "pages/3/index.html");
 		await assertEquals("untouched page preserved byte for byte", async () => betaSaved == betaOriginal, true);
