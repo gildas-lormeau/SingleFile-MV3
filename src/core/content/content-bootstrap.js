@@ -251,12 +251,12 @@ async function autoSavePage() {
 function refresh() {
 	if (autoSaveEnabled && optionsAutoSave && (optionsAutoSave.autoSaveUnload || optionsAutoSave.autoSaveLoadOrUnload || optionsAutoSave.autoSaveDiscard || optionsAutoSave.autoSaveRemove)) {
 		if (!unloadListenerAdded) {
-			globalThis.addEventListener("unload", onUnload);
+			globalThis.addEventListener("pagehide", onUnload);
 			document.addEventListener("visibilitychange", onVisibilityChange);
 			unloadListenerAdded = true;
 		}
 	} else {
-		globalThis.removeEventListener("unload", onUnload);
+		globalThis.removeEventListener("pagehide", onUnload);
 		document.removeEventListener("visibilitychange", onVisibilityChange);
 		unloadListenerAdded = false;
 	}
@@ -270,7 +270,7 @@ function onVisibilityChange() {
 
 function onUnload() {
 	if (!pageAutoSaved && document.body && (optionsAutoSave.autoSaveUnload || optionsAutoSave.autoSaveLoadOrUnload || optionsAutoSave.autoSaveRemove)) {
-		autoSaveUnloadedPage({ autoSaveUnload: optionsAutoSave.autoSaveUnload, autoSaveRemove: optionsAutoSave.autoSaveRemove });
+		autoSaveUnloadedPage({ autoSaveUnload: optionsAutoSave.autoSaveUnload || optionsAutoSave.autoSaveLoadOrUnload, autoSaveRemove: optionsAutoSave.autoSaveRemove });
 	}
 }
 
@@ -286,6 +286,10 @@ function autoSaveUnloadedPage({ autoSaveUnload, autoSaveDiscard, autoSaveRemove 
 	}
 	const docData = helper.preProcessDoc(document, globalThis, optionsAutoSave);
 	savePage(docData, frames, { autoSaveUnload, autoSaveDiscard, autoSaveRemove });
+	if (frames && frames.sessionId) {
+		singlefile.processors.frameTree.cleanup(frames.sessionId);
+	}
+	helper.postProcessDoc(document, docData.markedElements, docData.invalidElements);
 }
 
 function savePage(docData, frames, { autoSaveUnload, autoSaveDiscard, autoSaveRemove } = {}) {
