@@ -401,6 +401,18 @@ async function run() {
 	await assertEquals("single-page: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("single-page: save button visible", () => evalInPage("document.querySelector('.save-page-button').hidden"), false);
 	await assertEquals("single-page: edit tools visible", () => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => !element.hidden)"), true);
+	await evalInFrame("(() => { const link = document.createElement('a'); link.href = '#fragment-target'; link.className = 'fragment-link'; link.textContent = 'fragment link'; const target = document.createElement('p'); target.id = 'fragment-target'; target.textContent = 'fragment target'; const spacers = [0, 1].map(() => { const spacer = document.createElement('div'); spacer.style.height = '5000px'; return spacer; }); document.body.append(link, spacers[0], target, spacers[1]); })()");
+	await evalInFrame("document.querySelector('.fragment-link').click()");
+	await waitFor(() => evalInFrame("scrollY > 4000 && Math.abs(document.getElementById('fragment-target').getBoundingClientRect().top) < 100 || undefined"), "single-page: fragment link scrolls to its target");
+	await assertEquals("single-page: fragment link does not navigate", () => evalInFrame("location.hash"), "");
+	await evalInFrame("scrollTo(0, 0)");
+	await evalInPage("document.querySelector('.edit-page-button').dispatchEvent(new MouseEvent('mouseup'))");
+	await waitFor(() => evalInFrame("document.body.isContentEditable || undefined"), "single-page: edit mode enabled");
+	await evalInFrame("document.querySelector('.fragment-link').click()");
+	await new Promise(resolve => setTimeout(resolve, 500));
+	await assertEquals("single-page: fragment link does not scroll in edit mode", () => evalInFrame("scrollY"), 0);
+	await evalInPage("document.querySelector('.edit-page-button').dispatchEvent(new MouseEvent('mouseup'))");
+	await waitFor(() => evalInFrame("!document.body.isContentEditable || undefined"), "single-page: edit mode disabled");
 
 	const dedupBase64 = readFileSync(DEDUP_FIXTURE_PATH).toString("base64");
 	await openEditorArchive(dedupBase64, "multi-page-dedup.zip.html");
