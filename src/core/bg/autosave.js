@@ -52,7 +52,12 @@ async function onMessage(message, sender) {
 	if (message.method.endsWith(".save")) {
 		await pendingMessagesRestored;
 		const tab = sender.tab || { id: message.tabId, index: message.tabIndex, url: message.url, incognito: message.incognito };
-		if (!message.autoSaveUnload && (message.autoSaveDiscard || message.autoSaveRemove)) {
+		if (message.autoSaveBeforeUnload) {
+			if (sender.tab) {
+				message.tab = sender.tab;
+				setPendingMessage(sender.tab.id, message);
+			}
+		} else if (!message.autoSaveUnload && (message.autoSaveDiscard || message.autoSaveRemove)) {
 			const pendingMessage = pendingMessages[tab.id];
 			if (pendingMessage && ((pendingMessage.removed && message.autoSaveRemove) || (pendingMessage.discarded && message.autoSaveDiscard))) {
 				deletePendingMessage(tab.id);
@@ -64,6 +69,15 @@ async function onMessage(message, sender) {
 		} else {
 			deletePendingMessage(message.tabId);
 			await saveContent(message, tab);
+		}
+		return {};
+	}
+	if (message.method.endsWith(".unload")) {
+		await pendingMessagesRestored;
+		const pendingMessage = pendingMessages[message.tabId];
+		if (pendingMessage && pendingMessage.autoSaveBeforeUnload && pendingMessage.autoSaveUnload) {
+			deletePendingMessage(message.tabId);
+			await saveContent(pendingMessage, pendingMessage.tab);
 		}
 		return {};
 	}
@@ -79,7 +93,7 @@ async function onTabRemoved(tabId) {
 	const message = pendingMessages[tabId];
 	if (message) {
 		deletePendingMessage(tabId);
-		if (message.autoSaveRemove) {
+		if (message.autoSaveRemove || (message.autoSaveBeforeUnload && message.autoSaveUnload)) {
 			await saveContent(message, message.tab);
 		}
 	} else {
@@ -92,7 +106,9 @@ async function onTabDiscarded(tabId) {
 	const message = pendingMessages[tabId];
 	if (message) {
 		deletePendingMessage(tabId);
-		await saveContent(message, message.tab);
+		if (!message.autoSaveBeforeUnload || message.autoSaveDiscard) {
+			await saveContent(message, message.tab);
+		}
 	} else {
 		pendingMessages[tabId] = { discarded: true };
 	}
