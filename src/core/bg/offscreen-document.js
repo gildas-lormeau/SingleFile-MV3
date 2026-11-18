@@ -26,10 +26,15 @@
 import "./../../../lib/chrome-browser-polyfill.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 
+const ARCHIVE_MODULE_PATH = "/lib/single-file-archive.js";
+const ZIP_SCRIPT_PATH = "/lib/single-file-zip.min.js";
+const SELF_EXTRACTING_ARCHIVE_MIME_TYPE = "text/html";
+const ARCHIVE_MIME_TYPE = "application/zip";
+
 const singlefile = globalThis.singlefile;
 const parsers = new Map(), pendingData = new Map();
 
-browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, url, data, mimeType, options, width, height, tabId }) => {
+browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, url, data, mimeType, options, width, height, tabId, pages }) => {
 	if (method == "processPage") {
 		const result = await singlefile.getPageData(options, { fetch }, null, null);
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
@@ -61,6 +66,24 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 				response.hash = await singlefile.helper.digest("SHA-256", new Uint8Array(await blob.arrayBuffer()));
 			}
 			return response;
+		}
+	}
+	if (method == "createPagesArchive") {
+		try {
+			const { createPagesArchive } = await import(ARCHIVE_MODULE_PATH);
+			options.zipScript = await (await globalThis.fetch(ZIP_SCRIPT_PATH)).text();
+			const content = await createPagesArchive(pages.map(page => ({
+				url: page.url,
+				title: page.title,
+				getData: async () => new Uint8Array(await (await globalThis.fetch(page.blobURL)).arrayBuffer())
+			})), options);
+			const response = { url: URL.createObjectURL(new Blob([content], { type: options.selfExtractingArchive ? SELF_EXTRACTING_ARCHIVE_MIME_TYPE : ARCHIVE_MIME_TYPE })) };
+			if (options.addProof) {
+				response.hash = await singlefile.helper.digest("SHA-256", content);
+			}
+			return response;
+		} finally {
+			pages.forEach(page => URL.revokeObjectURL(page.blobURL));
 		}
 	}
 	if (method == "getBlobURL") {

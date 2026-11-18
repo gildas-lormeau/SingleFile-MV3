@@ -33,6 +33,7 @@ let creating, requestId = 0;
 
 export {
 	compressPage,
+	createPagesArchive,
 	processPage,
 	getBlobURL,
 	revokeObjectURL,
@@ -55,6 +56,11 @@ async function compressPage(pageData, options) {
 		tabId: options.tabId,
 		options
 	});
+}
+
+async function createPagesArchive(pages, options) {
+	await createOffscreenDocument();
+	return browser.runtime.sendMessage({ method: "createPagesArchive", pages, options });
 }
 
 async function processPage(options) {

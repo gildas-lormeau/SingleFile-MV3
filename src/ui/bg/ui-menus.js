@@ -344,6 +344,18 @@ async function initialize() {
 			const tabs = await queryTabs({ currentWindow: true });
 			business.saveTabs(tabs, profileOptions);
 		}
+		if (item.action == "save-selected-tabs-in-archive") {
+			const tabs = await queryTabs({ currentWindow: true, highlighted: true });
+			business.saveTabsInArchive(tabs, profileOptions);
+		}
+		if (item.action == "save-unpinned-tabs-in-archive") {
+			const tabs = await queryTabs({ currentWindow: true, pinned: false });
+			business.saveTabsInArchive(tabs, profileOptions);
+		}
+		if (item.action == "save-all-tabs-in-archive") {
+			const tabs = await queryTabs({ currentWindow: true });
+			business.saveTabsInArchive(tabs, profileOptions);
+		}
 		if (item.action == "batch-save-urls") {
 			business.batchSaveUrls();
 		}

@@ -47,6 +47,8 @@ const tabData = new Map();
 const viewerBlobURLs = new Map();
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const CONFLICT_ACTION_SKIP = "skip";
+const SELF_EXTRACTING_ARCHIVE_MIME_TYPE = "text/html";
+const ARCHIVE_MIME_TYPE = "application/zip";
 const CONFLICT_ACTION_UNIQUIFY = "uniquify";
 const REGEXP_ESCAPE = /([{}()^$&.*?/+|[\\\\]|\]|-)/g;
 let GDRIVE_CLIENT_ID = "207618107333-h1220p1oasj3050kr5r416661adm091a.apps.googleusercontent.com";
@@ -69,6 +71,8 @@ browser.tabs.onRemoved.addListener(tabId => {
 		offscreen.revokeObjectURL(blobURL).catch(() => { });
 	}
 });
+
+business.setArchiveEndCallback(downloadArchive);
 
 export {
 	onMessage,
@@ -315,15 +319,26 @@ async function downloadContent(blob, message, tab) {
 
 async function downloadCompressedContent(message, tab) {
 	const tabId = tab.id;
-	let blobURI, viewerOpened;
-	try {
-		const prompt = filename => promptFilename(tabId, filename);
-		let skipped, response;
-		let hash;
-		({ url: blobURI, hash } = await offscreen.compressPage(message.pageData, {
+	const pageData = message.pageData;
+	const archivePage = { tab, message, url: pageData.url || tab.url, title: pageData.title };
+	if (business.addArchivePage(message.taskId, archivePage)) {
+		try {
+			({ url: archivePage.blobURL } = await offscreen.compressPage(pageData, {
+				url: archivePage.url,
+				tabId,
+				disableCompression: message.disableCompression
+			}));
+			message.pageData = null;
+			ui.onEnd(tabId);
+		} catch (error) {
+			console.error(error); // eslint-disable-line no-console
+			ui.onError(tabId, error.message, error.link, error.stack);
+		}
+	} else {
+		await saveCompressedContent(message, tab, pageData.mimeType, () => offscreen.compressPage(pageData, {
 			addProof: message.addProof && !message.openEditor,
 			insertTextBody: message.insertTextBody,
-			url: message.pageData.url || tab.url,
+			url: pageData.url || tab.url,
 			createRootDirectory: message.createRootDirectory,
 			tabId,
 			selfExtractingArchive: message.selfExtractingArchive,
@@ -337,6 +352,43 @@ async function downloadCompressedContent(message, tab) {
 			password: message.password,
 			embeddedImage: message.embeddedImage
 		}));
+	}
+}
+
+async function downloadArchive(archive) {
+	const pages = archive.pages.filter(page => page && page.blobURL);
+	if (pages.length) {
+		const { tab, message, saveOptions } = pages[0];
+		const mimeType = message.selfExtractingArchive ? SELF_EXTRACTING_ARCHIVE_MIME_TYPE : ARCHIVE_MIME_TYPE;
+		const archiveMessage = Object.assign({}, message, saveOptions, { url: null, mimeType });
+		await saveCompressedContent(archiveMessage, tab, mimeType, () => offscreen.createPagesArchive(pages.map(page => ({
+			url: page.url,
+			title: page.title,
+			blobURL: page.blobURL
+		})), {
+			addProof: archiveMessage.addProof,
+			selfExtractingArchive: message.selfExtractingArchive,
+			extractDataFromPage: message.extractDataFromPage,
+			preventAppendedData: message.preventAppendedData,
+			maxAppendedDataLength: message.maxAppendedDataLength,
+			insertCanonicalLink: message.insertCanonicalLink,
+			insertMetaNoIndex: message.insertMetaNoIndex,
+			insertMetaCSP: message.insertMetaCSP,
+			insertSingleFileComment: true,
+			createRootDirectory: message.createRootDirectory,
+			tocPage: true
+		}));
+	}
+}
+
+async function saveCompressedContent(message, tab, mimeType, compress) {
+	const tabId = tab.id;
+	let blobURI, viewerOpened;
+	try {
+		const prompt = filename => promptFilename(tabId, filename);
+		let skipped, response;
+		let hash;
+		({ url: blobURI, hash } = await compress());
 		if (message.openEditor) {
 			ui.onEdit(tabId);
 			const content = Array.from(new Uint8Array(await (await fetch(blobURI)).arrayBuffer()));
@@ -355,7 +407,7 @@ async function downloadCompressedContent(message, tab) {
 			});
 		} else if (message.foregroundSave || message.sharePage) {
 			const blob = await (await fetch(blobURI)).blob();
-			response = await downloadPageForeground(message.taskId, message.filename, blob, message.pageData.mimeType, tabId, {
+			response = await downloadPageForeground(message.taskId, message.filename, blob, mimeType, tabId, {
 				foregroundSave: message.foregroundSave,
 				sharePage: message.sharePage
 			});
