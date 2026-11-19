@@ -194,6 +194,14 @@ async function run() {
 	const { sessionId } = await cdp.Target.attachToTarget({ targetId, flatten: true });
 	await cdp.Runtime.enable(null, sessionId);
 	await cdp.Page.enable(null, sessionId);
+	// real input gives the page a user activation, and the editor then asks before it is left with
+	// unsaved changes: the question is answered here, otherwise it is displayed on the screen of
+	// the developer and holds the suite
+	cdp.Page.addEventListener("javascriptDialogOpening", event => {
+		if (event.params.type == "beforeunload") {
+			cdp.Page.handleJavaScriptDialog({ accept: true }, sessionId).catch(() => { });
+		}
+	});
 	await waitFor(async () => {
 		const { result } = await cdp.Runtime.evaluate({ expression: "typeof chrome != 'undefined' && chrome.runtime && document.readyState == 'complete' && location.href.startsWith('chrome-extension:') || undefined" }, sessionId);
 		if (!result.value) {
@@ -401,6 +409,37 @@ async function run() {
 	await assertEquals("single-page: cluster hidden", () => evalInPage("document.querySelector('.archive-buttons').hidden"), true);
 	await assertEquals("single-page: save button visible", () => evalInPage("document.querySelector('.save-page-button').hidden"), false);
 	await assertEquals("single-page: edit tools visible", () => evalInPage("[...document.querySelectorAll('.edit-buttons')].every(element => !element.hidden)"), true);
+
+	// the toolbar is longer than a small screen and is dragged to reach its last buttons; the drag
+	// is done with the mouse, which goes through the same handlers as the touch events, and it
+	// starts on a button, which must not be triggered by the release
+	const SAVE_BUTTON_TOP = "Math.round(document.querySelector('.save-page-button').getBoundingClientRect().top)";
+	const TOOLBAR_TRANSFORM = "document.querySelector('.toolbar').style.transform";
+	const smallScreen = { width: 320, height: 400 };
+	await cdp.Emulation.setDeviceMetricsOverride({ ...smallScreen, deviceScaleFactor: 1, mobile: false }, sessionId);
+	await waitFor(() => evalInPage("matchMedia('(orientation: portrait)').matches && innerHeight == " + smallScreen.height + " || undefined"), "toolbar drag: small portrait screen");
+	// the editor reads the orientation in its "resize" listener, which runs with the next frame
+	await evalInPage("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))", true);
+	const saveButtonTop = await evalInPage(SAVE_BUTTON_TOP);
+	await assertEquals("toolbar drag: the save button is beyond the screen", () => Promise.resolve(saveButtonTop > smallScreen.height), true);
+	await dragToolbar(300, 20);
+	await assertEquals("toolbar drag: the toolbar follows the pointer", () => evalInPage(SAVE_BUTTON_TOP), saveButtonTop - 280);
+	await dragToolbar(300, -2000);
+	await assertEquals("toolbar drag: the toolbar stops when the last button reaches the top", () => evalInPage(SAVE_BUTTON_TOP), 0);
+	await dragToolbar(20, 2000);
+	await assertEquals("toolbar drag: the toolbar goes back to its place", () => evalInPage(TOOLBAR_TRANSFORM), "translate(0px, 0px)");
+	await assertEquals("toolbar drag: no button was triggered", () => evalInFrame("document.querySelectorAll('single-file-note').length"), 0);
+	await cdp.Emulation.clearDeviceMetricsOverride(null, sessionId);
+	await waitFor(() => evalInPage("innerHeight != " + smallScreen.height + " || undefined"), "toolbar drag: screen restored");
+
+	async function dragToolbar(fromY, toY) {
+		const x = 17;
+		await cdp.Input.dispatchMouseEvent({ type: "mousePressed", x, y: fromY, button: "left", buttons: 1, clickCount: 1 }, sessionId);
+		for (let step = 1; step <= 4; step++) {
+			await cdp.Input.dispatchMouseEvent({ type: "mouseMoved", x, y: Math.round(fromY + (toY - fromY) * step / 4), button: "left", buttons: 1 }, sessionId);
+		}
+		await cdp.Input.dispatchMouseEvent({ type: "mouseReleased", x, y: toY, button: "left", buttons: 0, clickCount: 1 }, sessionId);
+	}
 	await evalInFrame("(() => { const link = document.createElement('a'); link.href = '#fragment-target'; link.className = 'fragment-link'; link.textContent = 'fragment link'; const target = document.createElement('p'); target.id = 'fragment-target'; target.textContent = 'fragment target'; const spacers = [0, 1].map(() => { const spacer = document.createElement('div'); spacer.style.height = '5000px'; return spacer; }); document.body.append(link, spacers[0], target, spacers[1]); })()");
 	await evalInFrame("document.querySelector('.fragment-link').click()");
 	await waitFor(() => evalInFrame("scrollY > 4000 && Math.abs(document.getElementById('fragment-target').getBoundingClientRect().top) < 100 || undefined"), "single-page: fragment link scrolls to its target");
