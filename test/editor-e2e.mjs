@@ -197,9 +197,17 @@ async function run() {
 	// real input gives the page a user activation, and the editor then asks before it is left with
 	// unsaved changes: the question is answered here, otherwise it is displayed on the screen of
 	// the developer and holds the suite
+	// a prompt of the editor is answered with promptAnswer, or dismissed when there is none, and is
+	// recorded for the test that expects it
+	const promptDialogs = [];
+	let promptAnswer;
 	cdp.Page.addEventListener("javascriptDialogOpening", event => {
 		if (event.params.type == "beforeunload") {
 			cdp.Page.handleJavaScriptDialog({ accept: true }, sessionId).catch(() => { });
+		}
+		if (event.params.type == "prompt") {
+			promptDialogs.push(event.params);
+			cdp.Page.handleJavaScriptDialog(promptAnswer === undefined ? { accept: false } : { accept: true, promptText: promptAnswer }, sessionId).catch(() => { });
 		}
 	});
 	await waitFor(async () => {
@@ -403,6 +411,9 @@ async function run() {
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Beta' || undefined"), "deep-linked page displayed");
 
 	const singlePageBase64 = readFileSync(SINGLE_PAGE_FIXTURE_PATH).toString("base64");
+	// the options are read when the editor opens: the infobar is displayed in the editor for the
+	// single page, to see it follow the edit of its message
+	await updateDefaultProfile({ displayInfobarInEditor: true });
 	await openEditorArchive(singlePageBase64, "single.zip.html");
 	await waitFor(() => evalInFrame("document.querySelector('h1') && document.querySelector('h1').textContent == 'Alpha' || undefined"), "single-page archive displayed");
 	await assertEquals("single-page: no archive route", () => evalInPage("location.hash"), "");
@@ -431,6 +442,31 @@ async function run() {
 	await assertEquals("toolbar drag: no button was triggered", () => evalInFrame("document.querySelectorAll('single-file-note').length"), 0);
 	await cdp.Emulation.clearDeviceMetricsOverride(null, sessionId);
 	await waitFor(() => evalInPage("innerHeight != " + smallScreen.height + " || undefined"), "toolbar drag: screen restored");
+
+	// the message of the infobar is asked when the page is saved, and the editor lets the user
+	// change it afterwards: the button asks for it in a prompt holding the current message, where
+	// a line break is written \n as in the infobar template of the options
+	const INFOBAR_MESSAGE = "(singlefile.helper.extractInfobarData(document) || {}).infobarContent || ''";
+	const DISPLAYED_INFOBAR_MESSAGE = "(() => { const infobar = document.querySelector('.editor-container single-file-infobar'); return infobar && infobar.shadowRoot.querySelector('.infobar-content span').textContent; })()";
+	const savedMessage = await evalInFrame(INFOBAR_MESSAGE);
+	await assertEquals("infobar message: the button is displayed", () => evalInPage("document.querySelector('.edit-infobar-button').hidden"), false);
+	await waitFor(() => evalInPage(DISPLAYED_INFOBAR_MESSAGE + " != null || undefined"), "infobar message: the infobar is displayed in the editor");
+	await assertEquals("infobar message: the prompt holds the saved message", () => editInfobarMessage("edited message\\nsecond line"), savedMessage);
+	await waitFor(() => evalInFrame(INFOBAR_MESSAGE + " == 'edited message\\nsecond line' || undefined"), "infobar message: the message is written in the page, on two lines");
+	await waitFor(() => evalInPage(DISPLAYED_INFOBAR_MESSAGE + " == 'edited message\\nsecond line' || undefined"), "infobar message: the infobar displays the new message");
+	await assertEquals("infobar message: the prompt holds the edited message", () => editInfobarMessage(undefined), "edited message\\nsecond line");
+	await assertEquals("infobar message: a dismissed prompt changes nothing", () => evalInFrame(INFOBAR_MESSAGE), "edited message\nsecond line");
+	await editInfobarMessage(savedMessage.replace(/\n/g, "\\n"));
+	await waitFor(() => evalInFrame(INFOBAR_MESSAGE + " == " + JSON.stringify(savedMessage) + " || undefined"), "infobar message: the saved message is put back");
+	await updateDefaultProfile({ displayInfobarInEditor: false });
+
+	async function editInfobarMessage(answer) {
+		const promptCount = promptDialogs.length;
+		promptAnswer = answer;
+		await evalInPage("document.querySelector('.edit-infobar-button').dispatchEvent(new MouseEvent('mouseup'))");
+		const promptDialog = await poll(() => promptDialogs[promptCount], 10000);
+		return promptDialog ? promptDialog.defaultPrompt : "no prompt was displayed";
+	}
 
 	async function dragToolbar(fromY, toY) {
 		const x = 17;
