@@ -28,7 +28,7 @@ import * as bookmarks from "./bookmarks.js";
 import * as companion from "./companion.js";
 import * as business from "./business.js";
 import * as editor from "./editor.js";
-import { launchWebAuthFlow, extractAuthCode } from "./tabs-util.js";
+import { launchWebAuthFlow, extractAuthCode, sendMessage } from "./tabs-util.js";
 import * as ui from "./../../ui/bg/index.js";
 import * as woleet from "./../../lib/woleet/woleet.js";
 import { GDrive } from "./../../lib/gdrive/gdrive.js";
@@ -724,7 +724,7 @@ async function testSkipSave(filename, options) {
 }
 
 function promptFilename(tabId, filename) {
-	return browser.tabs.sendMessage(tabId, { method: "content.prompt", message: "Filename conflict, please enter a new filename", value: filename });
+	return sendMessage(tabId, { method: "content.prompt", message: "Filename conflict, please enter a new filename", value: filename });
 }
 
 async function downloadPage(pageData, options) {
@@ -773,10 +773,10 @@ async function downloadPageForeground(taskId, filename, content, mimeType, tabId
 		mimeType
 	});
 	for await (const data of serializer) {
-		await browser.tabs.sendMessage(tabId, {
+		await sendMessage(tabId, {
 			method: "content.download",
 			data: Array.from(data)
 		});
 	}
-	return browser.tabs.sendMessage(tabId, { method: "content.download" });
+	return sendMessage(tabId, { method: "content.download" });
 }
