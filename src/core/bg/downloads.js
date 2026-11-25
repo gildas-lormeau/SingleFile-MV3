@@ -392,6 +392,7 @@ async function saveArchive(pages, message, tab) {
 		insertMetaNoIndex: message.insertMetaNoIndex,
 		insertMetaCSP: message.insertMetaCSP,
 		insertSingleFileComment: true,
+		dedupPages: message.archiveDedupPages,
 		createRootDirectory: message.createRootDirectory,
 		tocPage: true
 	}));

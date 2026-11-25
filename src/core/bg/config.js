@@ -153,6 +153,7 @@ const DEFAULT_CONFIG = {
 	displayInfobarInEditor: false,
 	compressContent: false,
 	createRootDirectory: false,
+	archiveDedupPages: false,
 	selfExtractingArchive: false,
 	disableCompression: false,
 	extractDataFromPage: false,
