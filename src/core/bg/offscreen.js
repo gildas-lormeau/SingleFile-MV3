@@ -28,6 +28,8 @@ import * as yabson from "./../../lib/yabson/yabson.js";
 const OFFSCREEN_DOCUMENT_URL = "/src/ui/pages/offscreen-document.html";
 const MAX_CONTENT_SIZE = 16 * (1024 * 1024);
 const SINGLE_DOCUMENT_ERROR = "Only a single offscreen document";
+const REASONS = ["DOM_PARSER", "WORKERS", "CLIPBOARD", "BLOBS"];
+const LEGACY_REASONS = ["BLOBS"];
 
 let creating, requestId = 0;
 
@@ -89,26 +91,33 @@ async function saveToClipboard(content, mimeType) {
 }
 
 async function createOffscreenDocument() {
-	const offscreenUrl = browser.runtime.getURL(OFFSCREEN_DOCUMENT_URL);
-	const existingContexts = await browser.runtime.getContexts({
-		contextTypes: ["OFFSCREEN_DOCUMENT"],
-		documentUrls: [offscreenUrl]
-	});
-	if (existingContexts.length > 0) {
-		return;
+	if (browser.runtime.getContexts) {
+		const offscreenUrl = browser.runtime.getURL(OFFSCREEN_DOCUMENT_URL);
+		const existingContexts = await browser.runtime.getContexts({
+			contextTypes: ["OFFSCREEN_DOCUMENT"],
+			documentUrls: [offscreenUrl]
+		});
+		if (existingContexts.length > 0) {
+			return;
+		}
 	}
 
 	if (!creating) {
-		creating = browser.offscreen
-			.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons: ["DOM_PARSER", "WORKERS", "CLIPBOARD", "BLOBS"] })
-			.catch(error => {
-				if (!error || !error.message || !error.message.includes(SINGLE_DOCUMENT_ERROR)) {
-					throw error;
-				}
-			})
+		creating = createDocument(REASONS)
+			.catch(() => createDocument(LEGACY_REASONS))
 			.finally(() => creating = null);
 	}
 	await creating;
+}
+
+async function createDocument(reasons) {
+	try {
+		await browser.offscreen.createDocument({ url: OFFSCREEN_DOCUMENT_URL, justification: "Auto-save/Compression features", reasons });
+	} catch (error) {
+		if (!error || !error.message || !error.message.includes(SINGLE_DOCUMENT_ERROR)) {
+			throw error;
+		}
+	}
 }
 
 async function sendMessageData(message, data) {

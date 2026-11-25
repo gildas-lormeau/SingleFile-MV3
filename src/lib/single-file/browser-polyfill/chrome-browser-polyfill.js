@@ -201,7 +201,7 @@ if (typeof globalThis == "undefined") {
 				}
 			}),
 			getURL: (path) => nativeAPI.runtime.getURL(path),
-			getContexts: (filter) => nativeAPI.runtime.getContexts(filter),
+			getContexts: nativeAPI.runtime.getContexts && ((filter) => nativeAPI.runtime.getContexts(filter)),
 			get lastError() {
 				return nativeAPI.runtime.lastError;
 			}
