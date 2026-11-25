@@ -85,6 +85,7 @@ export {
 	saveToRestFormApi,
 	saveToS3,
 	saveWithMCP,
+	saveArchive,
 	encodeSharpCharacter
 };
 
@@ -323,11 +324,21 @@ async function downloadCompressedContent(message, tab) {
 	const archivePage = { tab, message, url: pageData.url || tab.url, title: pageData.title };
 	if (business.addArchivePage(message.taskId, archivePage)) {
 		try {
-			({ url: archivePage.blobURL } = await offscreen.compressPage(pageData, {
+			const options = {
 				url: archivePage.url,
 				tabId,
 				disableCompression: message.disableCompression
-			}));
+			};
+			if (archivePage.persistent) {
+				options.archivePage = {
+					position: archivePage.position,
+					url: archivePage.url,
+					title: archivePage.title,
+					filename: message.filename,
+					date: Date.now()
+				};
+			}
+			({ url: archivePage.blobURL } = await offscreen.compressPage(pageData, options));
 			message.pageData = null;
 			ui.onEnd(tabId);
 		} catch (error) {
@@ -359,26 +370,31 @@ async function downloadArchive(archive) {
 	const pages = archive.pages.filter(page => page && page.blobURL);
 	if (pages.length) {
 		const { tab, message, saveOptions } = pages[0];
-		const mimeType = message.selfExtractingArchive ? SELF_EXTRACTING_ARCHIVE_MIME_TYPE : ARCHIVE_MIME_TYPE;
-		const archiveMessage = Object.assign({}, message, saveOptions, { url: null, mimeType });
-		await saveCompressedContent(archiveMessage, tab, mimeType, () => offscreen.createPagesArchive(pages.map(page => ({
-			url: page.url,
-			title: page.title,
-			blobURL: page.blobURL
-		})), {
-			addProof: archiveMessage.addProof,
-			selfExtractingArchive: message.selfExtractingArchive,
-			extractDataFromPage: message.extractDataFromPage,
-			preventAppendedData: message.preventAppendedData,
-			maxAppendedDataLength: message.maxAppendedDataLength,
-			insertCanonicalLink: message.insertCanonicalLink,
-			insertMetaNoIndex: message.insertMetaNoIndex,
-			insertMetaCSP: message.insertMetaCSP,
-			insertSingleFileComment: true,
-			createRootDirectory: message.createRootDirectory,
-			tocPage: true
-		}));
+		await saveArchive(pages, Object.assign({}, message, saveOptions), tab);
 	}
+}
+
+async function saveArchive(pages, message, tab) {
+	const mimeType = message.selfExtractingArchive ? SELF_EXTRACTING_ARCHIVE_MIME_TYPE : ARCHIVE_MIME_TYPE;
+	const archiveMessage = Object.assign({}, message, { url: null, mimeType });
+	await saveCompressedContent(archiveMessage, tab, mimeType, () => offscreen.createPagesArchive(pages.map(page => ({
+		id: page.id,
+		url: page.url,
+		title: page.title,
+		blobURL: page.blobURL
+	})), {
+		addProof: archiveMessage.addProof,
+		selfExtractingArchive: message.selfExtractingArchive,
+		extractDataFromPage: message.extractDataFromPage,
+		preventAppendedData: message.preventAppendedData,
+		maxAppendedDataLength: message.maxAppendedDataLength,
+		insertCanonicalLink: message.insertCanonicalLink,
+		insertMetaNoIndex: message.insertMetaNoIndex,
+		insertMetaCSP: message.insertMetaCSP,
+		insertSingleFileComment: true,
+		createRootDirectory: message.createRootDirectory,
+		tocPage: true
+	}));
 }
 
 async function saveCompressedContent(message, tab, mimeType, compress) {

@@ -28,6 +28,7 @@ import "./../../../lib/chrome-browser-polyfill.js";
 import "./../../lib/single-file/background.js";
 import * as config from "./config.js";
 import * as bootstrap from "./bootstrap.js";
+import * as archive from "./archive.js";
 import * as autosave from "./autosave.js";
 import * as bookmarks from "./bookmarks.js";
 import * as companion from "./companion.js";
@@ -67,6 +68,9 @@ function onMessage(message, sender) {
 	}
 	if (message.method.startsWith("downloads.")) {
 		return downloads.onMessage(message, sender);
+	}
+	if (message.method.startsWith("archive.")) {
+		return archive.onMessage(message, sender);
 	}
 	if (message.method.startsWith("autosave.")) {
 		return autosave.onMessage(message, sender);

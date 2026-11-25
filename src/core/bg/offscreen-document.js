@@ -25,6 +25,7 @@
 
 import "./../../../lib/chrome-browser-polyfill.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
+import * as archiveStore from "./archive-store.js";
 
 const ARCHIVE_MODULE_PATH = "/lib/single-file-archive.js";
 const ZIP_SCRIPT_PATH = "/lib/single-file-zip.min.js";
@@ -61,6 +62,10 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 			parsers.delete(tabId);
 			const pageData = result.value;
 			const blob = await singlefile.processors.compression.process(pageData, options);
+			if (options.archivePage) {
+				await archiveStore.add(Object.assign({ size: blob.size }, options.archivePage), blob);
+				return {};
+			}
 			const response = { url: URL.createObjectURL(blob) };
 			if (options.addProof) {
 				response.hash = await singlefile.helper.digest("SHA-256", new Uint8Array(await blob.arrayBuffer()));
@@ -75,7 +80,7 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 			const content = await createPagesArchive(pages.map(page => ({
 				url: page.url,
 				title: page.title,
-				getData: async () => new Uint8Array(await (await globalThis.fetch(page.blobURL)).arrayBuffer())
+				getData: async () => new Uint8Array(await (page.blobURL ? await globalThis.fetch(page.blobURL) : await archiveStore.getData(page.id)).arrayBuffer())
 			})), options);
 			const response = { url: URL.createObjectURL(new Blob([content], { type: options.selfExtractingArchive ? SELF_EXTRACTING_ARCHIVE_MIME_TYPE : ARCHIVE_MIME_TYPE })) };
 			if (options.addProof) {
@@ -83,7 +88,7 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 			}
 			return response;
 		} finally {
-			pages.forEach(page => URL.revokeObjectURL(page.blobURL));
+			pages.filter(page => page.blobURL).forEach(page => URL.revokeObjectURL(page.blobURL));
 		}
 	}
 	if (method == "getBlobURL") {
