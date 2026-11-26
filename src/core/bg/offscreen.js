@@ -91,6 +91,10 @@ async function saveToClipboard(content, mimeType) {
 }
 
 async function createOffscreenDocument() {
+	if (creating) {
+		await creating;
+		return;
+	}
 	if (browser.runtime.getContexts) {
 		const offscreenUrl = browser.runtime.getURL(OFFSCREEN_DOCUMENT_URL);
 		const existingContexts = await browser.runtime.getContexts({
