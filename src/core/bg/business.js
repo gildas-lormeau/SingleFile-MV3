@@ -83,7 +83,8 @@ const ARCHIVE_PAGE_OPTIONS = {
 	addProof: false,
 	insertEmbeddedImage: false,
 	insertEmbeddedScreenshotImage: false,
-	autoClose: false
+	autoClose: false,
+	archiveTask: true
 };
 const CONTENT_SCRIPTS = [
 	"lib/single-file.js",

@@ -348,7 +348,7 @@ async function downloadCompressedContent(message, tab) {
 			console.error(error); // eslint-disable-line no-console
 			ui.onError(tabId, error.message, error.link, error.stack);
 		}
-	} else {
+	} else if (!message.archiveTask) {
 		await saveCompressedContent(message, tab, pageData.mimeType, () => offscreen.compressPage(pageData, {
 			addProof: message.addProof && !message.openEditor,
 			insertTextBody: message.insertTextBody,
