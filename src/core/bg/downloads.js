@@ -49,6 +49,8 @@ const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const CONFLICT_ACTION_SKIP = "skip";
 const SELF_EXTRACTING_ARCHIVE_MIME_TYPE = "text/html";
 const ARCHIVE_MIME_TYPE = "application/zip";
+const ARCHIVE_FAILURE_COUNT_MESSAGE = " tab(s) could not be saved in the archive: ";
+const ARCHIVE_FAILURE_SEPARATOR = ", ";
 const CONFLICT_ACTION_UNIQUIFY = "uniquify";
 const REGEXP_ESCAPE = /([{}()^$&.*?/+|[\\\\]|\]|-)/g;
 let GDRIVE_CLIENT_ID = "207618107333-h1220p1oasj3050kr5r416661adm091a.apps.googleusercontent.com";
@@ -339,6 +341,7 @@ async function downloadCompressedContent(message, tab) {
 				};
 			}
 			({ url: archivePage.blobURL } = await offscreen.compressPage(pageData, options));
+			archivePage.saved = archivePage.persistent;
 			message.pageData = null;
 			ui.onEnd(tabId);
 		} catch (error) {
@@ -371,6 +374,10 @@ async function downloadArchive(archive) {
 	if (pages.length) {
 		const { tab, message, saveOptions } = pages[0];
 		await saveArchive(pages, Object.assign({}, message, saveOptions), tab);
+		if (archive.failedTabs.length) {
+			const { tab: displayedTab } = pages.find(page => page.tab.active) || pages[0];
+			ui.onError(displayedTab.id, archive.failedTabs.length + ARCHIVE_FAILURE_COUNT_MESSAGE + archive.failedTabs.map(failedTab => failedTab.url).join(ARCHIVE_FAILURE_SEPARATOR));
+		}
 	}
 }
 
