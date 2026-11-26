@@ -220,6 +220,11 @@ if (typeof globalThis == "undefined") {
 				addListener: listener => nativeAPI.storage.onChanged.addListener(listener),
 				removeListener: listener => nativeAPI.storage.onChanged.removeListener(listener)
 			},
+			session: {
+				set: value => nativeAPI.storage.session.set(value),
+				get: keys => nativeAPI.storage.session.get(keys),
+				remove: keys => nativeAPI.storage.session.remove(keys)
+			},
 			sync: {
 				set: value => nativeAPI.storage.sync.set(value),
 				get: keys => nativeAPI.storage.sync.get(keys),
