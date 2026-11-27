@@ -344,6 +344,9 @@ async function initialize() {
 			const tabs = await queryTabs({ currentWindow: true });
 			business.saveTabs(tabs, profileOptions);
 		}
+		if (item.action == "save-tab-group") {
+			business.saveTabGroup(tab, profileOptions);
+		}
 		if (item.action == "save-selected-tabs-in-archive") {
 			const tabs = await queryTabs({ currentWindow: true, highlighted: true });
 			business.saveTabsInArchive(tabs, profileOptions);
