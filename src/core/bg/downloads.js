@@ -53,6 +53,7 @@ const ARCHIVE_FAILURE_COUNT_MESSAGE = " tab(s) could not be saved in the archive
 const ARCHIVE_FAILURE_SEPARATOR = ", ";
 const CONFLICT_ACTION_UNIQUIFY = "uniquify";
 const REGEXP_ESCAPE = /([{}()^$&.*?/+|[\\\\]|\]|-)/g;
+const HTTP_URL_REGEXP = /^https?:\/\//i;
 let GDRIVE_CLIENT_ID = "207618107333-h1220p1oasj3050kr5r416661adm091a.apps.googleusercontent.com";
 let GDRIVE_CLIENT_KEY = "VQJ8Gq8Vxx72QyxPyeLtWvUt";
 const DROPBOX_CLIENT_ID = "s50p6litdvuzrtb";
@@ -303,7 +304,7 @@ async function downloadContent(blob, message, tab) {
 				}
 			}
 		}
-		if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
+		if (message.bookmarkId && message.replaceBookmarkURL && response && HTTP_URL_REGEXP.test(response.url)) {
 			await bookmarks.update(message.bookmarkId, { url: response.url });
 		}
 		ui.onEnd(tabId);
@@ -526,7 +527,7 @@ async function saveCompressedContent(message, tab, mimeType, compress) {
 				await downloadPageForeground(message.taskId, message.filename, blob, message.mimeType, tabId);
 			}
 		}
-		if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
+		if (message.bookmarkId && message.replaceBookmarkURL && response && HTTP_URL_REGEXP.test(response.url)) {
 			await bookmarks.update(message.bookmarkId, { url: response.url });
 		}
 		ui.onEnd(tabId);
