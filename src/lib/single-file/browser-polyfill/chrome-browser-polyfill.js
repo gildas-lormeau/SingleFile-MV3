@@ -41,7 +41,7 @@ if (typeof globalThis == "undefined") {
 		}
 	}
 
-	globalThis.__defineGetter__("browser", () => ({
+	const browserAPI = {
 		action: {
 			onClicked: {
 				addListener: listener => nativeAPI.action.onClicked.addListener(listener)
@@ -296,6 +296,8 @@ if (typeof globalThis == "undefined") {
 		declarativeNetRequest: {
 			updateSessionRules: parameters => nativeAPI.declarativeNetRequest.updateSessionRules(parameters)
 		}
-	}));
+	};
+
+	Object.defineProperty(globalThis, "browser", { value: browserAPI, configurable: true, enumerable: true, writable: true });
 
 })();
