@@ -121,6 +121,7 @@ if (typeof globalThis == "undefined") {
 		},
 		permissions: {
 			request: permissions => nativeAPI.permissions.request(permissions),
+			contains: permissions => nativeAPI.permissions.contains(permissions),
 			remove: permissions => nativeAPI.permissions.remove(permissions)
 		},
 		runtime: {
@@ -230,6 +231,13 @@ if (typeof globalThis == "undefined") {
 				get: keys => nativeAPI.storage.sync.get(keys),
 				clear: () => nativeAPI.storage.sync.clear(),
 				remove: keys => nativeAPI.storage.sync.remove(keys)
+			}
+		},
+		tabGroups: {
+			get: groupId => nativeAPI.tabGroups.get(groupId),
+			query: options => nativeAPI.tabGroups.query(options),
+			onUpdated: {
+				addListener: listener => nativeAPI.tabGroups.onUpdated.addListener(listener)
 			}
 		},
 		tabs: {
