@@ -81,6 +81,7 @@ const DEFAULT_CONFIG = {
 	animateInfobar: true,
 	confirmInfobarContent: false,
 	autoClose: false,
+	buttonSaveSelection: false,
 	confirmFilename: false,
 	filenameConflictAction: "uniquify",
 	filenameMaxLength: 192,
