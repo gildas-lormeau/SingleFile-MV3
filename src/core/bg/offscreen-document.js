@@ -33,9 +33,16 @@ const SELF_EXTRACTING_ARCHIVE_MIME_TYPE = "text/html";
 const ARCHIVE_MIME_TYPE = "application/zip";
 
 const singlefile = globalThis.singlefile;
+const METHODS = ["processPage", "compressPage", "createPagesArchive", "getBlobURL", "revokeObjectURL", "getImageData", "saveToClipboard"];
 const parsers = new Map(), pendingData = new Map();
 
-browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requestId, url, data, mimeType, options, width, height, tabId, pages }) => {
+browser.runtime.onMessage.addListener(message => {
+	if (METHODS.includes(message.method)) {
+		return onMessage(message);
+	}
+});
+
+async function onMessage({ method, truncated, finished, requestId, url, data, mimeType, options, width, height, tabId, pages }) {
 	if (method == "processPage") {
 		const result = await singlefile.getPageData(options, { fetch }, null, null);
 		const blob = new Blob([typeof result.content == "string" ? result.content : new Uint8Array(result.content)], { type: result.mimeType });
@@ -136,7 +143,7 @@ browser.runtime.onMessage.addListener(async ({ method, truncated, finished, requ
 		}
 		return {};
 	}
-});
+}
 
 function saveToClipboard(pageData) {
 	const command = "copy";
