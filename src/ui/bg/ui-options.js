@@ -160,6 +160,7 @@ const autoSaveExternalSaveLabel = document.getElementById("autoSaveExternalSaveL
 const removeAlternativeFontsLabel = document.getElementById("removeAlternativeFontsLabel");
 const removeAlternativeImagesLabel = document.getElementById("removeAlternativeImagesLabel");
 const removeAlternativeMediasLabel = document.getElementById("removeAlternativeMediasLabel");
+const applyPrintStylesheetsLabel = document.getElementById("applyPrintStylesheetsLabel");
 const saveCreatedBookmarksLabel = document.getElementById("saveCreatedBookmarksLabel");
 const passReferrerOnErrorLabel = document.getElementById("passReferrerOnErrorLabel");
 const replaceBookmarkURLLabel = document.getElementById("replaceBookmarkURLLabel");
@@ -358,6 +359,7 @@ const autoSaveExternalSaveInput = document.getElementById("autoSaveExternalSaveI
 const removeAlternativeFontsInput = document.getElementById("removeAlternativeFontsInput");
 const removeAlternativeImagesInput = document.getElementById("removeAlternativeImagesInput");
 const removeAlternativeMediasInput = document.getElementById("removeAlternativeMediasInput");
+const applyPrintStylesheetsInput = document.getElementById("applyPrintStylesheetsInput");
 const saveCreatedBookmarksInput = document.getElementById("saveCreatedBookmarksInput");
 const passReferrerOnErrorInput = document.getElementById("passReferrerOnErrorInput");
 const replaceBookmarkURLInput = document.getElementById("replaceBookmarkURLInput");
@@ -889,6 +891,7 @@ autoSaveExternalSaveLabel.textContent = browser.i18n.getMessage("optionAutoSaveE
 removeAlternativeFontsLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeFonts");
 removeAlternativeImagesLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeImages");
 removeAlternativeMediasLabel.textContent = browser.i18n.getMessage("optionRemoveAlternativeMedias");
+applyPrintStylesheetsLabel.textContent = browser.i18n.getMessage("optionApplyPrintStylesheets");
 saveCreatedBookmarksLabel.textContent = browser.i18n.getMessage("optionSaveCreatedBookmarks");
 passReferrerOnErrorLabel.textContent = browser.i18n.getMessage("optionPassReferrerOnError");
 replaceBookmarkURLLabel.textContent = browser.i18n.getMessage("optionReplaceBookmarkURL");
@@ -1274,6 +1277,7 @@ async function refresh(profileName) {
 	imageQualityInput.disabled = !(profileOptions.imageReductionFactor > 1);
 	customShortcutInput.value = profileOptions.customShortcut || "";
 	removeAlternativeMediasInput.checked = profileOptions.removeAlternativeMedias;
+	applyPrintStylesheetsInput.checked = profileOptions.applyPrintStylesheets;
 	saveCreatedBookmarksInput.checked = profileOptions.saveCreatedBookmarks;
 	passReferrerOnErrorInput.checked = profileOptions.passReferrerOnError;
 	replaceBookmarkURLInput.checked = profileOptions.replaceBookmarkURL;
@@ -1508,6 +1512,7 @@ async function update() {
 			removeAlternativeFonts: removeAlternativeFontsInput.checked,
 			removeAlternativeImages: removeAlternativeImagesInput.checked,
 			removeAlternativeMedias: removeAlternativeMediasInput.checked,
+			applyPrintStylesheets: applyPrintStylesheetsInput.checked,
 			saveCreatedBookmarks: saveCreatedBookmarksInput.checked,
 			passReferrerOnError: passReferrerOnErrorInput.checked,
 			replaceBookmarkURL: replaceBookmarkURLInput.checked,
