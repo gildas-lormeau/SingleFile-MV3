@@ -309,8 +309,13 @@ async function downloadContent(blob, message, tab) {
 		}
 		ui.onEnd(tabId);
 		if (message.openSavedPage && !message.openEditor && !skipped) {
-			const viewerBlobURL = await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())), message.mimeType);
-			await openViewerTab(tab, viewerBlobURL);
+			const uploadedPageURL = getUploadedPageURL(message, response);
+			if (uploadedPageURL) {
+				await openTab(tab, uploadedPageURL);
+			} else {
+				const viewerBlobURL = await offscreen.getBlobURL(Array.from(new Uint8Array(await blob.arrayBuffer())), message.mimeType);
+				await openViewerTab(tab, viewerBlobURL);
+			}
 		}
 	} catch (error) {
 		if (!error.message || error.message != "upload_cancelled") {
@@ -532,8 +537,13 @@ async function saveCompressedContent(message, tab, mimeType, compress) {
 		}
 		ui.onEnd(tabId);
 		if (message.openSavedPage && !message.openEditor && !skipped) {
-			await openViewerTab(tab, blobURI, { compressed: true });
-			viewerOpened = true;
+			const uploadedPageURL = getUploadedPageURL(message, response);
+			if (uploadedPageURL) {
+				await openTab(tab, uploadedPageURL);
+			} else {
+				await openViewerTab(tab, blobURI, { compressed: true });
+				viewerOpened = true;
+			}
 		}
 		if (hash && !skipped) {
 			await woleet.anchor(hash, message.woleetKey);
@@ -555,13 +565,23 @@ async function saveCompressedContent(message, tab, mimeType, compress) {
 	}
 }
 
+function getUploadedPageURL(message, response) {
+	if (message.saveToRestFormApi && response && HTTP_URL_REGEXP.test(response.url)) {
+		return response.url;
+	}
+}
+
 async function openViewerTab(tab, blobURL, { compressed } = {}) {
-	const createTabProperties = { active: true, url: "/src/ui/pages/viewer.html?" + (compressed ? "compressed&" : "") + "blobURI=" + blobURL, windowId: tab.windowId };
+	const viewerTab = await openTab(tab, "/src/ui/pages/viewer.html?" + (compressed ? "compressed&" : "") + "blobURI=" + blobURL);
+	viewerBlobURLs.set(viewerTab.id, blobURL);
+}
+
+function openTab(tab, url) {
+	const createTabProperties = { active: true, url, windowId: tab.windowId };
 	if (tab.index != null) {
 		createTabProperties.index = tab.index + 1;
 	}
-	const viewerTab = await browser.tabs.create(createTabProperties);
-	viewerBlobURLs.set(viewerTab.id, blobURL);
+	return browser.tabs.create(createTabProperties);
 }
 
 function encodeSharpCharacter(path) {
