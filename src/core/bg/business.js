@@ -42,6 +42,7 @@ const AUTOSAVE_METHOD = "content.autosave";
 const ARCHIVE_PASSWORD_ERROR = "Saving tabs in one archive is not supported with a password yet.";
 const NO_TAB_GROUP_ERROR = "The tab is not in a tab group.";
 const NO_GROUP_ID = -1;
+const PDF_CONTENT_TYPE = "application/pdf";
 const ARCHIVE_PRIVATE_TAB_ERROR = "The tabs of a private window cannot be added to the archive in progress.";
 const ARCHIVE_POSITION_FACTOR = 1000;
 const PAUSED_TASKS_STORAGE_KEY = "pausedTasks";
@@ -309,6 +310,14 @@ function addArchivePage(taskId, page) {
 	}
 }
 
+async function isPDFDocument(tabId) {
+	const resultData = (await browser.scripting.executeScript({
+		target: { tabId },
+		func: () => document.contentType
+	}))[0];
+	return Boolean(resultData) && resultData.result == PDF_CONTENT_TYPE;
+}
+
 function addArchiveFailure(archive, archiveIndex, { url, title }) {
 	if (archive) {
 		if (archive.persistent) {
@@ -375,7 +384,9 @@ async function saveTabs(tabs, options = {}, archive) {
 				ui.onStart(tabId, INJECT_SCRIPTS_STEP);
 				let scriptsInjected;
 				try {
-					scriptsInjected = await injectScript(tabId, tabOptions);
+					if (!archive || !(await isPDFDocument(tabId))) {
+						scriptsInjected = await injectScript(tabId, tabOptions);
+					}
 					// eslint-disable-next-line no-unused-vars
 				} catch (error) {
 					// ignored
